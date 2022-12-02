@@ -21,3 +21,16 @@ model User {
   password  String?
   lastLoggedInTime DateTime 
 }
+model Verification { // not loggedin user 
+
+  id        Int     @default(autoincrement()) @id 
+  
+  email  String      @unique()
+  
+  try    Int  @default(0)
+
+  code   String    
+
+  lastResendTime  DateTime  
+ 
+}
