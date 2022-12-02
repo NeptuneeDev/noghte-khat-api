@@ -14,8 +14,6 @@ model User {
   id        Int     @default(autoincrement()) @id
   email    String? @unique
   name     String?
-  lastname String?
-  address  String?
   createdAt  DateTime     @default(now())
   updateAt  DateTime?
   password  String?
@@ -25,12 +23,12 @@ model Verification { // not loggedin user
 
   id        Int     @default(autoincrement()) @id 
   
+  
   email  String      @unique()
   
   try    Int  @default(0)
 
-  code   String    
-
+  code  Int
   lastResendTime  DateTime  
  
 }
