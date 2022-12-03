@@ -1,0 +1,23 @@
+# compiled output
+.vscode
+/node_modules
+/dist
+/.git
+
+# code formatter
+.eslintrc
+.eslintignore
+.editorconfig
+.prettierrc
+.git
+
+# test
+jest.config.js
+
+# docker
+Dockerfile
+docker-compose.yml
+
+# git
+LICENSE
+README.md
