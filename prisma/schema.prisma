@@ -12,12 +12,26 @@ datasource db {
 
 model User {
   id        Int     @default(autoincrement()) @id
-  email    String? @unique
-  name     String?
-  lastname String?
-  address  String?
+  email    String @unique
+  name     String
   createdAt  DateTime     @default(now())
-  updateAt  DateTime?
-  password  String?
+  updateAt  DateTime
+  password  String
+  status    String
   lastLoggedInTime DateTime 
+}
+model Verification { // not loggedin user 
+
+  id        Int     @default(autoincrement()) @id 
+  
+  
+  email  String      @unique()
+  
+
+  try    Int  @default(0)
+ 
+
+  code  String
+  lastResendTime  DateTime  
+ 
 }
