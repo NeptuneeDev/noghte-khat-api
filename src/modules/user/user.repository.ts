@@ -1,35 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import prisma from '@prisma/client';
 import { emitWarning } from 'process';
-import { Varificaiton } from '../interfacses/varification.inteface';
 import { PrismaService } from '../prisma/prisma.service';
-import { UserLoginDto } from './Dto/user-login.Dto';
-import { UserSignInDto } from './Dto/user-signin.dto';
-
+import { UserLoginDto } from '../auth/Dto/user-login.Dto';
+import { User } from '../interfacses/user.interface';
 @Injectable()
 export class userRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async upsertVarification(user: UserSignInDto) {
-    this.prisma.verification.upsert({
-      where: { email: user.email },
-      create: {
-        email: user.email,
-        code: 22,
-        lastResendTime: new Date().toISOString(),
-      },
-      update: {
-        try: { increment: 1 },
-        lastResendTime: new Date().toISOString(),
-        code: 22,
-      },
-    });
-  }
-  find(user: UserSignInDto) {
-    return this.prisma.user.findFirst({ where: { email: user.email } });
+  find(email: string) {
+    return this.prisma.user.findFirst({ where: { email: email } });
   }
 
-  findVarification(email: string): Promise<Varificaiton | undefined> {
-    return this.prisma.verification.findFirst({ where: { email } });
+  async upsert(user: User) :Promise<User> {
+    return this.prisma.user.upsert({
+      create: {
+        name: user.name,
+        password: user.password,
+        email: user.email,
+        updateAt: new Date().toISOString(),
+        lastLoggedInTime: new Date().toISOString(),
+        status: user.status,
+      },
+      update: {
+        lastLoggedInTime: new Date().toISOString(),
+      },
+      where: { email: user.email },
+    });
   }
 }

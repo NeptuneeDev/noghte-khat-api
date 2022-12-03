@@ -8,7 +8,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class UserSignInDto {
+export class UserSignUpDto {
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -20,7 +20,7 @@ export class UserSignInDto {
   @IsNotEmpty()
   @MinLength(6, { message: 'password should be ' })
   @MaxLength(30, { message: "password shouldn't be more than 30 characters" })
-  password: String;
+  password: string;
 
   // @Dose
   // confirmPassword
