@@ -4,7 +4,7 @@ COPY . ./app
 
 WORKDIR /app
 
-RUN npm ci
+RUN npm install --force
 
 RUN npx prisma generate
 
