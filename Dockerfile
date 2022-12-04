@@ -4,7 +4,9 @@ COPY . ./app
 
 WORKDIR /app
 
-RUN npm install
+RUN npm ci
+
+RUN npx prisma generate
 
 EXPOSE 3000
 
