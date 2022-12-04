@@ -6,6 +6,7 @@ services:
       target: development-build-stage
       dockerfile: Dockerfile
     container_name: server2
+    restart: always
     ports:
       - "3000:3000"
     volumes:
