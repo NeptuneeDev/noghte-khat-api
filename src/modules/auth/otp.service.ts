@@ -1,7 +1,5 @@
-
 export class OtpService {
-
- send(otp:number){
+  send(otp: number) {
     console.log(otp);
- }
+  }
 }

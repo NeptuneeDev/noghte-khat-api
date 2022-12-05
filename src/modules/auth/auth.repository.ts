@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Verificaiton } from '../interfacses/verification.inteface';
+import { Verificaiton } from './interfaces/verification.inteface';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserSignUpDto } from './Dto/user-signUp.dto';
 
