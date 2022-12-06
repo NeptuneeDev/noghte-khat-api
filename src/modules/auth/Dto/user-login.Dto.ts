@@ -33,3 +33,4 @@ export class VerficationDto {
   @Max(9999,{message:"code shouldn't be more then 4 numbers"})
   otp: number;
 }
+

@@ -36,7 +36,8 @@ export class AuthService {
 
     const otp = this.generateOtp();
 
-    this.otpService.send(otp);
+       this.otpService.send(otp);
+
     const hashedOtp = await this.hash(otp + '');
 
     const verification1 = await this.authRepository.upsertVarification(
@@ -130,3 +131,4 @@ export class AuthService {
   return this.jwtService.sign({ id: id });
   }
 }
+

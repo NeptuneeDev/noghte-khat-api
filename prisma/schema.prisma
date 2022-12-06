@@ -35,3 +35,19 @@ model Verification { // not loggedin user
   lastResendTime  DateTime  
  
 }
+
+model Proffessor {
+   
+  id Int @default(autoincrement()) @id
+
+  name String
+  
+  email String
+
+  university String
+ 
+  createdAt DateTime
+
+  updateAt DateTime
+ 
+}
