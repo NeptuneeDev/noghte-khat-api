@@ -36,18 +36,18 @@ model Verification { // not loggedin user
  
 }
 
-model Proffessor {
+model Professor {
    
   id Int @default(autoincrement()) @id
 
   name String
   
-  email String
+  email String @unique()
 
   university String
  
   createdAt DateTime
 
-  updateAt DateTime
+  updatedAt DateTime
  
 }
