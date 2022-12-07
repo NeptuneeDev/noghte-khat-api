@@ -9,6 +9,10 @@ export class userRepository {
     return this.prisma.user.findFirst({ where: { email: email } });
   }
 
+  findUnique(id: number) {
+    return this.prisma.user.findUnique({ where: { id: id } });
+  }
+
   async upsert(user: User): Promise<User> {
     return this.prisma.user.upsert({
       create: {
