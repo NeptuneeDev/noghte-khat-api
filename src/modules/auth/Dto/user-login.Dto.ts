@@ -29,8 +29,8 @@ export class VerficationDto {
 
   @IsNotEmpty()
   @IsNumber()
-  @Min(1000,{message:"code shouldn't be less then 4 numbers"})
-  @Max(9999,{message:"code shouldn't be more then 4 numbers"})
+  @Min(1000, { message: "code shouldn't be less then 4 numbers" })
+  @Max(9999, { message: "code shouldn't be more then 4 numbers" })
   otp: number;
 }
 

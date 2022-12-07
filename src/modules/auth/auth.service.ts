@@ -8,10 +8,11 @@ import { UserSignUpDto } from './Dto/user-signUp.dto';
 import * as bcrypt from 'bcrypt';
 import { OtpService } from './otp.service';
 import { UserLoginDto, VerficationDto } from './Dto/user-login.Dto';
-import { Verificaiton } from '../interfacses/verification.inteface';
+import { Verificaiton } from './interfaces/verification.inteface';
 import { userRepository } from '../user/user.repository';
+import { JwtService } from '@nestjs/jwt';
+import { Hash } from 'src/utils/Hash';
 
-import { JwtSecretRequestType, JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
   constructor(
@@ -36,16 +37,15 @@ export class AuthService {
 
     const otp = this.generateOtp();
 
-       this.otpService.send(otp);
-
-    const hashedOtp = await this.hash(otp + '');
+    this.otpService.send(otp);
+    const hashedOtp = await Hash.hash(otp + '');
 
     const verification1 = await this.authRepository.upsertVarification(
       userSignInDto,
       hashedOtp,
     );
 
-    const hashedPassword = await this.hash(userSignInDto.password);
+    const hashedPassword = await Hash.hash(userSignInDto.password);
     const user = await this.userRepository.upsert({
       email: userSignInDto.email,
       name: userSignInDto.name,
@@ -58,10 +58,11 @@ export class AuthService {
 
   async logIn(userLogInDto: UserLoginDto): Promise<string> {
     const user = await this.userRepository.find(userLogInDto.email);
-    const isPasswordValid = await bcrypt.compare(
+    const isPasswordValid = await Hash.compare(
       userLogInDto.password,
       user.password,
     );
+
     if (!isPasswordValid) {
       throw new BadRequestException("credintals arn't correct...");
     }
@@ -75,6 +76,7 @@ export class AuthService {
     if (!verification) {
       throw new BadRequestException("We haven't sent code to this email");
     }
+
     const isValid = await this.isValidOtp(verificationDto.otp, verification);
 
     if (!isValid) {
@@ -83,6 +85,7 @@ export class AuthService {
     const user = await this.userRepository.find(verificationDto.email);
     return this.generateJwt(user.id);
   }
+
   isRequestedALot(numberOfAttampt: number, lastResendTime: Date): boolean {
     const isPassedTowWeeksFromLastResnd =
       new Date(new Date(lastResendTime)).getTime() +
@@ -100,18 +103,6 @@ export class AuthService {
     return code;
   }
 
-  async hash(code: string): Promise<string> {
-    try {
-      const salt = await bcrypt.genSalt(10);
-
-      const hash = await bcrypt.hash(code, salt);
-
-      return hash;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   async isValidOtp(otp: number, verification: Verificaiton): Promise<boolean> {
     const isExpird = !(
       new Date(new Date(verification.lastResendTime)).getTime() +
@@ -127,8 +118,8 @@ export class AuthService {
   }
 
   async generateJwt(id: number) {
-    const secret= await process.env.SECRET_KEY as string;
-  return this.jwtService.sign({ id: id });
+    const secret = (await process.env.SECRET_KEY) as string;
+    return this.jwtService.sign({ id: id });
   }
 }
 

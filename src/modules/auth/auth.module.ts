@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { OtpService } from './otp.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtStrategy } from './startegy/jwt.startegy';
+import { RefreshTokenStrategy } from './startegy/refreshToken.strategy';
 const secret = process.env.SECRET_KEY as string;
 @Module({
   imports: [
@@ -21,6 +22,7 @@ const secret = process.env.SECRET_KEY as string;
     AuthRepository,
     OtpService,
     userRepository,
+    RefreshTokenStrategy,
     JwtStrategy,
   ],
   controllers: [AuthController],

@@ -5,7 +5,8 @@ services:
       context: ./
       target: development-build-stage
       dockerfile: Dockerfile
-    container_name: server
+    container_name: server2
+    restart: always
     ports:
       - "3000:3000"
     volumes:
@@ -17,10 +18,14 @@ services:
       - "psql:postgres"
     depends_on:
       - psql
-      
+
   psql:
     image: postgres:15.1-alpine3.17
     container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
     ports:
       - '5432:5432'
     networks:

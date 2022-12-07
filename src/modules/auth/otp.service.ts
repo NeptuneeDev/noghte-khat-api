@@ -1,8 +1,5 @@
-
 export class OtpService {
-
-   // eamil server
- send(otp:number){
+  send(otp: number) {
     console.log(otp);
- }
+  }
 }

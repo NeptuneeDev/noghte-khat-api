@@ -4,7 +4,9 @@ COPY . ./app
 
 WORKDIR /app
 
-RUN npm ci
+RUN npm install --force
+
+RUN npx prisma generate
 
 EXPOSE 3000
 
@@ -20,6 +22,7 @@ FROM common-build-stage AS production-build-stage
 
 ENV NODE_ENV production
 
-RUN npm run build
+RUN npm run prebuild \
+    npm run build
 
 CMD ["npm", "run", "start:prod"]

@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import prisma from '@prisma/client';
-import { emitWarning } from 'process';
 import { PrismaService } from '../prisma/prisma.service';
-import { UserLoginDto } from '../auth/Dto/user-login.Dto';
-import { User } from '../interfacses/user.interface';
+import { User } from './interfaces/user.interface';
 @Injectable()
 export class userRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -12,7 +9,7 @@ export class userRepository {
     return this.prisma.user.findFirst({ where: { email: email } });
   }
 
-  async upsert(user: User) :Promise<User> {
+  async upsert(user: User): Promise<User> {
     return this.prisma.user.upsert({
       create: {
         name: user.name,
