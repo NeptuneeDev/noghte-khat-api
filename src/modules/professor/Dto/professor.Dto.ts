@@ -13,3 +13,9 @@ export class CreateProfessorDto {
   @IsEmail()
   email: string;
 }
+
+export class SearchByNameDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+}

@@ -1,14 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateProfessorDto } from './Dto/create.professor.Dto';
-import { Professor } from './professor.interface';
+import { CreateProfessorDto } from './Dto/professor.Dto';
+import { Professor } from './interfaces/professor.interface';
 
 @Injectable()
 export class ProfessorRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async find(name: string): Promise<Professor[] | undefined> {
-    return this.prisma.professor.findMany({ where: { name } });
+  async findByName(name: string): Promise<Professor[] | undefined> {
+    return this.prisma.professor.findMany({
+      where: {
+        name: {
+          contains: name,
+        },
+      },
+    });
   }
 
   async create(professorDto: CreateProfessorDto): Promise<Professor> {
@@ -23,9 +29,21 @@ export class ProfessorRepository {
     });
   }
 
-  async findByUni(university: string):Promise<Professor[]> {
+  async findByUni(university: string): Promise<Professor[]> {
     return this.prisma.professor.findMany({
       where: { university },
     });
+  }
+
+  async findAll(): Promise<Professor[]> {
+    return this.prisma.professor.findMany();
+  }
+
+  async deletetProfessor(id: number) {
+    return this.prisma.professor.delete({ where: { id } });
+  }
+
+  async findById(id: number): Promise<Professor | undefined> {
+    return this.prisma.professor.findFirst({ where: { id } });
   }
 }

@@ -49,5 +49,6 @@ model Professor {
   createdAt DateTime
 
   updatedAt DateTime
+
  
 }

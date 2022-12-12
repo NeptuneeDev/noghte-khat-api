@@ -11,3 +11,4 @@ export interface Professor {
 
   updatedAt: Date;
 }
+

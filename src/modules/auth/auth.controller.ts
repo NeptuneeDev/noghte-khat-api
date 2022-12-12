@@ -28,4 +28,9 @@ export class AuthController {
     console.log(jwt);
     res.cookie('access-token', jwt);
   }
+
+  //doc use case  activity diagram
+  //doc swagger
+  // 20
+  
 }
