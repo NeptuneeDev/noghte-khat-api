@@ -4,19 +4,12 @@ import { AuthController } from './auth.controller';
 import { AuthRepository } from './auth.repository';
 import { AuthService } from './auth.service';
 import { OtpService } from './otp.service';
-import { JwtModule, JwtService } from '@nestjs/jwt';
-import { JwtStrategy } from './startegy/jwt.startegy';
-import { RefreshTokenStrategy } from './startegy/refreshToken.strategy';
-const secret = process.env.SECRET_KEY as string;
+import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './startegies/at.startegy';
+import { RefreshTokenStrategy } from './startegies/rt.strategy';
+
 @Module({
-  imports: [
-    JwtModule.register({
-      secret: secret,
-      signOptions: {
-        expiresIn: '60min',
-      },
-    }),
-  ],
+  imports: [JwtModule.register({})],
   providers: [
     AuthService,
     AuthRepository,
