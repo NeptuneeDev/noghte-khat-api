@@ -22,10 +22,7 @@ export class UserSignUpDto {
 
   // @Dose
   // confirmPassword
-
-
 }
-
 
 // email name password cofirmPassword
 
