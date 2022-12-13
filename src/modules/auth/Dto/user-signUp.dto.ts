@@ -2,8 +2,6 @@ import {
   IsEmail,
   IsNotEmpty,
   IsString,
-  matches,
-  MATCHES,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -18,7 +16,7 @@ export class UserSignUpDto {
   email: string;
 
   @IsNotEmpty()
-  @MinLength(6, { message: 'password should be ' })
+  @MinLength(8, { message: 'password should be 8 characters' })
   @MaxLength(30, { message: "password shouldn't be more than 30 characters" })
   password: string;
 
