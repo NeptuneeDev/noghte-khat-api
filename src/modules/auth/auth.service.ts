@@ -188,7 +188,7 @@ export class AuthService {
       }),
       this.jwtService.signAsync(jwtPayload, {
         secret: process.env.SECRET_KEY,
-        expiresIn: '7d',
+        expiresIn: '10h',
       }),
     ]);
 
@@ -198,4 +198,3 @@ export class AuthService {
     };
   }
 }
-
