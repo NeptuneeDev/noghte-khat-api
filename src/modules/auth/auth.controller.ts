@@ -7,10 +7,14 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiHeader,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { GetCurrentUserId, Public } from '../common/decorators';
 import { GetCurrentUser } from '../common/decorators';
-import { AtGuard } from '../common/guards/at.guard';
 import { RtGuard } from '../common/guards/rt.guard';
 import { AuthService } from './auth.service';
 import { UserLoginDto, VerficationDto } from './Dto/user-login.Dto';
@@ -45,6 +49,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @ApiBearerAuth()
   async logout(@GetCurrentUserId() userId: number): Promise<boolean> {
     return this.authService.logOut(userId);
   }
@@ -58,6 +63,10 @@ export class AuthController {
   @Public()
   @UseGuards(RtGuard)
   @Post('refresh')
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer + refreshToken',
+  })
   @HttpCode(HttpStatus.OK)
   async refreshTokens(
     @GetCurrentUserId() userId: number,
