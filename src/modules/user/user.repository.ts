@@ -9,6 +9,10 @@ export class userRepository {
     return this.prisma.user.findFirst({ where: { email: email } });
   }
 
+  findAll() {
+    return this.prisma.user.findMany();
+  }
+
   findUnique(id: number) {
     return this.prisma.user.findUnique({ where: { id: id } });
   }

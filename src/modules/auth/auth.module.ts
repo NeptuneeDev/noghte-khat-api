@@ -9,7 +9,7 @@ import { JwtStrategy } from './startegies/at.startegy';
 import { RefreshTokenStrategy } from './startegies/rt.strategy';
 
 @Module({
-  imports: [JwtModule.register({})],
+  imports: [JwtModule.register({ secret: process.env.SECRET_KEY })],
   providers: [
     AuthService,
     AuthRepository,
