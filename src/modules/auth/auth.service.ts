@@ -1,13 +1,15 @@
 import {
   BadRequestException,
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   Injectable,
   NotAcceptableException,
 } from '@nestjs/common';
 import { AuthRepository } from './auth.repository';
-import { UserSignUpDto } from './Dto/user-signUp.dto';
+import { SignUpDto } from './Dto/user-signUp.dto';
 import { OtpService } from './otp.service';
-import { UserLoginDto, VerficationDto } from './Dto/user-login.Dto';
+import { UserLoginDto } from './Dto/user-login.Dto';
 import { Verificaiton } from './interfaces/verification.inteface';
 import { userRepository } from '../user/user.repository';
 import { JwtService } from '@nestjs/jwt';
@@ -15,6 +17,8 @@ import { Hash } from 'src/utils/Hash';
 import { Tokens } from './types/tokens.type';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtPayload } from './types';
+import { SanitizeError } from 'src/http-error-handlers/error.handler';
+import { VerficationDto } from './Dto/user-signUp.dto';
 
 @Injectable()
 export class AuthService {
@@ -26,17 +30,17 @@ export class AuthService {
     private readonly userRepository: userRepository,
   ) {}
 
-  async signUp(userSignUpDto: UserSignUpDto) {
-    /*const varification = await this.authRepository.findVarification(
-      userSignUpDto.email,
+  @SanitizeError({ targetName: '' })
+  async sendCode(verificationDto: VerficationDto) {
+    const varification = await this.authRepository.findVarification(
+      verificationDto.email,
     );
 
-    ///////////come back here later
     if (
       varification &&
       this.isRequestedALot(varification.try, varification.lastResendTime)
     ) {
-      throw new Error();
+      throw new BadRequestException('too much request for otp...');
     }
 
     const otp = this.generateOtp();
@@ -45,23 +49,11 @@ export class AuthService {
     const hashedOtp = await Hash.hash(otp + '');
 
     const verification1 = await this.authRepository.upsertVarification(
-      userSignUpDto,
+      verificationDto,
       hashedOtp,
-    );*/
+    );
 
-    const hashedPassword = await Hash.hash(userSignUpDto.password);
-
-    const user = await this.userRepository.upsert({
-      email: userSignUpDto.email,
-      name: userSignUpDto.name,
-      password: hashedPassword,
-      status: 'unverified',
-    });
-
-    const tokens = await this.getTokens(user.id, user.email);
-    await this.updateRtHash(user.id, tokens.refresh_token);
-
-    return;
+    return verification1;
   }
 
   async logIn(userLogInDto: UserLoginDto): Promise<Tokens> {
@@ -78,7 +70,7 @@ export class AuthService {
       throw new BadRequestException("credintals arn't correct...");
     }
 
-    const tokens = await this.getTokens(user.id, user.email);
+    const tokens = await this.getTokens(user.id);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
     return tokens;
@@ -96,22 +88,32 @@ export class AuthService {
     return true;
   }
 
-  async verifyOtp(verificationDto: VerficationDto) {
+  async signUp(signUPDto: SignUpDto) {
     const verification = await this.authRepository.findVarification(
-      verificationDto.email,
+      signUPDto.email,
     );
 
     if (!verification) {
       throw new BadRequestException("We haven't sent code to this email");
     }
 
-    const isValid = await this.isValidOtp(verificationDto.otp, verification);
+    const isValid = await this.isValidOtp(signUPDto.otp, verification);
 
     if (!isValid) {
       throw new BadRequestException("the otp isn't valid ");
     }
-    const user = await this.userRepository.find(verificationDto.email);
-    return this.getTokens(user.id, user.email);
+    const hashedPassword = await Hash.hash(signUPDto.password);
+
+    const user = await this.userRepository.upsert({
+      email: signUPDto.email,
+      name: signUPDto.name,
+      password: hashedPassword,
+      status: 'verified',
+    });
+
+    const tokens = await this.getTokens(user.id);
+    await this.updateRtHash(user.id, tokens.refresh_token);
+    return this.getTokens(user.id);
   }
 
   isRequestedALot(numberOfAttampt: number, lastResendTime: Date): boolean {
@@ -157,7 +159,7 @@ export class AuthService {
     const rtMatches = await Hash.compare(rt, user.hashedRT);
     if (!rtMatches) throw new ForbiddenException('Access Denied');
 
-    const tokens = await this.getTokens(user.id, user.email);
+    const tokens = await this.getTokens(user.id);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
     return tokens;
@@ -175,10 +177,9 @@ export class AuthService {
     });
   }
 
-  async getTokens(userId: number, email: string): Promise<Tokens> {
+  async getTokens(userId: number): Promise<Tokens> {
     const jwtPayload: JwtPayload = {
       sub: userId,
-      email: email,
     };
 
     const [at, rt] = await Promise.all([
@@ -198,3 +199,6 @@ export class AuthService {
     };
   }
 }
+
+// sendCode email         error {}
+// signup email name password confirmpassword otp

@@ -8,7 +8,9 @@ import {
   MaxLength,
   Min,
   MinLength,
+  Validate,
 } from 'class-validator';
+import { CustomMatchPasswords } from 'src/utils/password.utils';
 
 export class UserLoginDto {
   @ApiProperty()
@@ -24,16 +26,8 @@ export class UserLoginDto {
   password: string;
 }
 
-export class VerficationDto {
-  @ApiProperty()
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(1000, { message: "code shouldn't be less then 4 numbers" })
-  @Max(9999, { message: "code shouldn't be more then 4 numbers" })
-  otp: number;
-}
+
+
+// sendCOde email
+// siginup  email otp name password confirm password

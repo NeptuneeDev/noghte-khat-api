@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Verificaiton } from './interfaces/verification.inteface';
 import { PrismaService } from '../prisma/prisma.service';
-import { UserSignUpDto } from './Dto/user-signUp.dto';
+import { VerficationDto } from './Dto/user-signUp.dto';
 
 @Injectable()
 export class AuthRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async upsertVarification(
-    user: UserSignUpDto,
+    user: VerficationDto,
     code: string,
   ): Promise<Verificaiton> {
     return this.prisma.verification.upsert({

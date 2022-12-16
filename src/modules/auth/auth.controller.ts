@@ -13,12 +13,15 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { SanitizeError } from 'src/http-error-handlers/error.handler';
 import { GetCurrentUserId, Public } from '../common/decorators';
 import { GetCurrentUser } from '../common/decorators';
 import { RtGuard } from '../common/guards/rt.guard';
 import { AuthService } from './auth.service';
-import { UserLoginDto, VerficationDto } from './Dto/user-login.Dto';
-import { UserSignUpDto } from './Dto/user-signUp.dto';
+import { UserLoginDto } from './Dto/user-login.Dto';
+import { SignUpDto, VerficationDto } from './Dto/user-signUp.dto';
+
+import { Verificaiton } from './interfaces/verification.inteface';
 import { Tokens } from './types/tokens.type';
 
 @ApiTags('Authentication')
@@ -27,13 +30,14 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
-  @Post('signup')
+  @Post('sendCode')
   @ApiResponse({ status: 201, description: 'Successful Registration' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(HttpStatus.CREATED)
-  async signUp(@Body() userSignInDto: UserSignUpDto) {
-    return await this.authService.signUp(userSignInDto);
+  @SanitizeError({ targetName: '' })
+  async sendCode(@Body() verificationDto: VerficationDto) {
+    return await this.authService.sendCode(verificationDto);
   }
 
   @Public()
@@ -44,7 +48,7 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async login(@Body() userLogInDto: UserLoginDto, @Res() res) {
     const tokens = await this.authService.logIn(userLogInDto);
-    res.cookie('Authorization', tokens);
+    res.cookie('Authentication', tokens);
     res.send(tokens);
   }
 
@@ -55,10 +59,12 @@ export class AuthController {
   }
 
   @Public()
-  @Post('verify')
-  async verify(@Body() verificationDto: VerficationDto, @Res() res) {
-    const jwt = await this.authService.verifyOtp(verificationDto);
+  @Post('signUp')
+  async verify(@Body() signUpDto: SignUpDto, @Res() res) {
+    const jwt = await this.authService.signUp(signUpDto);
     res.cookie('access-token', jwt);
+    console.log('here');
+    return res.send(jwt);
   }
 
   @Public()
