@@ -31,7 +31,7 @@ export class ProfessorRepository {
 
   async findByUni(university: string): Promise<Professor[]> {
     return this.prisma.professor.findMany({
-      where: { university },
+      where: { university: { contains: university } },
     });
   }
 

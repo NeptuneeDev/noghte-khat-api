@@ -49,6 +49,7 @@ export class AuthController {
     return this.authService.logOut(userId);
   }
 
+  @Public()
   @Post('verify')
   async verify(@Body() verificationDto: VerficationDto, @Res() res) {
     const jwt = await this.authService.verifyOtp(verificationDto);

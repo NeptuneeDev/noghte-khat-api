@@ -9,6 +9,7 @@ import { CreateProfessorDto } from './Dto/professor.Dto';
 import { Professor } from './interfaces/professor.interface';
 import { ProfessorRepository } from './professor.repository';
 import * as _ from 'lodash';
+import { SanitizeError } from 'src/http-error-handlers/error.handler';
 @Injectable()
 export class ProfessorService {
   constructor(private readonly professorRepository: ProfessorRepository) {}
@@ -17,6 +18,7 @@ export class ProfessorService {
     return this.professorRepository.create(createProfessorDto);
   }
 
+  @SanitizeError({ targetName: 'professor' })
   async findById(id: number): Promise<Professor | undefined> {
     return await this.professorRepository.findById(id);
   }
@@ -24,13 +26,15 @@ export class ProfessorService {
   async findByName(name: string): Promise<Partial<Professor>[]> {
     const professors = await this.professorRepository.findByName(name);
     return professors.map((pro) =>
-      _.omit(pro, ['createdAt', 'updatedAt', 'email', "university"]),
+      _.omit(pro, ['createdAt', 'updatedAt', 'email']),
     );
   }
 
-  async findByUni(university: string): Promise<Professor[]> {
+  async findByUni(university: string): Promise<Partial<Professor>[]> {
     const professors = await this.professorRepository.findByUni(university);
-    return professors;
+    return professors.map((pro) =>
+      _.omit(pro, ['createdAt', 'updatedAt', 'email']),
+    );
   }
 
   async findAll(): Promise<Professor[]> {
@@ -47,3 +51,7 @@ export class ProfessorService {
     return await this.professorRepository.deletetProfessor(id);
   }
 }
+
+/// model for university that is unique
+
+// api/professor/university/  body{"uni":""}
