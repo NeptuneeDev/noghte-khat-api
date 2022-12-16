@@ -47,9 +47,16 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async login(@Body() userLogInDto: UserLoginDto, @Res() res) {
-    const tokens = await this.authService.logIn(userLogInDto);
-    res.cookie('Authentication', tokens);
-    res.send(tokens);
+    const { atCookie, rtCookie } = await this.authService.logIn(userLogInDto);
+    res.cookie('access_token', atCookie, {
+      maxAge: 900000,
+      httpOnly: true,
+    });
+    res.cookie('refresh_token', rtCookie, {
+      maxAge: 86400000,
+      httpOnly: true,
+    });
+    res.send('logined!');
   }
 
   @Post('logout')
@@ -61,10 +68,16 @@ export class AuthController {
   @Public()
   @Post('signUp')
   async verify(@Body() signUpDto: SignUpDto, @Res() res) {
-    const jwt = await this.authService.signUp(signUpDto);
-    res.cookie('access-token', jwt);
-    console.log('here');
-    return res.send(jwt);
+    const { atCookie, rtCookie } = await this.authService.signUp(signUpDto);
+    res.cookie('access_token', atCookie, {
+      maxAge: 900000,
+      httpOnly: true,
+    });
+    res.cookie('refresh_token', rtCookie, {
+      maxAge: 86400000,
+      httpOnly: true,
+    });
+    res.send({ success: true });
   }
 
   @Public()

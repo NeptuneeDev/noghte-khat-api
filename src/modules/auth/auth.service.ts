@@ -56,7 +56,7 @@ export class AuthService {
     return verification1;
   }
 
-  async logIn(userLogInDto: UserLoginDto): Promise<Tokens> {
+  async logIn(userLogInDto: UserLoginDto) {
     const user = await this.userRepository.find(userLogInDto.email);
     if (!user) {
       throw new ForbiddenException('user not found!');
@@ -73,7 +73,10 @@ export class AuthService {
     const tokens = await this.getTokens(user.id);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
-    return tokens;
+    const atCookie = this.createAtCookie(tokens.access_token);
+    const rtCookie = this.createRtCookie(tokens.refresh_token);
+
+    return { atCookie, rtCookie };
   }
 
   async logOut(userId: number): Promise<boolean> {
@@ -113,7 +116,11 @@ export class AuthService {
 
     const tokens = await this.getTokens(user.id);
     await this.updateRtHash(user.id, tokens.refresh_token);
-    return this.getTokens(user.id);
+
+    const atCookie = this.createAtCookie(tokens.access_token);
+    const rtCookie = this.createRtCookie(tokens.refresh_token);
+
+    return { atCookie, rtCookie };
   }
 
   isRequestedALot(numberOfAttampt: number, lastResendTime: Date): boolean {
@@ -197,6 +204,14 @@ export class AuthService {
       access_token: at,
       refresh_token: rt,
     };
+  }
+
+  public createAtCookie(accessToken: string): string {
+    return `Bearer ${accessToken}`;
+  }
+
+  public createRtCookie(refreshToken): string {
+    return `Bearer ${refreshToken}`;
   }
 }
 
