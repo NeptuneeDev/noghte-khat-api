@@ -24,13 +24,6 @@ export class ProfessorController {
     return this.professorService.create(createProfessorDto);
   }
 
-  @Public()
-  @Get('/:id')
-  find(@Param('id', ParseIntPipe) id: number, @Res() res) {
-    const resl = this.professorService.findById(id);
-    res.send(resl);
-  }
-
   // body name on change
   @Public()
   @Post('/name')
@@ -53,6 +46,11 @@ export class ProfessorController {
     return this.professorService.findAll();
   }
 
+  @Public()
+  @Get(':id')
+  async findById(@Param('id', ParseIntPipe) id: number) {
+    return this.professorService.findById(id);
+  }
   @Delete('/:id')
   async deleteProfessor(
     @Param('id', ParseIntPipe) id: number,
