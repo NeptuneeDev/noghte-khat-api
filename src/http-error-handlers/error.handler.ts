@@ -38,7 +38,6 @@ const inferDatabaseError: ErrorInferFunction<{ targetName: string }> = (
   if (error.code === 'P2003')
     return [`${meta.targetName}Id is Parent Table filed`, HttpStatus.FORBIDDEN];
 
-  
   return undefined;
 };
 
@@ -55,7 +54,6 @@ const inferSystemError: ErrorInferFunction<{}> = (error) => {
 
   return ['internal server error', HttpStatus.INTERNAL_SERVER_ERROR];
 };
-
 
 /// api/professoes/2213123
 

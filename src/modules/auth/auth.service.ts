@@ -19,6 +19,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { JwtPayload } from './types';
 import { SanitizeError } from 'src/http-error-handlers/error.handler';
 import { VerficationDto } from './Dto/user-signUp.dto';
+import { User } from '../user/interfaces/user.interface';
 
 @Injectable()
 export class AuthService {
@@ -56,7 +57,7 @@ export class AuthService {
     return verification1;
   }
 
-  async logIn(userLogInDto: UserLoginDto) {
+  async logIn(userLogInDto: UserLoginDto): Promise<Tokens> {
     const user = await this.userRepository.find(userLogInDto.email);
     if (!user) {
       throw new ForbiddenException('user not found!');
@@ -73,10 +74,7 @@ export class AuthService {
     const tokens = await this.getTokens(user.id);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
-    const atCookie = this.createAtCookie(tokens.access_token);
-    const rtCookie = this.createRtCookie(tokens.refresh_token);
-
-    return { atCookie, rtCookie };
+    return tokens;
   }
 
   async logOut(userId: number): Promise<boolean> {
@@ -91,7 +89,7 @@ export class AuthService {
     return true;
   }
 
-  async signUp(signUPDto: SignUpDto) {
+  async signUp(signUPDto: SignUpDto): Promise<Tokens> {
     const verification = await this.authRepository.findVarification(
       signUPDto.email,
     );
@@ -117,10 +115,7 @@ export class AuthService {
     const tokens = await this.getTokens(user.id);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
-    const atCookie = this.createAtCookie(tokens.access_token);
-    const rtCookie = this.createRtCookie(tokens.refresh_token);
-
-    return { atCookie, rtCookie };
+    return tokens;
   }
 
   isRequestedALot(numberOfAttampt: number, lastResendTime: Date): boolean {
@@ -196,7 +191,7 @@ export class AuthService {
       }),
       this.jwtService.signAsync(jwtPayload, {
         secret: process.env.SECRET_KEY,
-        expiresIn: '10h',
+        expiresIn: '24h',
       }),
     ]);
 
@@ -206,12 +201,8 @@ export class AuthService {
     };
   }
 
-  public createAtCookie(accessToken: string): string {
-    return `Bearer ${accessToken}`;
-  }
-
-  public createRtCookie(refreshToken): string {
-    return `Bearer ${refreshToken}`;
+  async validateUser(userId: number): Promise<User> {
+    return await this.prisma.user.findUnique({ where: { id: userId } });
   }
 }
 

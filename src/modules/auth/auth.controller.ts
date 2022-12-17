@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -20,14 +22,24 @@ import { RtGuard } from '../common/guards/rt.guard';
 import { AuthService } from './auth.service';
 import { UserLoginDto } from './Dto/user-login.Dto';
 import { SignUpDto, VerficationDto } from './Dto/user-signUp.dto';
-
 import { Verificaiton } from './interfaces/verification.inteface';
 import { Tokens } from './types/tokens.type';
+import { UserInit } from './Dto/user-init.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Get('')
+  @HttpCode(HttpStatus.OK)
+  async init(@Req() req) {
+    const user: UserInit = req.user;
+    return {
+      name: user.name,
+      email: user.email,
+    };
+  }
 
   @Public()
   @Post('sendCode')
@@ -47,12 +59,12 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async login(@Body() userLogInDto: UserLoginDto, @Res() res) {
-    const { atCookie, rtCookie } = await this.authService.logIn(userLogInDto);
-    res.cookie('access_token', atCookie, {
+    const tokens = await this.authService.logIn(userLogInDto);
+    res.cookie('access_token', tokens.access_token, {
       maxAge: 900000,
       httpOnly: true,
     });
-    res.cookie('refresh_token', rtCookie, {
+    res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 86400000,
       httpOnly: true,
     });
@@ -68,12 +80,12 @@ export class AuthController {
   @Public()
   @Post('signUp')
   async verify(@Body() signUpDto: SignUpDto, @Res() res) {
-    const { atCookie, rtCookie } = await this.authService.signUp(signUpDto);
-    res.cookie('access_token', atCookie, {
+    const tokens = await this.authService.signUp(signUpDto);
+    res.cookie('access_token', tokens.access_token, {
       maxAge: 900000,
       httpOnly: true,
     });
-    res.cookie('refresh_token', rtCookie, {
+    res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 86400000,
       httpOnly: true,
     });
