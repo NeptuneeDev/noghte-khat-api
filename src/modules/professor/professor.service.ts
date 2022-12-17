@@ -18,7 +18,6 @@ export class ProfessorService {
     return this.professorRepository.create(createProfessorDto);
   }
 
-  @SanitizeError({ targetName: 'professor' })
   async findById(id: number): Promise<Professor | undefined> {
     return await this.professorRepository.findById(id);
   }
