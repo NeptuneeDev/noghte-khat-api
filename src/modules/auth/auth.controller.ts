@@ -103,7 +103,17 @@ export class AuthController {
   async refreshTokens(
     @GetCurrentUserId() userId: number,
     @GetCurrentUser('refreshToken') refreshtoken: string,
-  ): Promise<Tokens> {
-    return this.authService.refreshTokens(userId, refreshtoken);
+    @Res() res,
+  ) {
+    const tokens = await this.authService.refreshTokens(userId, refreshtoken);
+    res.cookie('access_token', tokens.access_token, {
+      maxAge: 900000,
+      httpOnly: true,
+    });
+    res.cookie('refresh_token', tokens.refresh_token, {
+      maxAge: 86400000,
+      httpOnly: true,
+    });
+    res.send({ success: true });
   }
 }
