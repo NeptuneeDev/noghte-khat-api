@@ -76,8 +76,12 @@ export class AuthController {
 
   @Post('logout')
   @ApiBearerAuth()
-  async logout(@GetCurrentUserId() userId: number): Promise<boolean> {
-    return this.authService.logOut(userId);
+  async logout(@Res() res, @Req() req) {
+    const isLogouted = await this.authService.logOut(req.user.id);
+    res.cookie('access_token', '');
+    res.cookie('refresh_token', '');
+
+    res.send(isLogouted);
   }
 
   @Public()
