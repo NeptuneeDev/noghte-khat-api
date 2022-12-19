@@ -57,7 +57,7 @@ export class AuthService {
     return verification1;
   }
 
-  async logIn(userLogInDto: UserLoginDto): Promise<Tokens> {
+  async logIn(userLogInDto: UserLoginDto) {
     const user = await this.userRepository.find(userLogInDto.email);
     if (!user) {
       throw new ForbiddenException('user not found!');
@@ -74,7 +74,7 @@ export class AuthService {
     const tokens = await this.getTokens(user.id);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
-    return tokens;
+    return { tokens, user };
   }
 
   async logOut(userId: number): Promise<boolean> {

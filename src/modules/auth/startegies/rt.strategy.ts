@@ -13,10 +13,10 @@ export class RefreshTokenStrategy extends PassportStrategy(
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
-          const data = request?.cookies['refresh_token'];
-          if (!data) return null;
+          const token = request?.cookies['refresh_token'];
+          if (!token) return null;
 
-          return data;
+          return token;
         },
       ]),
       secretOrKey: process.env.SECRET_KEY,

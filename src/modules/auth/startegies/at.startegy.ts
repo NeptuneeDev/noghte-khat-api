@@ -11,10 +11,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
-          const data = request?.cookies['access_token'];
-          if (!data) return null;
+          const token = request?.cookies['access_token'];
+          if (!token) return null;
 
-          return data;
+          return token;
         },
       ]),
       ignoreExpiration: false,

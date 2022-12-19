@@ -33,7 +33,7 @@ export class AuthController {
 
   @Get('')
   @HttpCode(HttpStatus.OK)
-  async init(@Req() req) {
+  async init(@Req() req): Promise<UserInit> {
     const user: UserInit = req.user;
     return {
       name: user.name,
@@ -59,7 +59,7 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async login(@Body() userLogInDto: UserLoginDto, @Res() res) {
-    const tokens = await this.authService.logIn(userLogInDto);
+    const { tokens, user } = await this.authService.logIn(userLogInDto);
     res.cookie('access_token', tokens.access_token, {
       maxAge: 900000,
       httpOnly: true,
@@ -68,7 +68,10 @@ export class AuthController {
       maxAge: 86400000,
       httpOnly: true,
     });
-    res.send('logined!');
+    res.send({
+      name: user.name,
+      email: user.email,
+    });
   }
 
   @Post('logout')
@@ -95,10 +98,6 @@ export class AuthController {
   @Public()
   @UseGuards(RtGuard)
   @Post('refresh')
-  @ApiHeader({
-    name: 'Authorization',
-    description: 'Bearer + refreshToken',
-  })
   @HttpCode(HttpStatus.OK)
   async refreshTokens(
     @GetCurrentUserId() userId: number,
