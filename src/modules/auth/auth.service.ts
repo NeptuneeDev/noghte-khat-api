@@ -1,25 +1,23 @@
 import {
   BadRequestException,
   ForbiddenException,
-  HttpException,
-  HttpStatus,
   Injectable,
-  NotAcceptableException,
+  NotAcceptableException
 } from '@nestjs/common';
-import { AuthRepository } from './auth.repository';
-import { SignUpDto } from './Dto/user-signUp.dto';
-import { OtpService } from './otp.service';
-import { UserLoginDto } from './Dto/user-login.Dto';
-import { Verificaiton } from './interfaces/verification.inteface';
-import { userRepository } from '../user/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import { Hash } from 'src/utils/Hash';
-import { Tokens } from './types/tokens.type';
 import { PrismaService } from '../prisma/prisma.service';
+import { userRepository } from '../user/user.repository';
+import { UserLoginDto } from './Dto/user-login.Dto';
+import { SignUpDto } from './Dto/user-signUp.dto';
+import { AuthRepository } from './auth.repository';
+import { Verificaiton } from './interfaces/verification.inteface';
+import { OtpService } from './otp.service';
 import { JwtPayload } from './types';
-import { SanitizeError } from 'src/http-error-handlers/error.handler';
-import { VerficationDto } from './Dto/user-signUp.dto';
+import { Tokens } from './types/tokens.type';
+// import { SanitizeError } from 'src/http-error-handlers/error.handler';
 import { User } from '../user/interfaces/user.interface';
+import { VerficationDto } from './Dto/user-signUp.dto';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +29,7 @@ export class AuthService {
     private readonly userRepository: userRepository,
   ) {}
 
-  @SanitizeError({ targetName: '' })
+  // @SanitizeError({ targetName: '' })
   async sendCode(verificationDto: VerficationDto) {
     const varification = await this.authRepository.findVarification(
       verificationDto.email,

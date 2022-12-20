@@ -11,20 +11,16 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiHeader,
   ApiResponse,
-  ApiTags,
+  ApiTags
 } from '@nestjs/swagger';
-import { SanitizeError } from 'src/http-error-handlers/error.handler';
-import { GetCurrentUserId, Public } from '../common/decorators';
-import { GetCurrentUser } from '../common/decorators';
+// import { SanitizeError } from 'src/http-error-handlers/error.handler';
+import { GetCurrentUser, GetCurrentUserId, Public } from '../common/decorators';
 import { RtGuard } from '../common/guards/rt.guard';
-import { AuthService } from './auth.service';
+import { UserInit } from './Dto/user-init.dto';
 import { UserLoginDto } from './Dto/user-login.Dto';
 import { SignUpDto, VerficationDto } from './Dto/user-signUp.dto';
-import { Verificaiton } from './interfaces/verification.inteface';
-import { Tokens } from './types/tokens.type';
-import { UserInit } from './Dto/user-init.dto';
+import { AuthService } from './auth.service';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -47,7 +43,7 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(HttpStatus.CREATED)
-  @SanitizeError({ targetName: '' })
+  // @SanitizeError({ targetName: '' })
   async sendCode(@Body() verificationDto: VerficationDto) {
     return await this.authService.sendCode(verificationDto);
   }
