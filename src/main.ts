@@ -1,8 +1,9 @@
 import { ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
+import { AllExpectionsFilter } from './http-error-handlers/http.expection.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -16,7 +17,6 @@ async function bootstrap() {
     }),
   );
   app.use(cookieParser());
-
   const config = new DocumentBuilder()
     .addBearerAuth()
     .setTitle('backend')
