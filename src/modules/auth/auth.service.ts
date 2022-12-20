@@ -1,22 +1,19 @@
 import {
   BadRequestException,
   ForbiddenException,
-  HttpException,
-  HttpStatus,
   Injectable,
   NotAcceptableException,
 } from '@nestjs/common';
-import { AuthRepository } from './auth.repository';
-import { SignUpDto } from './Dto/user-signUp.dto';
-import { OtpService } from './otp.service';
-import { UserLoginDto } from './Dto/user-login.Dto';
-import { Verificaiton } from './interfaces/verification.inteface';
-import { userRepository } from '../user/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import { Hash } from 'src/utils/Hash';
-import { Tokens } from './types/tokens.type';
 import { PrismaService } from '../prisma/prisma.service';
-import { JwtPayload } from './types';
+import { userRepository } from '../user/user.repository';
+import { UserLoginDto } from './Dto/user-login.Dto';
+import { SignUpDto } from './Dto/user-signUp.dto';
+import { AuthRepository } from './auth.repository';
+import { Verificaiton } from './interfaces/verification.inteface';
+import { OtpService } from './otp.service';
+import { JwtPayload, Tokens } from './types';
 import { VerficationDto } from './Dto/user-signUp.dto';
 import { User } from '../user/interfaces/user.interface';
 
@@ -203,6 +200,3 @@ export class AuthService {
     return await this.prisma.user.findUnique({ where: { id: userId } });
   }
 }
-
-// sendCode email         error {}
-// signup email name password confirmpassword otp
