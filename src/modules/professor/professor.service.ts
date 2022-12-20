@@ -9,7 +9,6 @@ import { CreateProfessorDto } from './Dto/professor.Dto';
 import { Professor } from './interfaces/professor.interface';
 import { ProfessorRepository } from './professor.repository';
 import * as _ from 'lodash';
-import { SanitizeError } from 'src/http-error-handlers/error.handler';
 @Injectable()
 export class ProfessorService {
   constructor(private readonly professorRepository: ProfessorRepository) {}
@@ -19,7 +18,10 @@ export class ProfessorService {
   }
 
   async findById(id: number): Promise<Professor | undefined> {
-    return await this.professorRepository.findById(id);
+    const prof = await this.professorRepository.findById(id);
+
+    if (prof) return prof;
+    else throw new HttpException('NOT found prof', HttpStatus.NOT_FOUND);
   }
 
   async findByName(name: string): Promise<Partial<Professor>[]> {
