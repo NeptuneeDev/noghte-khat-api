@@ -49,6 +49,7 @@ export class ProfessorController {
   @Public()
   @Get(':id')
   async findById(@Param('id', ParseIntPipe) id: number) {
+    console.log('here');
     return this.professorService.findById(id);
   }
   @Delete('/:id')

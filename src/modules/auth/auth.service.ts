@@ -17,7 +17,6 @@ import { Hash } from 'src/utils/Hash';
 import { Tokens } from './types/tokens.type';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtPayload } from './types';
-import { SanitizeError } from 'src/http-error-handlers/error.handler';
 import { VerficationDto } from './Dto/user-signUp.dto';
 import { User } from '../user/interfaces/user.interface';
 
@@ -31,7 +30,6 @@ export class AuthService {
     private readonly userRepository: userRepository,
   ) {}
 
-  @SanitizeError({ targetName: '' })
   async sendCode(verificationDto: VerficationDto) {
     const varification = await this.authRepository.findVarification(
       verificationDto.email,

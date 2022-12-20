@@ -15,7 +15,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { SanitizeError } from 'src/http-error-handlers/error.handler';
 import { GetCurrentUserId, Public } from '../common/decorators';
 import { GetCurrentUser } from '../common/decorators';
 import { RtGuard } from '../common/guards/rt.guard';
@@ -47,7 +46,6 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(HttpStatus.CREATED)
-  @SanitizeError({ targetName: '' })
   async sendCode(@Body() verificationDto: VerficationDto) {
     return await this.authService.sendCode(verificationDto);
   }
