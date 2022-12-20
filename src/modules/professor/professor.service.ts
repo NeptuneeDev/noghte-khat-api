@@ -9,7 +9,6 @@ import { CreateProfessorDto } from './Dto/professor.Dto';
 import { Professor } from './interfaces/professor.interface';
 import { ProfessorRepository } from './professor.repository';
 import * as _ from 'lodash';
-import { SanitizeError } from 'src/http-error-handlers/error.handler';
 @Injectable()
 export class ProfessorService {
   constructor(private readonly professorRepository: ProfessorRepository) {}
