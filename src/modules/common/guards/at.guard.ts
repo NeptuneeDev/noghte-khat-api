@@ -1,17 +1,11 @@
 import {
   ExecutionContext,
-  ForbiddenException,
   HttpException,
-  HttpStatus,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { compareSync } from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
-import { AuthService } from 'src/modules/auth/auth.service';
-import { Hash } from 'src/utils/Hash';
 
 @Injectable()
 export class AtGuard extends AuthGuard('jwt') {
@@ -30,10 +24,10 @@ export class AtGuard extends AuthGuard('jwt') {
     return super.canActivate(context);
   }
 
-  handleRequest(err, user, info) {
-    if (err || info || !user) {
-      throw err || info || new UnauthorizedException('Access Denied.');
-    }
+  handleRequest(err, user, info: Error) {
+    if (err || info) throw new HttpException('Invalid Token', 498);
+
+    if (!user) throw new UnauthorizedException('Access Denied.');
 
     return user;
   }

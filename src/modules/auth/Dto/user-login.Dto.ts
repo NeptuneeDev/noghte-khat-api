@@ -26,8 +26,5 @@ export class UserLoginDto {
   password: string;
 }
 
-
-
-
 // sendCOde email
 // siginup  email otp name password confirm password

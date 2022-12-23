@@ -44,6 +44,9 @@ export class ProfessorRepository {
   }
 
   async findById(id: number): Promise<Professor | undefined> {
-    return this.prisma.professor.findFirst({ where: { id } });
+    return this.prisma.professor.findFirst({
+      where: { id },
+      include: { lessons: true },
+    });
   }
 }

@@ -7,7 +7,8 @@ import { ProfessorModule } from './modules/professor/professor.module';
 import { LoggerMiddleware } from './utils/logger.middleware';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './modules/common/guards/at.guard';
-import { AllExpectionsFilter } from './http-error-handlers/http.expection.filter';
+import { AllExpectionsFilter } from './expections/http.expection.filter';
+import { LessonModule } from './modules/lesson/lesson.module';
 
 @Module({
   imports: [
@@ -15,17 +16,18 @@ import { AllExpectionsFilter } from './http-error-handlers/http.expection.filter
     PrismaModule,
     AuthModule,
     ProfessorModule,
+    LessonModule,
     ConfigModule.forRoot({}),
   ],
   providers: [
     {
       provide: APP_GUARD,
       useClass: AtGuard,
-
-    },{
-      provide:APP_FILTER,
-      useClass:AllExpectionsFilter
-    }
+    },
+    {
+      provide: APP_FILTER,
+      useClass: AllExpectionsFilter,
+    },
   ],
 })
 export class AppModule implements NestModule {

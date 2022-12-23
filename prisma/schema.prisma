@@ -27,22 +27,21 @@ model Verification { // not loggedin user
   try    Int     @default(0)
   code   String
   lastResendTime  DateTime
-
 }
 
 model Professor {
-   
   id Int @default(autoincrement()) @id
-
   name String
-  
   email String @unique()
-
   university String
- 
+  lessons Lesson[]
   createdAt DateTime
-
   updatedAt DateTime
+}
 
- 
+model Lesson {
+  id Int @default(autoincrement()) @id
+  title String
+  professor Professor  @relation(fields: [professorId], references: [id])
+  professorId Int
 }
