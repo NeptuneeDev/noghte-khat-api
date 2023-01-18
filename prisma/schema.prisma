@@ -17,7 +17,7 @@ model User {
   createdAt  DateTime   @default(now())
   updateAt   DateTime   @default(now())
   password   String
-  status     String
+  role       Role        @default(user)
   hashedRT   String?
   lastLoggedInTime DateTime?
 }
@@ -33,15 +33,25 @@ model Professor {
   id Int @default(autoincrement()) @id
   name String
   email String @unique()
+  isVerified  Boolean  @default(false)  
   university String
-  lessons Lesson[]
+  lessons Subject[]
   createdAt DateTime
   updatedAt DateTime
 }
 
-model Lesson {
+model Subject {
   id Int @default(autoincrement()) @id
   title String
   professor Professor  @relation(fields: [professorId], references: [id])
   professorId Int
+  isVerified  Boolean  @default(false)  
+  createdAt DateTime
+  updatedAt DateTime
 }
+
+enum Role {
+  user
+  admin
+}
+

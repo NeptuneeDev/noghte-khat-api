@@ -1,3 +1,5 @@
+import { Subject } from '../../subject/interfaces/subject.interface';
+
 export interface Professor {
   id: number;
 
@@ -6,6 +8,8 @@ export interface Professor {
   email: string;
 
   university: string;
+  isVerified : boolean
+  subject?: Subject[];
 
   createdAt: Date;
 

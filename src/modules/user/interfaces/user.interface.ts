@@ -1,9 +1,10 @@
 export interface User {
-  id?: number;
+  id: number;
   name: string;
   email: string;
+  hashedRt?: string;
   password: string;
-  status: string | 'verified' | 'unverified';
+  role: 'user' | 'admin';
   createdAt?: Date;
   updatedAt?: Date;
 }

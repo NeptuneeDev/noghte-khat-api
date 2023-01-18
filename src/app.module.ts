@@ -8,7 +8,8 @@ import { LoggerMiddleware } from './utils/logger.middleware';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './modules/common/guards/at.guard';
 import { AllExpectionsFilter } from './expections/http.expection.filter';
-import { LessonModule } from './modules/lesson/lesson.module';
+import { SubjectModule } from './modules/subject/subject.module';
+import { RolesGuard } from './modules/common/guards/roles.gaurd';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { LessonModule } from './modules/lesson/lesson.module';
     PrismaModule,
     AuthModule,
     ProfessorModule,
-    LessonModule,
+    SubjectModule,
     ConfigModule.forRoot({}),
   ],
   providers: [
@@ -27,6 +28,10 @@ import { LessonModule } from './modules/lesson/lesson.module';
     {
       provide: APP_FILTER,
       useClass: AllExpectionsFilter,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
 })

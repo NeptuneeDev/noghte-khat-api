@@ -18,6 +18,7 @@ export class ProfessorRepository {
   }
 
   async create(professorDto: CreateProfessorDto): Promise<Professor> {
+    console.log('here');
     return this.prisma.professor.create({
       data: {
         name: professorDto.name,
@@ -32,6 +33,12 @@ export class ProfessorRepository {
   async findByUni(university: string): Promise<Professor[]> {
     return this.prisma.professor.findMany({
       where: { university: { contains: university } },
+    });
+  }
+
+  async findByEmail(email: string): Promise<Professor | undefined> {
+    return this.prisma.professor.findUnique({
+      where: { email: email },
     });
   }
 

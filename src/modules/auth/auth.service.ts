@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ForbiddenException,
+  HttpStatus,
   Injectable,
   NotAcceptableException,
 } from '@nestjs/common';
@@ -21,7 +22,6 @@ import { User } from '../user/interfaces/user.interface';
 export class AuthService {
   constructor(
     private readonly authRepository: AuthRepository,
-    private readonly prisma: PrismaService,
     private readonly otpService: OtpService,
     private readonly jwtService: JwtService,
     private readonly userRepository: userRepository,
@@ -66,25 +66,26 @@ export class AuthService {
       throw new BadRequestException("credintals arn't correct...");
     }
 
-    const tokens = await this.getTokens(user.id);
+    const tokens = await this.getTokens(user);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
     return { tokens, user };
   }
 
   async logOut(userId: number): Promise<boolean> {
-    await this.prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        hashedRT: null,
-      },
-    });
-    return true;
+    const isLogeddOut = await this.authRepository.logOut(userId);
+    return isLogeddOut;
   }
 
   async signUp(signUPDto: SignUpDto): Promise<Tokens> {
+    const userExists = await this.userRepository.find(signUPDto.email);
+
+    if (userExists) {
+      throw new BadRequestException(
+        'user already exists with this email,Please login...',
+      );
+    }
+
     const verification = await this.authRepository.findVarification(
       signUPDto.email,
     );
@@ -104,10 +105,9 @@ export class AuthService {
       email: signUPDto.email,
       name: signUPDto.name,
       password: hashedPassword,
-      status: 'verified',
     });
 
-    const tokens = await this.getTokens(user.id);
+    const tokens = await this.getTokens(user);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
     return tokens;
@@ -144,39 +144,30 @@ export class AuthService {
     return test;
   }
 
-  async refreshTokens(userId: number, rt: string): Promise<Tokens> {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-    });
+  async refreshTokens(userId: number, refreshToken: string): Promise<Tokens> {
+    const user = await this.userRepository.findById(userId);
 
-    if (!user || !user.hashedRT) throw new ForbiddenException('Access Denied');
+    if (!user || !user.hashedRt) throw new ForbiddenException('Access Denied');
 
-    const rtMatches = await Hash.compare(rt, user.hashedRT);
+    const rtMatches = await Hash.compare(refreshToken, user.hashedRt);
     if (!rtMatches) throw new ForbiddenException('Access Denied');
 
-    const tokens = await this.getTokens(user.id);
+    const tokens = await this.getTokens(user);
     await this.updateRtHash(user.id, tokens.refresh_token);
 
     return tokens;
   }
 
-  async updateRtHash(userId: number, rt: string): Promise<void> {
-    const hash: string = await Hash.hash(rt);
-    await this.prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        hashedRT: hash,
-      },
-    });
+  async updateRtHash(userId: number, refreshToken: string): Promise<void> {
+    const hashedRefreshToken: string = await Hash.hash(refreshToken);
+
+    await this.authRepository.updateRtHash(userId, hashedRefreshToken);
   }
 
-  async getTokens(userId: number): Promise<Tokens> {
+  async getTokens(user: User): Promise<Tokens> {
     const jwtPayload: JwtPayload = {
-      sub: userId,
+      sub: user.id,
+      role: user.role,
     };
 
     const [at, rt] = await Promise.all([
@@ -186,7 +177,7 @@ export class AuthService {
       }),
       this.jwtService.signAsync(jwtPayload, {
         secret: process.env.SECRET_KEY,
-        expiresIn: '24h',
+        expiresIn: '7d',
       }),
     ]);
 
@@ -196,7 +187,7 @@ export class AuthService {
     };
   }
 
-  async validateUser(userId: number): Promise<User> {
-    return await this.prisma.user.findUnique({ where: { id: userId } });
+  async findById(userId: number): Promise<User> {
+    return await this.userRepository.findById(userId);
   }
 }

@@ -16,4 +16,7 @@ export class UserService {
   async findOne(id: number) {
     this.userRepository.findUnique(id);
   }
+  async findByEmail(email:string){
+    
+  }
 }

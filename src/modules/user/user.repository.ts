@@ -17,7 +17,7 @@ export class userRepository {
     return this.prisma.user.findUnique({ where: { id: id } });
   }
 
-  async upsert(user: User): Promise<User> {
+  async upsert(user: Partial<User>): Promise<User> {
     return this.prisma.user.upsert({
       create: {
         name: user.name,
@@ -25,12 +25,16 @@ export class userRepository {
         email: user.email,
         updateAt: new Date().toISOString(),
         lastLoggedInTime: new Date().toISOString(),
-        status: user.status,
+        role: user.role,
       },
       update: {
         lastLoggedInTime: new Date().toISOString(),
       },
       where: { email: user.email },
     });
+  }
+
+  async findById(id: number): Promise<User> {
+    return this.prisma.user.findUnique({ where: { id } });
   }
 }
