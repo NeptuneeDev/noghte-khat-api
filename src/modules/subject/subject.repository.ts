@@ -1,8 +1,9 @@
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSubjectDto } from './dto/create-lesson.dto';
 import { UpdateSubjectDto } from './dto/update-lesson.dto';
 import { Subject } from './interfaces/subject.interface';
-
+@Injectable()
 export class SubjectRepository {
   constructor(private readonly prisma: PrismaService) {}
 

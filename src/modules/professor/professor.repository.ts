@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import e from 'express';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProfessorDto } from './Dto/professor.Dto';
 import { Professor } from './interfaces/professor.interface';
@@ -18,7 +19,6 @@ export class ProfessorRepository {
   }
 
   async create(professorDto: CreateProfessorDto): Promise<Professor> {
-    console.log('here');
     return this.prisma.professor.create({
       data: {
         name: professorDto.name,
@@ -32,7 +32,7 @@ export class ProfessorRepository {
 
   async findByUni(university: string): Promise<Professor[]> {
     return this.prisma.professor.findMany({
-      where: { university: { contains: university } },
+      where: { university: { contains: university }, isVerified: true },
     });
   }
 
@@ -43,7 +43,7 @@ export class ProfessorRepository {
   }
 
   async findAll(): Promise<Professor[]> {
-    return this.prisma.professor.findMany();
+    return this.prisma.professor.findMany({ where: { isVerified: true } });
   }
 
   async deletetProfessor(id: number) {
@@ -51,9 +51,13 @@ export class ProfessorRepository {
   }
 
   async findById(id: number): Promise<Professor | undefined> {
-    return this.prisma.professor.findFirst({
+    return this.prisma.professor.findUnique({
       where: { id },
       include: { lessons: true },
     });
+  }
+
+  async findUnverifieds() {
+    return this.prisma.professor.findMany({ where: { isVerified: false } });
   }
 }

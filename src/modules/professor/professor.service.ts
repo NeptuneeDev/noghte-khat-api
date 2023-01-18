@@ -17,10 +17,9 @@ export class ProfessorService {
     createProfessorDto: CreateProfessorDto,
   ): Promise<Partial<Professor | undefined>> {
     const existsProfessr = await this.findByEmail(createProfessorDto.email);
-    console.log(existsProfessr);
-    if (existsProfessr)
+    if (existsProfessr && !existsProfessr.isVerified)
       throw new BadRequestException(
-        "professor with this email already exists,please change email or do with existed professor's  prifle...",
+        "professor with this email already exists or not verified yet ,please change email or do with existed professor's  prifle...",
       );
     return this.professorRepository.create(createProfessorDto);
   }
@@ -29,11 +28,14 @@ export class ProfessorService {
     const prof = await this.professorRepository.findById(id);
 
     if (prof) return prof;
-    else throw new HttpException('NOT found prof', HttpStatus.NOT_FOUND);
+    else
+      throw new HttpException(
+        'NOT found prof or not verified',
+        HttpStatus.NOT_FOUND,
+      );
   }
 
   async findByName(name: string): Promise<Partial<Professor>[]> {
-    console.log('here');
     const professors = await this.professorRepository.findByName(name);
     return professors.map((pro) => _.omit(pro, ['createdAt', 'updatedAt']));
   }
@@ -51,6 +53,9 @@ export class ProfessorService {
 
   async findAll(): Promise<Professor[]> {
     return await this.professorRepository.findAll();
+  }
+  async findUnverifiedsById(id: number): Promise<Professor | undefined> {
+    return this.professorRepository.findById(id);
   }
 
   async deleteProfessor(id: number): Promise<Professor | undefined> {
