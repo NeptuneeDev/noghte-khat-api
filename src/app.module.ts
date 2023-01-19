@@ -4,12 +4,12 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { ProfessorModule } from './modules/professor/professor.module';
-import { LoggerMiddleware } from './utils/logger.middleware';
+import { LoggerMiddleware } from './common/utils/logger.middleware';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
-import { AtGuard } from './modules/common/guards/at.guard';
-import { AllExpectionsFilter } from './expections/http.expection.filter';
+import { AtGuard } from './common/guards/at.guard';
+import { AllExpectionsFilter } from './common/expections/http.expection.filter';
 import { SubjectModule } from './modules/subject/subject.module';
-import { RolesGuard } from './modules/common/guards/roles.gaurd';
+import { RolesGuard } from './common/guards/roles.guard';
 
 @Module({
   imports: [

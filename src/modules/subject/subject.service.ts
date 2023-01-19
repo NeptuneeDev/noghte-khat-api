@@ -7,14 +7,16 @@ import { ProfessorService } from '../professor/professor.service';
 
 @Injectable()
 export class SubjectService {
-  constructor(private readonly subjectRepository: SubjectRepository,
-              private readonly professorService: ProfessorService) {}
+  constructor(
+    private readonly subjectRepository: SubjectRepository,
+    private readonly professorService: ProfessorService,
+  ) {}
 
   async create(
     createSubjectDto: CreateSubjectDto,
     id: number,
   ): Promise<Subject> {
-    const proffessor= await this.professorService.findById(id)
+    const proffessor = await this.professorService.findById(id);
     const subject = await this.subjectRepository.create(createSubjectDto, id);
     return subject;
   }

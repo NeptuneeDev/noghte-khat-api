@@ -10,7 +10,7 @@ import {
   MinLength,
   Validate,
 } from 'class-validator';
-import { CustomMatchPasswords } from 'src/utils/password.utils';
+import { CustomMatchPasswords } from 'src/common/utils/password.utils';
 
 export class VerficationDto {
   @ApiProperty()
