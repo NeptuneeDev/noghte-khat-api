@@ -10,6 +10,8 @@ import { AtGuard } from './modules/common/guards/at.guard';
 import { AllExpectionsFilter } from './expections/http.expection.filter';
 import { SubjectModule } from './modules/subject/subject.module';
 import { RolesGuard } from './modules/common/guards/roles.gaurd';
+import { FileModule } from './modules/file/file.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { RolesGuard } from './modules/common/guards/roles.gaurd';
     ProfessorModule,
     SubjectModule,
     ConfigModule.forRoot({}),
+    FileModule,
+    MulterModule.register({ dest: './upload' }),
   ],
   providers: [
     {

@@ -46,8 +46,18 @@ model Subject {
   professor Professor  @relation(fields: [professorId], references: [id])
   professorId Int
   isVerified  Boolean  @default(false)  
+  file File[]
   createdAt DateTime
   updatedAt DateTime
+}
+
+model File {
+  id Int @default(autoincrement()) @id
+  
+  title String
+  description String 
+  subject Subject @relation(fields: [subjectId],references: [id])
+  subjectId Int
 }
 
 enum Role {

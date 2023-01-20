@@ -146,7 +146,6 @@ export class AuthService {
 
   async refreshTokens(userId: number, refreshToken: string): Promise<Tokens> {
     const user = await this.userRepository.findById(userId);
-
     if (!user || !user.hashedRt) throw new ForbiddenException('Access Denied');
 
     const rtMatches = await Hash.compare(refreshToken, user.hashedRt);

@@ -1,6 +1,0 @@
- math.txt
- math1234567654322.txt
- math53452423245675.txt
- mathseason1.txt
-
-
