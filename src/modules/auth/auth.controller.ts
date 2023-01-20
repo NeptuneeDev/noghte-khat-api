@@ -10,10 +10,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-// import { GetCurrentUserId, Public } from '../common/decorators';
-import { Public } from '../common/decorators/public.decorator';
-import { GetCurrentUser, GetCurrentUserId } from '../common/decorators';
-import { RtGuard } from '../common/guards/rt.guard';
+import { GetCurrentUserId, Public } from '../../common/decorators';
+import { GetCurrentUser } from '../../common/decorators';
+import { RtGuard } from '../../common/guards/rt.guard';
 import { UserInit } from './Dto/user-init.dto';
 import { UserLoginDto } from './Dto/user-login.Dto';
 import { SignUpDto, VerficationDto } from './Dto/user-signUp.dto';
@@ -38,6 +37,7 @@ export class AuthController {
   @Post('sendCode')
   @ApiResponse({ status: 201, description: 'Successful Registration' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(HttpStatus.CREATED)
   async sendCode(@Body() verificationDto: VerficationDto) {
     return await this.authService.sendCode(verificationDto);
@@ -62,14 +62,13 @@ export class AuthController {
     res.send({
       name: user.name,
       email: user.email,
-      tokens,
     });
   }
 
   @Post('logout')
   @ApiBearerAuth()
   async logout(@Res() res, @Req() req) {
-    const isLoggedOut= await this.authService.logOut(req.user.id);
+    const isLoggedOut = await this.authService.logOut(req.user.id);
     res.cookie('access_token', '');
     res.cookie('refresh_token', '');
 
@@ -89,7 +88,6 @@ export class AuthController {
       httpOnly: true,
     });
     res.send({ success: true });
-    return tokens;
   }
 
   @Public()

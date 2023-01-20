@@ -11,8 +11,8 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Role } from '../auth/types/roles.enum';
-import { Public } from '../common/decorators';
-import { Roles } from '../common/decorators/roles.decorators';
+import { Public } from '../../common/decorators';
+import { Roles } from '../../common/decorators/roles.decorators';
 import { CreateProfessorDto, SearchByNameDto } from './Dto/professor.Dto';
 import { Professor } from './interfaces/professor.interface';
 import { ProfessorService } from './professor.service';
@@ -57,7 +57,7 @@ export class ProfessorController {
     return await this.professorService.findById(id);
   }
 
-  
+
   @Roles(Role.Admin)
   @Delete('/:id')
   async deleteProfessor(

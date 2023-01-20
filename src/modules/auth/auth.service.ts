@@ -1,13 +1,11 @@
 import {
   BadRequestException,
   ForbiddenException,
-  HttpStatus,
   Injectable,
   NotAcceptableException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Hash } from 'src/utils/Hash';
-import { PrismaService } from '../prisma/prisma.service';
+import { Hash } from 'src/common/utils/Hash';
 import { userRepository } from '../user/user.repository';
 import { UserLoginDto } from './Dto/user-login.Dto';
 import { SignUpDto } from './Dto/user-signUp.dto';
@@ -146,9 +144,10 @@ export class AuthService {
 
   async refreshTokens(userId: number, refreshToken: string): Promise<Tokens> {
     const user = await this.userRepository.findById(userId);
-    if (!user || !user.hashedRt) throw new ForbiddenException('Access Denied');
 
-    const rtMatches = await Hash.compare(refreshToken, user.hashedRt);
+    if (!user || !user.hashedRT) throw new ForbiddenException('Access Denied');
+
+    const rtMatches = await Hash.compare(refreshToken, user.hashedRT);
     if (!rtMatches) throw new ForbiddenException('Access Denied');
 
     const tokens = await this.getTokens(user);

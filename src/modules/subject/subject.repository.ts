@@ -23,7 +23,7 @@ export class SubjectRepository {
     return this.prisma.subject.findMany({});
   }
 
-  findOne(id: number) {
+  findOne(id: number): Promise<Subject | undefined> {
     return this.prisma.subject.findUnique({ where: { id: id } });
   }
 

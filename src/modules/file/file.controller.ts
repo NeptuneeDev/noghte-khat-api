@@ -22,29 +22,18 @@ import { disk } from './disk.storage';
 @Controller('file')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
-  @Post()
+  @Post(':subId')
   @UseInterceptors(FileInterceptor('file', disk))
   async uploadFile(
     @UploadedFile(
       new ParseFilePipe({
-        validators: [new MaxFileSizeValidator({ maxSize: 1042 * 1024 * 3 })],
+        validators: [new MaxFileSizeValidator({ maxSize: 1042 * 1024 * 100 })],
       }),
     )
     file: Express.Multer.File,
     @Body() body: UploadedFileDto,
     @Param('subId', ParseIntPipe) subId: number,
   ) {
-    console.log(subId);
-    console.log(body.title);
-    return file;
-    // return await this.pictureService.savePicture(
-    //   productId,
-    //   image.filename,
-    //   +proiorty,
-    // );
+    return await this.fileService.saveFile(subId, file.filename, body);
   }
 }
-// }
-// new ParseFilePipe({
-//   validators: [new MaxFileSizeValidator({ maxSize: 100 })],
-// }),

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateSubjectDto } from './dto/create-lesson.dto';
 import { UpdateSubjectDto } from './dto/update-lesson.dto';
 import { SubjectRepository } from './subject.repository';
@@ -7,15 +7,25 @@ import { ProfessorService } from '../professor/professor.service';
 
 @Injectable()
 export class SubjectService {
-  constructor(private readonly subjectRepository: SubjectRepository,
-              private readonly professorService: ProfessorService) {}
+  constructor(
+    private readonly subjectRepository: SubjectRepository,
+    private readonly professorService: ProfessorService,
+  ) {}
 
   async create(
     createSubjectDto: CreateSubjectDto,
     id: number,
   ): Promise<Subject> {
-    const proffessor= await this.professorService.findById(id)
+    const proffessor = await this.professorService.findById(id);
     const subject = await this.subjectRepository.create(createSubjectDto, id);
+    return subject;
+  }
+
+  async findById(id: number): Promise<Subject | undefined> {
+    const subject = await this.subjectRepository.findOne(id);
+    if (!subject)
+      throw new HttpException("subject isn't found ", HttpStatus.NOT_FOUND);
+
     return subject;
   }
 

@@ -1,3 +1,4 @@
+import { File } from 'src/modules/file/interfaces/file.interface';
 import { Subject } from '../../subject/interfaces/subject.interface';
 
 export interface Professor {
@@ -8,9 +9,9 @@ export interface Professor {
   email: string;
 
   university: string;
-  isVerified : boolean
+  isVerified: boolean;
   subject?: Subject[];
-
+  file?: File[];
   createdAt: Date;
 
   updatedAt: Date;

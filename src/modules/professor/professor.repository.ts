@@ -43,7 +43,7 @@ export class ProfessorRepository {
   }
 
   async findAll(): Promise<Professor[]> {
-    return this.prisma.professor.findMany({ where: { isVerified: true } });
+    return this.prisma.professor.findMany();
   }
 
   async deletetProfessor(id: number) {
@@ -53,7 +53,7 @@ export class ProfessorRepository {
   async findById(id: number): Promise<Professor | undefined> {
     return this.prisma.professor.findUnique({
       where: { id },
-      include: { lessons: true },
+      include: { lessons: { include: { file: true } } },
     });
   }
 

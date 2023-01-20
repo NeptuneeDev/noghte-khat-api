@@ -56,8 +56,11 @@ model File {
   
   title String
   description String 
+  fileName    String
   subject Subject @relation(fields: [subjectId],references: [id])
   subjectId Int
+  createdAt DateTime
+  updatedAt DateTime
 }
 
 enum Role {

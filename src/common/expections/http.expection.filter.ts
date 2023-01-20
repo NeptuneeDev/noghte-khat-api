@@ -32,7 +32,7 @@ export class AllExpectionsFilter implements ExceptionFilter {
     };
 
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
-    console.log("in filter expectino");
+    console.log('in filter expectino');
     console.log(exception);
   }
 }

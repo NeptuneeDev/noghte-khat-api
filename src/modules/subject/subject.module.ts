@@ -16,5 +16,6 @@ import { ProfessorModule } from '../professor/professor.module';
     ProfessorRepository,
     SubjectService,
   ],
+  exports: [SubjectRepository, SubjectService],
 })
 export class SubjectModule {}

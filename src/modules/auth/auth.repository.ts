@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Verificaiton } from './interfaces/verification.inteface';
 import { PrismaService } from '../prisma/prisma.service';
 import { VerficationDto } from './Dto/user-signUp.dto';
-import { Hash } from 'src/utils/Hash';
 
 @Injectable()
 export class AuthRepository {
