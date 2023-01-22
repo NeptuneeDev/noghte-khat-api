@@ -14,6 +14,7 @@ export class ProfessorRepository {
         name: {
           contains: name,
         },
+        isVerified: true,
       },
     });
   }
@@ -43,7 +44,7 @@ export class ProfessorRepository {
   }
 
   async findAll(): Promise<Professor[]> {
-    return this.prisma.professor.findMany();
+    return this.prisma.professor.findMany({ where: { isVerified: true } });
   }
 
   async deletetProfessor(id: number) {
@@ -57,7 +58,21 @@ export class ProfessorRepository {
     });
   }
 
-  async findUnverifieds() {
+  async findUnverifieds(): Promise<Professor[]> {
     return this.prisma.professor.findMany({ where: { isVerified: false } });
+  }
+
+  async accept(id: number): Promise<Professor> {
+    return this.prisma.professor.update({
+      where: { id: id },
+      data: {
+        isVerified: true,
+        updatedAt: new Date().toISOString(),
+      },
+    });
+  }
+
+  async reject(id: number) {
+    return this.prisma.professor.delete({ where: { id: id } });
   }
 }

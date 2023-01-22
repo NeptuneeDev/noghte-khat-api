@@ -26,7 +26,7 @@ export class ProfessorService {
   async findById(id: number): Promise<Professor | undefined> {
     const prof = await this.professorRepository.findById(id);
 
-    if (prof) return prof;
+    if (prof && prof.isVerified) return prof;
     else
       throw new HttpException(
         'NOT found prof or not verified',
@@ -57,6 +57,10 @@ export class ProfessorService {
     return this.professorRepository.findById(id);
   }
 
+  async findUnverifids(): Promise<Professor[]> {
+    return await this.professorRepository.findUnverifieds();
+  }
+
   async deleteProfessor(id: number): Promise<Professor | undefined> {
     const professor = await this.professorRepository.findById(id);
 
@@ -65,6 +69,24 @@ export class ProfessorService {
     }
 
     return await this.professorRepository.deletetProfessor(id);
+  }
+
+  async accept(id: number) {
+    const professor = await this.professorRepository.findById(id);
+    if (!professor) {
+      throw new HttpException('professor not found', HttpStatus.NOT_FOUND);
+    }
+
+    return await this.professorRepository.accept(id);
+  }
+
+  async reject(id: number) {
+    const professor = await this.professorRepository.findById(id);
+    if (!professor) {
+      throw new HttpException('professor not found', HttpStatus.NOT_FOUND);
+    }
+
+    return await this.professorRepository.reject(id);
   }
 }
 

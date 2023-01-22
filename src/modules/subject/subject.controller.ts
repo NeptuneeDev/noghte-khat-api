@@ -9,10 +9,12 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { SubjectService } from './subject.service';
-import { CreateSubjectDto } from './dto/create-lesson.dto';
-import { UpdateSubjectDto } from './dto/update-lesson.dto';
+import { CreateSubjectDto } from './dto/create-update.dto';
+import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { ApiTags } from '@nestjs/swagger';
-
+import { Roles, ROLES_KEY } from 'src/common/decorators/roles.decorators';
+import { Role } from '../auth/types/roles.enum';
+import { Subject } from './interfaces/subject.interface';
 @ApiTags('Subject')
 @Controller('subject')
 export class SubjectController {
@@ -28,6 +30,12 @@ export class SubjectController {
     return this.subjectService.findAll();
   }
 
+  @Roles(Role.Admin)
+  @Get('unverifieds')
+  async findUnverifieds() {
+    return await this.subjectService.findUnverifieds();
+  }
+
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: string,
@@ -36,8 +44,17 @@ export class SubjectController {
     return this.subjectService.update(+id, updateSubjectDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.subjectService.remove(+id);
+  @Roles(Role.Admin)
+  @Get('accept/:id')
+  async accept(@Param('id', ParseIntPipe) subjectId: number) {
+    return await this.subjectService.accept(subjectId);
+  }
+
+  @Roles(Role.Admin)
+  @Delete('reject/:id')
+  async reject(
+    @Param('id', ParseIntPipe) subjectId: number,
+  ): Promise<Subject | undefined> {
+    return await this.subjectService.reject(subjectId);
   }
 }

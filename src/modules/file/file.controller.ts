@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  Delete,
+  Get,
   HttpException,
   HttpStatus,
   MaxFileSizeValidator,
@@ -18,6 +20,9 @@ import { UploadedFileDto } from './Dto/upload.file.Dto';
 import { FileService } from './file.service';
 
 import { disk } from './disk.storage';
+import { File } from './interfaces/file.interface';
+import { Roles, ROLES_KEY } from 'src/common/decorators/roles.decorators';
+import { Role } from '../auth/types/roles.enum';
 
 @Controller('file')
 export class FileController {
@@ -35,5 +40,24 @@ export class FileController {
     @Param('subId', ParseIntPipe) subId: number,
   ) {
     return await this.fileService.saveFile(subId, file.filename, body);
+  }
+
+  @Roles(Role.Admin)
+  @Get('unverifieds')
+  async findUnverifieds(): Promise<File[]> {
+    return await this.fileService.findUnverifieds();
+  }
+  @Roles(Role.Admin)
+  @Get('accept/:id')
+  async accept(@Param('id', ParseIntPipe) fileId: number) {
+    return await this.fileService.accept(fileId);
+  }
+
+  @Roles(Role.Admin)
+  @Delete('reject/:id')
+  async reject(
+    @Param('id', ParseIntPipe) fileId: number,
+  ): Promise<File | undefined> {
+    return await this.fileService.reject(fileId);
   }
 }

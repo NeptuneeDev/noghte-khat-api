@@ -28,6 +28,12 @@ export class ProfessorController {
   ): Promise<Partial<Professor>> {
     return await this.professorService.create(createProfessorDto);
   }
+  @Roles(Role.Admin)
+  @Get('unverifieds')
+  async getUnverifieds(): Promise<Professor[]> {
+    console.log('heresasd');
+    return await this.professorService.findUnverifids();
+  }
 
   // body name on change
   @Public()
@@ -53,16 +59,20 @@ export class ProfessorController {
   @Public()
   @Get(':id')
   async findById(@Param('id', ParseIntPipe) id: number) {
-    console.log('here');
     return await this.professorService.findById(id);
   }
 
+  @Roles(Role.Admin)
+  @Get('accept/:id')
+  async accept(@Param('id', ParseIntPipe) professorId: number) {
+    return await this.professorService.accept(professorId);
+  }
 
   @Roles(Role.Admin)
-  @Delete('/:id')
-  async deleteProfessor(
-    @Param('id', ParseIntPipe) id: number,
+  @Delete('reject/:id')
+  async reject(
+    @Param('id', ParseIntPipe) professorId: number,
   ): Promise<Professor | undefined> {
-    return await this.professorService.deleteProfessor(id);
+    return await this.professorService.reject(professorId);
   }
 }

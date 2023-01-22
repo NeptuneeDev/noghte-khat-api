@@ -30,6 +30,7 @@ export class AuthController {
     return {
       name: user.name,
       email: user.email,
+      role: user.role,
     };
   }
 
@@ -99,7 +100,6 @@ export class AuthController {
     @GetCurrentUser('refreshToken') refreshtoken: string,
     @Res() res,
   ) {
- console.log(userId);
 
     const tokens = await this.authService.refreshTokens(userId, refreshtoken);
     res.cookie('access_token', tokens.access_token, {

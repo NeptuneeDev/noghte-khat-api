@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateSubjectDto } from './dto/create-lesson.dto';
-import { UpdateSubjectDto } from './dto/update-lesson.dto';
+import { CreateSubjectDto } from './dto/create-update.dto';
+import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { SubjectRepository } from './subject.repository';
 import { Subject } from './interfaces/subject.interface';
 import { ProfessorService } from '../professor/professor.service';
@@ -36,7 +36,25 @@ export class SubjectService {
   async update(id: number, updateSubjectDto: UpdateSubjectDto) {
     return await this.subjectRepository.update(id, updateSubjectDto);
   }
-  remove(id: number): Promise<Subject> {
-    return this.subjectRepository.remove(id);
+
+  async findUnverifieds(): Promise<Subject[]> {
+    const subjects = await this.subjectRepository.findUnverifieds();
+    return subjects;
+  }
+
+  async accept(id: number): Promise<Subject> {
+    const subject = await this.subjectRepository.findById(id);
+    if (!subject)
+      throw new HttpException('not found subject', HttpStatus.NOT_FOUND);
+    const acceptedSubject = await this.subjectRepository.accept(id);
+    return acceptedSubject;
+  }
+
+  async reject(id: number): Promise<Subject> {
+    const subject = await this.subjectRepository.findById(id);
+    if (!subject)
+      throw new HttpException('not found subject', HttpStatus.NOT_FOUND);
+    const rejectedSubject = await this.subjectRepository.reject(id);
+    return rejectedSubject;
   }
 }

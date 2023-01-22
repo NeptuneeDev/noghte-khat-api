@@ -17,10 +17,35 @@ export class FileRepository {
         title: uploadFileDto.title,
         fileName: fileName,
         description: uploadFileDto.description,
-        subjectId: subjectId,
+        subject: { connect: { id: subjectId } },
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       },
     });
+  }
+
+  async findById(id: number): Promise<File> {
+    return this.prisma.file.findUnique({ where: { id: id } });
+  }
+
+  async findUnverifieds(): Promise<File[]> {
+    return this.prisma.file.findMany({
+      where: { isVerified: false },
+      include: { subject: { include: { professor: true } } },
+    });
+  }
+
+  async accept(id: number): Promise<File> {
+    return this.prisma.file.update({
+      where: { id: id },
+      data: {
+        isVerified: true,
+        updatedAt: new Date().toISOString(),
+      },
+    });
+  }
+
+  async reject(id: number): Promise<File> {
+    return this.prisma.file.delete({ where: { id: id } });
   }
 }

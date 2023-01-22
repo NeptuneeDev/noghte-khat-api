@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { resolve } from 'path';
 import { SubjectService } from '../subject/subject.service';
 import { UploadedFileDto } from './Dto/upload.file.Dto';
 import { FileRepository } from './file.repository';
+import { File } from './interfaces/file.interface';
 
 @Injectable()
 export class FileService {
@@ -23,7 +24,25 @@ export class FileService {
     );
     return file;
   }
-  async sayHi() {
-    return new Promise((res, rej) => resolve('sadssa'));
+
+  async findUnverifieds(): Promise<File[]> {
+    const files = await this.fileRepository.findUnverifieds();
+    return files;
+  }
+
+  async accept(id: number): Promise<File> {
+    const file = await this.fileRepository.findById(id);
+
+    if (file) throw new HttpException('not found file', HttpStatus.NOT_FOUND);
+
+    return await this.fileRepository.accept(id);
+  }
+
+  async reject(id: number): Promise<File> {
+    const file = await this.fileRepository.findById(id);
+
+    if (file) throw new HttpException('not found file', HttpStatus.NOT_FOUND);
+
+    return await this.fileRepository.reject(id);
   }
 }
