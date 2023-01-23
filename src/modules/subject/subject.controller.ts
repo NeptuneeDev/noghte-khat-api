@@ -12,7 +12,7 @@ import { SubjectService } from './subject.service';
 import { CreateSubjectDto } from './dto/create-update.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { Roles, ROLES_KEY } from 'src/common/decorators/roles.decorators';
+import { Roles, ROLES_KEY } from '../../common/decorators/roles.decorator';
 import { Role } from '../auth/types/roles.enum';
 import { Subject } from './interfaces/subject.interface';
 @ApiTags('Subject')

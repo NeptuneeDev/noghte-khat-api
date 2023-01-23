@@ -21,7 +21,7 @@ import { FileService } from './file.service';
 
 import { disk } from './disk.storage';
 import { File } from './interfaces/file.interface';
-import { Roles, ROLES_KEY } from 'src/common/decorators/roles.decorators';
+import { Roles, ROLES_KEY } from '../../common/decorators/roles.decorator';
 import { Role } from '../auth/types/roles.enum';
 
 @Controller('file')

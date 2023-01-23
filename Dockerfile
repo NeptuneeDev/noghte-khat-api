@@ -1,8 +1,5 @@
 FROM node:18.12-alpine3.16 as common-build-stage
 
-RUN npm config set registry http://registry.npmjs.org/
-RUN  npm config set proxy http://fodev.org:8118
-RUN  npm config set https-proxy http://fodev.org:8118
 
 # COPY package.json and package-lock.json files
 COPY package*.json ./
