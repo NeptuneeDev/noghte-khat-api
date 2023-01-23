@@ -54,7 +54,12 @@ export class ProfessorRepository {
   async findById(id: number): Promise<Professor | undefined> {
     return this.prisma.professor.findUnique({
       where: { id },
-      include: { lessons: { include: { file: true } } },
+      include: {
+        lessons: {
+          where: { isVerified: true },
+          include: { file: { where: { isVerified: true } } },
+        },
+      },
     });
   }
 
