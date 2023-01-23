@@ -12,7 +12,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { Role } from '../auth/types/roles.enum';
 import { Public } from '../../common/decorators';
-import { Roles } from '../../common/decorators/roles.decorators';
+import { Roles } from '../../common/decorators/roles.decorator';
 import { CreateProfessorDto, SearchByNameDto } from './Dto/professor.Dto';
 import { Professor } from './interfaces/professor.interface';
 import { ProfessorService } from './professor.service';
