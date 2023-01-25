@@ -11,6 +11,7 @@ import {
   ParseIntPipe,
   Post,
   Res,
+  StreamableFile,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -47,6 +48,7 @@ export class FileController {
   async findUnverifieds(): Promise<File[]> {
     return await this.fileService.findUnverifieds();
   }
+
   @Roles(Role.Admin)
   @Get('accept/:id')
   async accept(@Param('id', ParseIntPipe) fileId: number) {

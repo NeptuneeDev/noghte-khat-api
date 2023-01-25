@@ -1,9 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { resolve } from 'path';
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { join, resolve } from 'path';
 import { SubjectService } from '../subject/subject.service';
 import { UploadedFileDto } from './Dto/upload.file.Dto';
 import { FileRepository } from './file.repository';
 import { File } from './interfaces/file.interface';
+import { existsSync } from 'fs';
 
 @Injectable()
 export class FileService {
@@ -17,6 +18,8 @@ export class FileService {
     uploadFileDto: UploadedFileDto,
   ) {
     const subject = await this.subjectService.findById(subjectId);
+    if (!subject) throw new BadRequestException('subject id not valid!');
+
     const file = await this.fileRepository.saveFile(
       subjectId,
       fileName,

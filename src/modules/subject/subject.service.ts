@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSubjectDto } from './dto/create-update.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { SubjectRepository } from './subject.repository';
@@ -17,6 +17,8 @@ export class SubjectService {
     id: number,
   ): Promise<Subject> {
     const proffessor = await this.professorService.findById(id);
+    if (!proffessor) throw new NotFoundException('professor not found!');
+
     const subject = await this.subjectRepository.create(createSubjectDto, id);
     return subject;
   }
