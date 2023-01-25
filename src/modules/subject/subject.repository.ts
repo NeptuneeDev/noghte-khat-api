@@ -21,12 +21,13 @@ export class SubjectRepository {
   }
 
   findAll(): Promise<Subject[]> {
-    return this.prisma.subject.findMany({where:{isVerified:true}});
+    return this.prisma.subject.findMany({ where: { isVerified: true } });
   }
   findByName(name: string): Promise<Subject[]> {
     return this.prisma.subject.findMany({
       where: {
-        title: { contains: name },isVerified:true
+        title: { contains: name },
+        isVerified: true,
       },
     });
   }

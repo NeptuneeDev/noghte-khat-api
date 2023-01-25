@@ -12,6 +12,8 @@ import { SubjectModule } from './modules/subject/subject.module';
 import { RolesGuard } from './common/guards/roles.guard';
 import { FileModule } from './modules/file/file.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -22,7 +24,11 @@ import { MulterModule } from '@nestjs/platform-express';
     SubjectModule,
     ConfigModule.forRoot({}),
     FileModule,
-    MulterModule.register({ dest: './upload' }),
+    MulterModule.register({ dest: './uploads' }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/files/',
+    }),
   ],
   providers: [
     {

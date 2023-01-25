@@ -6,6 +6,8 @@ export class UploadedFileDto {
   title: string;
 
   @IsString()
-  @MaxLength(255, { message: "disciption shouldn't be more than 30 characters" })
+  @MaxLength(255, {
+    message: "disciption shouldn't be more than 30 characters",
+  })
   description: string;
 }
