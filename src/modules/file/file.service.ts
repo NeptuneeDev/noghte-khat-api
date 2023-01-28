@@ -1,4 +1,10 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { join, resolve } from 'path';
 import { SubjectService } from '../subject/subject.service';
 import { UploadedFileDto } from './Dto/upload.file.Dto';
@@ -36,7 +42,7 @@ export class FileService {
   async accept(id: number): Promise<File> {
     const file = await this.fileRepository.findById(id);
 
-    if (file) throw new HttpException('not found file', HttpStatus.NOT_FOUND);
+    if (!file) throw new HttpException('not found file', HttpStatus.NOT_FOUND);
 
     return await this.fileRepository.accept(id);
   }
