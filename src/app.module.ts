@@ -25,11 +25,6 @@ import { MailerModule } from '@nestjs-modules/mailer';
     SubjectModule,
     ConfigModule.forRoot({}),
     FileModule,
-    MulterModule.register({ dest: './uploads' }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
-      serveRoot: '/files/',
-    }),
   ],
   providers: [
     {
