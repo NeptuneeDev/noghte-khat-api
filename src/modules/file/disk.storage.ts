@@ -19,7 +19,7 @@ export const imageFileFilter = (req, file, callback) => {
 
 export const disk = {
   storage: diskStorage({
-    destination: './upload',
+    destination: './uploads',
     filename(req, file, callback) {
       const unixSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9); //1,000,000,000
       const ext = path.extname(file.originalname);
