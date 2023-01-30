@@ -14,6 +14,7 @@ import { FileModule } from './modules/file/file.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [

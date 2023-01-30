@@ -3,7 +3,7 @@ import { userRepository } from '../user/user.repository';
 import { AuthController } from './auth.controller';
 import { AuthRepository } from './auth.repository';
 import { AuthService } from './auth.service';
-import { OtpService } from './otp.service';
+import { MailService } from './mail.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './startegies/at.startegy';
 import { RefreshTokenStrategy } from './startegies/rt.strategy';
@@ -13,7 +13,7 @@ import { RefreshTokenStrategy } from './startegies/rt.strategy';
   providers: [
     AuthService,
     AuthRepository,
-    OtpService,
+    MailService,
     userRepository,
     RefreshTokenStrategy,
     JwtStrategy,
