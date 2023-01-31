@@ -9,7 +9,9 @@ import {
 import { S3ManagerService } from './s3-manager.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { File } from '../../common/interfaces/file.interface';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('S3')
 @Controller()
 export class S3ManagerController {
   constructor(private readonly s3: S3ManagerService) {}
