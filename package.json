@@ -9,7 +9,7 @@
     "run:front": "npx prisma migrate dev && npx prisma generate && npm run start:dev",
     "start:migrate:dev": "prisma migrate dev --name init && prisma generate",
     "prebuild": "rimraf dist",
-    "build": "nest build && npx prisma generate",
+    "build": "npx prisma generate && nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "node dist/main",
     "start:dev": "nest start --watch",
