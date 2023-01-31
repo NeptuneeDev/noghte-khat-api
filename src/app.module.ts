@@ -12,8 +12,8 @@ import { SubjectModule } from './modules/subject/subject.module';
 import { RolesGuard } from './common/guards/roles.guard';
 import { FileModule } from './modules/file/file.module';
 import { MulterModule } from '@nestjs/platform-express';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+import { S3ManagerModule } from './modules/s3-manager/s3-manager.module';
+import { AwsSdkModule } from 'nest-aws-sdk';
 
 @Module({
   imports: [
@@ -24,6 +24,15 @@ import { join } from 'path';
     SubjectModule,
     ConfigModule.forRoot({}),
     FileModule,
+    S3ManagerModule,
+    MulterModule.register(),
+    AwsSdkModule.forRoot({
+      defaultServiceOptions: {
+        accessKeyId: process.env.LIARA_ACCESS_KEY,
+        secretAccessKey: process.env.LIARA_SECRET_KEY,
+        endpoint: process.env.LIARA_ENDPOINT,
+      },
+    }),
   ],
   providers: [
     {

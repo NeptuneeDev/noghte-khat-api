@@ -3,27 +3,21 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
   MaxFileSizeValidator,
   Param,
   ParseFilePipe,
   ParseIntPipe,
   Post,
-  Res,
-  StreamableFile,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadedFileDto } from './Dto/upload.file.Dto';
 import { FileService } from './file.service';
-
-import { disk } from './disk.storage';
-import { File } from './interfaces/file.interface';
-import { Roles, ROLES_KEY } from '../../common/decorators/roles.decorator';
+import { Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../auth/types/roles.enum';
+import { disk } from './disk.storage';
+import { File as FileModel } from '@prisma/client';
 
 @Controller('file')
 export class FileController {
@@ -40,12 +34,12 @@ export class FileController {
     @Body() body: UploadedFileDto,
     @Param('subId', ParseIntPipe) subId: number,
   ) {
-    return await this.fileService.saveFile(subId, file.filename, body);
+    return await this.fileService.saveFile(subId, file, body);
   }
 
   @Roles(Role.Admin)
   @Get('unverifieds')
-  async findUnverifieds(): Promise<File[]> {
+  async findUnverifieds(): Promise<FileModel[]> {
     return await this.fileService.findUnverifieds();
   }
 
@@ -59,7 +53,7 @@ export class FileController {
   @Delete('reject/:id')
   async reject(
     @Param('id', ParseIntPipe) fileId: number,
-  ): Promise<File | undefined> {
+  ): Promise<FileModel | undefined> {
     return await this.fileService.reject(fileId);
   }
 }

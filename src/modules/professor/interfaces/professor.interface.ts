@@ -1,5 +1,5 @@
-import { File } from 'src/modules/file/interfaces/file.interface';
 import { Subject } from '../../subject/interfaces/subject.interface';
+import { File } from '@prisma/client';
 
 export interface Professor {
   id: number;

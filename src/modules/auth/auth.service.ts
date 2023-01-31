@@ -11,7 +11,7 @@ import { UserLoginDto } from './Dto/user-login.Dto';
 import { SignUpDto } from './Dto/user-signUp.dto';
 import { AuthRepository } from './auth.repository';
 import { Verificaiton } from './interfaces/verification.inteface';
-import { OtpService } from './otp.service';
+import { MailService } from './mail.service';
 import { JwtPayload, Tokens } from './types';
 import { VerficationDto } from './Dto/user-signUp.dto';
 import { User } from '../user/interfaces/user.interface';
@@ -20,7 +20,7 @@ import { User } from '../user/interfaces/user.interface';
 export class AuthService {
   constructor(
     private readonly authRepository: AuthRepository,
-    private readonly otpService: OtpService,
+    private readonly mailService: MailService,
     private readonly jwtService: JwtService,
     private readonly userRepository: userRepository,
   ) {}
@@ -39,7 +39,7 @@ export class AuthService {
 
     const otp = this.generateOtp();
 
-    this.otpService.send(otp);
+    this.mailService.send(otp, verificationDto.email);
     const hashedOtp = await Hash.hash(otp + '');
 
     const verification1 = await this.authRepository.upsertVarification(

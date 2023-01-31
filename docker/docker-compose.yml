@@ -1,0 +1,56 @@
+version: "3.8"
+
+networks:
+  net-app:
+    driver: bridge
+
+services:
+  minio:
+    image: minio/minio
+    container_name: minio
+    restart: always
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      - MINIO_ROOT_USER=jozve
+      - MINIO_ROOT_PASSWORD=987654321
+    command: server /data
+    volumes:
+      - ${PWD}/data:/data
+    networks:
+      - net-app
+
+  postgres:
+    image: postgres:15.1-alpine
+    container_name: postgresql
+    restart: always
+    ports:
+      - 5436:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=jozveh
+    networks:
+      - net-app
+
+  api:
+    build:
+      context: ./
+      target: development-build-stage
+      dockerfile: Dockerfile
+    container_name: server1
+    restart: always
+    ports:
+      - '3000:3000'
+      - '5000:5000'
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    networks:
+      - net-app
+    links:
+      - 'postgres:postgres'
+    depends_on:
+      - postgres
+      - minio
