@@ -17,16 +17,18 @@ async function bootstrap() {
     }),
   );
   app.use(cookieParser());
-  const config = new DocumentBuilder()
-    .addBearerAuth()
-    .setTitle('backend')
-    .setDescription('The API description')
-    .setVersion('1.0')
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api-docs', app, document);
 
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .addBearerAuth()
+      .setTitle('backend')
+      .setDescription('The API description')
+      .setVersion('1.0')
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api-docs', app, document);
+  }
   await app.listen(7070, '0.0.0.0');
+  // await app.listen(5000);
 }
 bootstrap();
-
