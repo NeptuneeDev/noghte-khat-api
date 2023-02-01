@@ -18,7 +18,9 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../auth/types/roles.enum';
 import { disk } from './disk.storage';
 import { File as FileModel } from '@prisma/client';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('file')
 @Controller('file')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
