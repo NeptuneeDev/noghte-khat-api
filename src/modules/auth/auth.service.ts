@@ -37,9 +37,9 @@ export class AuthService {
       throw new BadRequestException('too much request for otp...');
     }
 
-    const otp = this.generateOtp();
+    const otp = await this.generateOtp();
 
-    this.mailService.send(otp, verificationDto.email);
+    await this.mailService.send(otp, verificationDto.email);
     const hashedOtp = await Hash.hash(otp + '');
 
     const verification1 = await this.authRepository.upsertVarification(
@@ -124,7 +124,6 @@ export class AuthService {
 
   generateOtp(): number {
     const code = Math.floor(Math.random() * 9000 + 1000);
-    console.log(code);
     return code;
   }
 
