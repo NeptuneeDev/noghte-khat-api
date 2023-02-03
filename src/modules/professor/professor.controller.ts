@@ -31,7 +31,6 @@ export class ProfessorController {
   @Roles(Role.Admin)
   @Get('unverifieds')
   async getUnverifieds(): Promise<Professor[]> {
-    console.log('heresasd');
     return await this.professorService.findUnverifids();
   }
 

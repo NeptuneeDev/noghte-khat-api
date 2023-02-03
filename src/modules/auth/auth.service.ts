@@ -136,9 +136,8 @@ export class AuthService {
     if (isExpird) {
       throw new NotAcceptableException('time has expired...');
     }
-    const test = await Hash.compare(otp + '', verification.code);
-    console.log(test);
-    return test;
+    const isValid = await Hash.compare(otp + '', verification.code);
+    return isValid;
   }
 
   async refreshTokens(userId: number, refreshToken: string): Promise<Tokens> {
