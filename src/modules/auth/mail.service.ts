@@ -7,9 +7,7 @@ export class MailService {
   async send(otp: number, email: string) {
     const response = await this.mailService.sendMail({
       to: email,
-      from: 'info@mail.noghteh-khat.ir',
-      text: '',
-      subject: 'کد احراز هویت شما',
+      subject: 'کد تایید ایمیل شما',
       template: './otp',
       context: {
         otp,
