@@ -47,9 +47,6 @@ export class AuthController {
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiResponse({ status: 200, description: 'Successful Login' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async login(@Body() userLogInDto: UserLoginDto, @Res() res) {
     const { tokens, user } = await this.authService.logIn(userLogInDto);
     res.cookie('access_token', tokens.access_token, {
@@ -60,7 +57,7 @@ export class AuthController {
       maxAge: 86400000,
       httpOnly: true,
     });
-    res.send({
+    return res.send({
       name: user.name,
       email: user.email,
     });
@@ -73,7 +70,7 @@ export class AuthController {
     res.cookie('access_token', '');
     res.cookie('refresh_token', '');
 
-    res.send(isLoggedOut);
+   return res.send(isLoggedOut);
   }
 
   @Public()
@@ -88,7 +85,7 @@ export class AuthController {
       maxAge: 86400000,
       httpOnly: true,
     });
-    res.send({ success: true });
+   return res.send({ success: true });
   }
 
   @Public()
@@ -100,7 +97,6 @@ export class AuthController {
     @GetCurrentUser('refreshToken') refreshtoken: string,
     @Res() res,
   ) {
-
     const tokens = await this.authService.refreshTokens(userId, refreshtoken);
     res.cookie('access_token', tokens.access_token, {
       maxAge: 900000,
@@ -110,6 +106,6 @@ export class AuthController {
       maxAge: 86400000,
       httpOnly: true,
     });
-    res.send({ success: true });
+   return res.send({ success: true });
   }
 }

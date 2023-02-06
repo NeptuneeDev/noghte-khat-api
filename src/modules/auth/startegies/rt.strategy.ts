@@ -17,7 +17,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
           if (!token) return null;
 
           return token;
-        },
+        }
       ]),
       secretOrKey: process.env.SECRET_KEY,
       passReqToCallback: true,
