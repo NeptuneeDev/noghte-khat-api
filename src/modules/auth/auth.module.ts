@@ -25,7 +25,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
           },
         },
         defaults: {
-          from: 'info@mail.noghteh-khat.ir',
+          from: '"Noghteh Khat" <info@mail.noghteh-khat.ir>',
         },
         template: {
           dir: join(__dirname, 'templates'),
