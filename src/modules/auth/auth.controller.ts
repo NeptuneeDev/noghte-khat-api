@@ -4,6 +4,8 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseIntPipe,
   Post,
   Req,
   Res,
@@ -17,6 +19,10 @@ import { UserInit } from './Dto/user-init.dto';
 import { UserLoginDto } from './Dto/user-login.Dto';
 import { SignUpDto, VerficationDto } from './Dto/user-signUp.dto';
 import { AuthService } from './auth.service';
+import {
+  ForgetPasswordDto,
+  ResetPasswordtDto,
+} from './Dto/forget.password.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -70,7 +76,7 @@ export class AuthController {
     res.cookie('access_token', '');
     res.cookie('refresh_token', '');
 
-   return res.send(isLoggedOut);
+    return res.send(isLoggedOut);
   }
 
   @Public()
@@ -85,7 +91,7 @@ export class AuthController {
       maxAge: 86400000,
       httpOnly: true,
     });
-   return res.send({ success: true });
+    return res.send({ success: true });
   }
 
   @Public()
@@ -106,6 +112,31 @@ export class AuthController {
       maxAge: 86400000,
       httpOnly: true,
     });
-   return res.send({ success: true });
+    return res.send({ success: true });
+  }
+
+  @Public()
+  @Post('forgetPassword')
+  async forgetPassword(@Body() body: ForgetPasswordDto) {
+    return await this.authService.generateUniqueLink(body.email);
+  }
+
+  @Public()
+  @Get('resetPassword/:id/:token')
+  async validateResetPasswordToken(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('token', ParseIntPipe) token: string,
+  ) {
+    return await this.authService.validateResetPasswordToken(id, token);
+  }
+
+  @Public()
+  @Post('resetPassword/:id/:token')
+  async RestPassword(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('token', ParseIntPipe) token: string,
+    @Body() body: ResetPasswordtDto,
+  ) {
+    return await this.authService.updatePassword(body.password, id, token);
   }
 }

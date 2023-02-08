@@ -40,7 +40,7 @@ export class S3ManagerService {
           ACL: 'public-read',
           Key: key,
         })
-        .promise();
+        .promise()
 
       return {
         key: key,
