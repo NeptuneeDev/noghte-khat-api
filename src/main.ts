@@ -7,9 +7,9 @@ import * as cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    // origin: 'https://noghteh-khat.ir',
+    origin: 'https://noghteh-khat.ir',
     // origin: 'https://frontend-g885.vercel.app',
-    origin:"http://localhost:8000",
+    // origin:"http://localhost:8000",
 
     credentials: true,
   });
@@ -31,6 +31,6 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api-docs', app, document);
   }
-  await app.listen(5000);
+  await app.listen(7070,"0.0.0.0");
 }
 bootstrap();
