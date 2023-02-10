@@ -20,7 +20,10 @@ export class MailService {
     const response = await this.mailService.sendMail({
       to: email,
       subject: 'لینک فراموشی رمز عبور',
-      text: link,
+      template: './forgetPassword',
+      context: {
+        link,
+      },
     });
   }
 }

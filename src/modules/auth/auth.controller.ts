@@ -11,7 +11,13 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { GetCurrentUserId, Public } from '../../common/decorators';
 import { GetCurrentUser } from '../../common/decorators';
 import { RtGuard } from '../../common/guards/rt.guard';
@@ -23,7 +29,10 @@ import {
   ForgetPasswordDto,
   ResetPasswordtDto,
 } from './Dto/forget.password.dto';
-
+import { Verificaition } from './interfaces/verification.inteface';
+import { Success } from './types/success.return.type';
+import { ApiSendCodeDoc } from './doc/api-response.body';
+import { Response } from 'express';
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
@@ -42,9 +51,7 @@ export class AuthController {
 
   @Public()
   @Post('sendCode')
-  @ApiResponse({ status: 201, description: 'Successful Registration' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiSendCodeDoc()
   @HttpCode(HttpStatus.CREATED)
   async sendCode(@Body() verificationDto: VerficationDto) {
     return await this.authService.sendCode(verificationDto);
@@ -53,15 +60,19 @@ export class AuthController {
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() userLogInDto: UserLoginDto, @Res() res) {
+  async login(@Body() userLogInDto: UserLoginDto, @Res() res: Response) {
     const { tokens, user } = await this.authService.logIn(userLogInDto);
     res.cookie('access_token', tokens.access_token, {
       maxAge: 900000,
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
     });
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 86400000,
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
     });
     return res.send({
       name: user.name,
@@ -73,8 +84,14 @@ export class AuthController {
   @ApiBearerAuth()
   async logout(@Res() res, @Req() req) {
     const isLoggedOut = await this.authService.logOut(req.user.id);
-    res.cookie('access_token', '');
-    res.cookie('refresh_token', '');
+    res.cookie('access_token', '', {
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+    res.cookie('refresh_token', '', {
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
 
     return res.send(isLoggedOut);
   }
@@ -86,10 +103,14 @@ export class AuthController {
     res.cookie('access_token', tokens.access_token, {
       maxAge: 900000,
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
     });
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 86400000,
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
     });
     return res.send({ success: true });
   }
@@ -107,10 +128,14 @@ export class AuthController {
     res.cookie('access_token', tokens.access_token, {
       maxAge: 900000,
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
     });
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 86400000,
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
     });
     return res.send({ success: true });
   }
@@ -125,7 +150,7 @@ export class AuthController {
   @Get('resetPassword/:id/:token')
   async validateResetPasswordToken(
     @Param('id', ParseIntPipe) id: number,
-    @Param('token', ParseIntPipe) token: string,
+    @Param('token') token: string,
   ) {
     return await this.authService.validateResetPasswordToken(id, token);
   }
@@ -134,7 +159,7 @@ export class AuthController {
   @Post('resetPassword/:id/:token')
   async RestPassword(
     @Param('id', ParseIntPipe) id: number,
-    @Param('token', ParseIntPipe) token: string,
+    @Param('token') token: string,
     @Body() body: ResetPasswordtDto,
   ) {
     return await this.authService.updatePassword(body.password, id, token);

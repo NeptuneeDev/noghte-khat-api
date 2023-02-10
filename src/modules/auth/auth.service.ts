@@ -10,13 +10,14 @@ import { userRepository } from '../user/user.repository';
 import { UserLoginDto } from './Dto/user-login.Dto';
 import { SignUpDto } from './Dto/user-signUp.dto';
 import { AuthRepository } from './auth.repository';
-import { Verificaiton } from './interfaces/verification.inteface';
+import { Verificaition } from './interfaces/verification.inteface';
 import { MailService } from './mail.service';
 import { JwtPayload, Tokens } from './types';
 import { VerficationDto } from './Dto/user-signUp.dto';
 import { User } from '../user/interfaces/user.interface';
 import _ from 'lodash';
 import { use } from 'passport';
+import { Success } from './types/success.return.type';
 
 @Injectable()
 export class AuthService {
@@ -27,7 +28,9 @@ export class AuthService {
     private readonly userRepository: userRepository,
   ) {}
 
-  async sendCode(verificationDto: VerficationDto) {
+  async sendCode(
+    verificationDto: VerficationDto,
+  ): Promise<Success | undefined> {
     const varification = await this.authRepository.findVarification(
       verificationDto.email,
     );
@@ -49,13 +52,13 @@ export class AuthService {
       hashedOtp,
     );
 
-    return { id: verification1.id, email: verification1.email };
+    return { success: true };
   }
 
   async logIn(userLogInDto: UserLoginDto) {
     const user = await this.userRepository.find(userLogInDto.email);
     if (!user) {
-      throw new ForbiddenException('user not found!');
+      throw new BadRequestException("credintals aren't correct...");
     }
 
     const isPasswordValid = await Hash.compare(
@@ -63,7 +66,7 @@ export class AuthService {
       user.password,
     );
     if (!isPasswordValid) {
-      throw new BadRequestException("credintals arn't correct...");
+      throw new BadRequestException("credintals aren't correct...");
     }
 
     const tokens = await this.getTokens(user);
@@ -113,71 +116,6 @@ export class AuthService {
     return tokens;
   }
 
-  async recoveryPassword() {
-    //check if user exists
-    // send code to email
-    // validate the code
-  }
-
-  async generateUniqueLink(email: string) {
-    const user = await this.userRepository.find(email);
-
-    if (!user) {
-      throw new BadRequestException('bad request');
-    }
-
-    const secret = process.env.SECRET_KEY + user.password;
-    const jwtPayload: JwtPayload = { sub: user.id, role: user.role };
-    const token = await this.jwtService.sign(jwtPayload, {
-      secret: secret,
-      expiresIn: '15m',
-    });
-    const link = `${process.env.HOST}/auth/resetPassword/${user.id}/${token}`;
-
-    await this.mailService.send(link, email);
-    return { sucess: true };
-  }
-  async validateResetPasswordToken(id: number, token: string) {
-    const user = await this.userRepository.findById(id);
-
-    if (!user) {
-      throw new BadRequestException('bad request has been sent...');
-    }
-
-    const secret = process.env.SECRET_KEY + user.password;
-
-    try {
-      const payload = await this.jwtService.verify(token, { secret: secret });
-      return { sucess: true };
-    } catch (error) {
-      return { message: 'some thing is manipulated...' };
-    }
-  }
-
-  async updatePassword(password: string, id: number, token: string) {
-    const user = await this.userRepository.findById(id);
-
-    if (!user) {
-      throw new BadRequestException('bad request has been sent...');
-    }
-
-    const secret = process.env.SECRET_KEY + user.password;
-
-    try {
-      const payload = await this.jwtService.verify(token, { secret: secret });
-      const hashedPassword = await Hash.hash(password);
-
-      const resetdPasswordUser = await this.userRepository.updatePassword(
-        id,
-        hashedPassword,
-      );
-
-      return { sucess: true };
-    } catch (error) {
-      return { message: 'some thing is manipulated...' };
-    }
-  }
-
   isRequestedALot(numberOfAttampt: number, lastResendTime: Date): boolean {
     const isPassedTowWeeksFromLastResnd =
       new Date(new Date(lastResendTime)).getTime() +
@@ -194,7 +132,7 @@ export class AuthService {
     return code;
   }
 
-  async isValidOtp(otp: number, verification: Verificaiton): Promise<boolean> {
+  async isValidOtp(otp: number, verification: Verificaition): Promise<boolean> {
     const isExpird = !(
       new Date(new Date(verification.lastResendTime)).getTime() +
         5 * 60 * 1000 >
@@ -252,5 +190,65 @@ export class AuthService {
 
   async findById(id: number): Promise<User | undefined> {
     return await this.userRepository.findById(id);
+  }
+
+  // forget password sequence of requests
+  async generateUniqueLink(email: string) {
+    const user = await this.userRepository.find(email);
+
+    if (!user) {
+      throw new BadRequestException('bad request');
+    }
+
+    const secret = process.env.SECRET_KEY + user.password;
+    const jwtPayload: JwtPayload = { sub: user.id, role: user.role };
+    const token = await this.jwtService.sign(jwtPayload, {
+      secret: secret,
+      expiresIn: '15m',
+    });
+    const link = `${process.env.HOST}/auth/resetPassword/${user.id}/${token}`;
+
+    await this.mailService.send(link, email);
+    return { sucess: true };
+  }
+  async validateResetPasswordToken(id: number, token: string) {
+    const user = await this.userRepository.findById(id);
+
+    if (!user) {
+      throw new BadRequestException('bad request has been sent...');
+    }
+
+    const secret = process.env.SECRET_KEY + user.password;
+
+    try {
+      const payload = await this.jwtService.verify(token, { secret: secret });
+      return { sucess: true };
+    } catch (error) {
+      return { message: 'some thing is manipulated...' };
+    }
+  }
+
+  async updatePassword(password: string, id: number, token: string) {
+    const user = await this.userRepository.findById(id);
+
+    if (!user) {
+      throw new BadRequestException('bad request has been sent...');
+    }
+
+    const secret = process.env.SECRET_KEY + user.password;
+
+    try {
+      const payload = await this.jwtService.verify(token, { secret: secret });
+      const hashedPassword = await Hash.hash(password);
+
+      const resetdPasswordUser = await this.userRepository.updatePassword(
+        id,
+        hashedPassword,
+      );
+
+      return { sucess: true };
+    } catch (error) {
+      return { message: 'some thing is manipulated...' };
+    }
   }
 }

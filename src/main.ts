@@ -25,12 +25,13 @@ async function bootstrap() {
     const config = new DocumentBuilder()
       .addBearerAuth()
       .setTitle('backend')
-      .setDescription('The API description')
+      .setDescription('jozveh api discription')
       .setVersion('1.0')
       .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api-docs', app, document);
   }
-  await app.listen(7070,"0.0.0.0");
+  await app.listen(7070, '0.0.0.0');
+  // await app.listen(5000);
 }
 bootstrap();

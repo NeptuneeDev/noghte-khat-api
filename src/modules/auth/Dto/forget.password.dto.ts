@@ -21,11 +21,6 @@ export class ForgetPasswordDto {
 }
 
 export class ResetPasswordtDto {
-  @ApiProperty()
-  @IsEmail()
-  @IsString()
-  @IsNotEmpty()
-  email: string;
 
   @ApiProperty()
   @IsNotEmpty()
