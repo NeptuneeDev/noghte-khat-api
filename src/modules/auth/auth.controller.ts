@@ -87,8 +87,18 @@ export class AuthController {
   @ApiLogOutDoc()
   async logout(@Res() res: Response, @Req() req) {
     const isLoggedOut = await this.authService.logOut(req.user.id);
-    res.clearCookie('access_token');
-    res.clearCookie('refresh_token');
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
+    });
+    res.clearCookie('refresh_token', {
+      httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
+    });
 
     return res.send(isLoggedOut);
   }
