@@ -9,14 +9,14 @@ import {
   Post,
   Req,
   Res,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import {
   GetCurrentUser,
   GetCurrentUserId,
-  Public
+  Public,
 } from '../../common/decorators';
 import { RtGuard } from '../../common/guards/rt.guard';
 import { AuthService } from './auth.service';
@@ -24,11 +24,11 @@ import {
   ApiLoginDoc,
   ApiLogOutDoc,
   ApiSendCodeDoc,
-  ApiSignUpDoc
+  ApiSignUpDoc,
 } from './doc/api-response.body';
 import {
   ForgetPasswordDto,
-  ResetPasswordtDto
+  ResetPasswordtDto,
 } from './Dto/forget.password.dto';
 import { UserInit } from './Dto/user-init.dto';
 import { UserLoginDto } from './Dto/user-login.Dto';
@@ -87,18 +87,8 @@ export class AuthController {
   @ApiLogOutDoc()
   async logout(@Res() res, @Req() req) {
     const isLoggedOut = await this.authService.logOut(req.user.id);
-    res.cookie('access_token', '', {
-      httpOnly: true,
-      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
-    });
-    res.cookie('refresh_token', '', {
-      httpOnly: true,
-      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
-    });
+    res.cookie('access_token', '');
+    res.cookie('refresh_token', '');
 
     return res.send(isLoggedOut);
   }
