@@ -63,18 +63,22 @@ export class AuthController {
   @ApiLoginDoc()
   async login(@Body() userLogInDto: UserLoginDto, @Res() res: Response) {
     const { tokens, user } = await this.authService.logIn(userLogInDto);
-    res.cookie('access_token', tokens.access_token, {
-      maxAge: 900000,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
-    });
-    res.cookie('refresh_token', tokens.refresh_token, {
-      maxAge: 86400000,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
-    });
+    res.setHeader('Set-Cookie', [
+      `access_token=${tokens.access_token}; HttpOnly; Max-Age=900000; Path=/; SameSite=lax; Secure`,
+      `refresh_token=${tokens.refresh_token}; HttpOnly; Max-Age=86400000; Path=/; SameSite=lax; Secure`,
+    ]);
+    // res.cookie('access_token', tokens.access_token, {
+    //   maxAge: 900000,
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === 'production' ? true : false,
+    //   sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+    // });
+    // res.cookie('refresh_token', tokens.refresh_token, {
+    //   maxAge: 86400000,
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === 'production' ? true : false,
+    //   sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+    // });
     return res.send({
       name: user.name,
       email: user.email,
@@ -85,16 +89,20 @@ export class AuthController {
   @ApiLogOutDoc()
   async logout(@Res() res, @Req() req) {
     const isLoggedOut = await this.authService.logOut(req.user.id);
-    res.cookie('access_token', '', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
-    });
-    res.cookie('refresh_token', '', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
-    });
+    res.setHeader('Set-Cookie', [
+      `access_token=; HttpOnly; Max-Age=900000; Path=/; SameSite=lax; Secure`,
+      `refresh_token=; HttpOnly; Max-Age=86400000; Path=/; SameSite=lax; Secure`,
+    ]);
+    // res.cookie('access_token', '', {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === 'production' ? true : false,
+    //   sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+    // });
+    // res.cookie('refresh_token', '', {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === 'production' ? true : false,
+    //   sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+    // });
 
     return res.send(isLoggedOut);
   }
@@ -104,18 +112,22 @@ export class AuthController {
   @ApiSignUpDoc()
   async verify(@Body() signUpDto: SignUpDto, @Res() res: Response) {
     const tokens = await this.authService.signUp(signUpDto);
-    res.cookie('access_token', tokens.access_token, {
-      maxAge: 900000,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
-    });
-    res.cookie('refresh_token', tokens.refresh_token, {
-      maxAge: 86400000,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
-    });
+    res.setHeader('Set-Cookie', [
+      `access_token=${tokens.access_token}; HttpOnly; Max-Age=900000; Path=/; SameSite=lax; Secure`,
+      `refresh_token=${tokens.refresh_token}; HttpOnly; Max-Age=86400000; Path=/; SameSite=lax; Secure`,
+    ]);
+    // res.cookie('access_token', tokens.access_token, {
+    //   maxAge: 900000,
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === 'production' ? true : false,
+    //   sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+    // });
+    // res.cookie('refresh_token', tokens.refresh_token, {
+    //   maxAge: 86400000,
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === 'production' ? true : false,
+    //   sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+    // });
     return res.send({ success: true });
   }
 
@@ -129,18 +141,22 @@ export class AuthController {
     @Res() res,
   ) {
     const tokens = await this.authService.refreshTokens(userId, refreshtoken);
-    res.cookie('access_token', tokens.access_token, {
-      maxAge: 900000,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
-    });
-    res.cookie('refresh_token', tokens.refresh_token, {
-      maxAge: 86400000,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
-    });
+    res.setHeader('Set-Cookie', [
+      `access_token=${tokens.access_token}; HttpOnly; Max-Age=900000; Path=/; SameSite=lax; Secure`,
+      `refresh_token=${tokens.refresh_token}; HttpOnly; Max-Age=86400000; Path=/; SameSite=lax; Secure`,
+    ]);
+    // res.cookie('access_token', tokens.access_token, {
+    //   maxAge: 900000,
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === 'production' ? true : false,
+    //   sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+    // });
+    // res.cookie('refresh_token', tokens.refresh_token, {
+    //   maxAge: 86400000,
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === 'production' ? true : false,
+    //   sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+    // });
     return res.send({ success: true });
   }
 
