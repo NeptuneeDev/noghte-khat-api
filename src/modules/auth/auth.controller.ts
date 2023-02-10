@@ -4,20 +4,35 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseIntPipe,
   Post,
   Req,
   Res,
-  UseGuards,
+  UseGuards
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { GetCurrentUserId, Public } from '../../common/decorators';
-import { GetCurrentUser } from '../../common/decorators';
+import { ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
+import {
+  GetCurrentUser,
+  GetCurrentUserId,
+  Public
+} from '../../common/decorators';
 import { RtGuard } from '../../common/guards/rt.guard';
+import { AuthService } from './auth.service';
+import {
+  ApiLoginDoc,
+  ApiLogOutDoc,
+  ApiSendCodeDoc,
+  ApiSignUpDoc
+} from './doc/api-response.body';
+import {
+  ForgetPasswordDto,
+  ResetPasswordtDto
+} from './Dto/forget.password.dto';
 import { UserInit } from './Dto/user-init.dto';
 import { UserLoginDto } from './Dto/user-login.Dto';
 import { SignUpDto, VerficationDto } from './Dto/user-signUp.dto';
-import { AuthService } from './auth.service';
-
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
@@ -36,9 +51,7 @@ export class AuthController {
 
   @Public()
   @Post('sendCode')
-  @ApiResponse({ status: 201, description: 'Successful Registration' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiSendCodeDoc()
   @HttpCode(HttpStatus.CREATED)
   async sendCode(@Body() verificationDto: VerficationDto) {
     return await this.authService.sendCode(verificationDto);
@@ -47,15 +60,22 @@ export class AuthController {
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() userLogInDto: UserLoginDto, @Res() res) {
+  @ApiLoginDoc()
+  async login(@Body() userLogInDto: UserLoginDto, @Res() res: Response) {
     const { tokens, user } = await this.authService.logIn(userLogInDto);
     res.cookie('access_token', tokens.access_token, {
       maxAge: 900000,
       httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 86400000,
       httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
     return res.send({
       name: user.name,
@@ -64,28 +84,45 @@ export class AuthController {
   }
 
   @Post('logout')
-  @ApiBearerAuth()
+  @ApiLogOutDoc()
   async logout(@Res() res, @Req() req) {
     const isLoggedOut = await this.authService.logOut(req.user.id);
-    res.cookie('access_token', '');
-    res.cookie('refresh_token', '');
+    res.cookie('access_token', '', {
+      httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
+    });
+    res.cookie('refresh_token', '', {
+      httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
+    });
 
-   return res.send(isLoggedOut);
+    return res.send(isLoggedOut);
   }
 
   @Public()
   @Post('signUp')
-  async verify(@Body() signUpDto: SignUpDto, @Res() res) {
+  @ApiSignUpDoc()
+  async verify(@Body() signUpDto: SignUpDto, @Res() res: Response) {
     const tokens = await this.authService.signUp(signUpDto);
     res.cookie('access_token', tokens.access_token, {
       maxAge: 900000,
       httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 86400000,
       httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
-   return res.send({ success: true });
+    return res.send({ success: true });
   }
 
   @Public()
@@ -95,17 +132,48 @@ export class AuthController {
   async refreshTokens(
     @GetCurrentUserId() userId: number,
     @GetCurrentUser('refreshToken') refreshtoken: string,
-    @Res() res,
+    @Res() res: Response,
   ) {
     const tokens = await this.authService.refreshTokens(userId, refreshtoken);
     res.cookie('access_token', tokens.access_token, {
       maxAge: 900000,
       httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 86400000,
       httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
-   return res.send({ success: true });
+    return res.send({ success: true });
+  }
+
+  @Public()
+  @Post('forgetPassword')
+  async forgetPassword(@Body() body: ForgetPasswordDto) {
+    return await this.authService.generateUniqueLink(body.email);
+  }
+
+  @Public()
+  @Get('resetPassword/:id/:token')
+  async validateResetPasswordToken(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('token') token: string,
+  ) {
+    return await this.authService.validateResetPasswordToken(id, token);
+  }
+
+  @Public()
+  @Post('resetPassword/:id/:token')
+  async RestPassword(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('token') token: string,
+    @Body() body: ResetPasswordtDto,
+  ) {
+    return await this.authService.updatePassword(body.password, id, token);
   }
 }

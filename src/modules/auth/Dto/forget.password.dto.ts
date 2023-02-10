@@ -12,30 +12,15 @@ import {
 } from 'class-validator';
 import { CustomMatchPasswords } from 'src/common/utils/password.utils';
 
-export class VerficationDto {
+export class ForgetPasswordDto {
   @ApiProperty()
   @IsEmail()
+  @IsString()
   @IsNotEmpty()
   email: string;
 }
 
-export class SignUpDto {
-  @ApiProperty()
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  name: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(1000, { message: "code shouldn't be less then 4 numbers" })
-  @Max(9999, { message: "code shouldn't be more then 4 numbers" })
-  otp: number;
+export class ResetPasswordtDto {
 
   @ApiProperty()
   @IsNotEmpty()
@@ -43,7 +28,6 @@ export class SignUpDto {
   @MaxLength(30, { message: 'password shouldn be less than 30 characters' })
   password: string;
 
-  @ApiProperty()
   @Validate(CustomMatchPasswords, ['password'])
   passwordConfirm: string;
 }
