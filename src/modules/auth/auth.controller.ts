@@ -31,7 +31,12 @@ import {
 } from './Dto/forget.password.dto';
 import { Verificaition } from './interfaces/verification.inteface';
 import { Success } from './types/success.return.type';
-import { ApiSendCodeDoc } from './doc/api-response.body';
+import {
+  ApiLoginDoc,
+  ApiLogOutDoc,
+  ApiSendCodeDoc,
+  ApiSignUpDoc,
+} from './doc/api-response.body';
 import { Response } from 'express';
 @ApiTags('Authentication')
 @Controller('auth')
@@ -60,19 +65,20 @@ export class AuthController {
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @ApiLoginDoc()
   async login(@Body() userLogInDto: UserLoginDto, @Res() res: Response) {
     const { tokens, user } = await this.authService.logIn(userLogInDto);
     res.cookie('access_token', tokens.access_token, {
       maxAge: 900000,
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'none',
     });
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 86400000,
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'none',
     });
     return res.send({
       name: user.name,
@@ -81,16 +87,18 @@ export class AuthController {
   }
 
   @Post('logout')
-  @ApiBearerAuth()
+  @ApiLogOutDoc()
   async logout(@Res() res, @Req() req) {
     const isLoggedOut = await this.authService.logOut(req.user.id);
     res.cookie('access_token', '', {
+      httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'none',
     });
     res.cookie('refresh_token', '', {
+      httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'none',
     });
 
     return res.send(isLoggedOut);
@@ -98,19 +106,20 @@ export class AuthController {
 
   @Public()
   @Post('signUp')
-  async verify(@Body() signUpDto: SignUpDto, @Res() res) {
+  @ApiSignUpDoc()
+  async verify(@Body() signUpDto: SignUpDto, @Res() res: Response) {
     const tokens = await this.authService.signUp(signUpDto);
     res.cookie('access_token', tokens.access_token, {
       maxAge: 900000,
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'none',
     });
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 86400000,
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'none',
     });
     return res.send({ success: true });
   }
@@ -127,15 +136,15 @@ export class AuthController {
     const tokens = await this.authService.refreshTokens(userId, refreshtoken);
     res.cookie('access_token', tokens.access_token, {
       maxAge: 900000,
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'none',
     });
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 86400000,
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'none',
     });
     return res.send({ success: true });
   }

@@ -25,6 +25,7 @@ export class SignUpDto {
   @IsNotEmpty()
   email: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   name: string;
@@ -42,6 +43,7 @@ export class SignUpDto {
   @MaxLength(30, { message: 'password shouldn be less than 30 characters' })
   password: string;
 
+  @ApiProperty()
   @Validate(CustomMatchPasswords, ['password'])
   passwordConfirm: string;
 }

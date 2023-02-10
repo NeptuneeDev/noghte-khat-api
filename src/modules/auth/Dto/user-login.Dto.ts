@@ -19,12 +19,11 @@ export class UserLoginDto {
   @IsNotEmpty()
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'password should be', minimum: 6, maximum: 30 })
   @IsNotEmpty()
-  @MinLength(6, { message: 'password should be ' })
-  @MaxLength(30, { message: "password shouldn't be more than 30 characters" })
+  @MinLength(6, { message: 'password shouldn be more than 6 characters ' })
+  @MaxLength(30, { message: 'password should be less than 30 characters' })
   password: string;
 }
-
 // sendCOde email
 // siginup  email otp name password confirm password

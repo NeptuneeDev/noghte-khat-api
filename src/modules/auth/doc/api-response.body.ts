@@ -3,8 +3,11 @@
 import { applyDecorators, Type } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBody,
   ApiOkResponse,
   getSchemaPath,
+  ApiBearerAuth,
+  ApiResponse,
 } from '@nestjs/swagger';
 import { stringify } from 'querystring';
 import { UserLoginDto } from '../Dto/user-login.Dto';
@@ -37,12 +40,34 @@ export const ApiLoginDoc = () => {
     ApiOkResponse({
       description: 'loggedIn successfuly',
       type: LoginSuccess,
-      schema: {
-        example: UserLoginDto,
-      },
     }),
     ApiBadRequestResponse({
       description: "credintals aren't correct...",
+    }),
+  );
+};
+
+export const ApiLogOutDoc = () => {
+  return applyDecorators(ApiBearerAuth(), ApiOkResponse({ type: Boolean }));
+};
+
+export const ApiSignUpDoc = () => {
+  return applyDecorators(
+    ApiResponse({
+      status: 403,
+      description: 'user already exists with this email,Please login...',
+    }),
+    ApiResponse({
+      status: 402,
+      description: "We haven't sent code to this email",
+    }),
+    ApiBadRequestResponse({
+      description: "the otp isn't valid ",
+    }),
+
+    ApiOkResponse({
+      description: 'signed up successfuly',
+      type: Success,
     }),
   );
 };
