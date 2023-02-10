@@ -63,22 +63,20 @@ export class AuthController {
   @ApiLoginDoc()
   async login(@Body() userLogInDto: UserLoginDto, @Res() res: Response) {
     const { tokens, user } = await this.authService.logIn(userLogInDto);
-    res.setHeader('Set-Cookie', [
-      `access_token=${tokens.access_token}; HttpOnly; Max-Age=900000; Path=/; SameSite=lax; Secure`,
-      `refresh_token=${tokens.refresh_token}; HttpOnly; Max-Age=86400000; Path=/; SameSite=lax; Secure`,
-    ]);
-    // res.cookie('access_token', tokens.access_token, {
-    //   maxAge: 900000,
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === 'production' ? true : false,
-    //   sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
-    // });
-    // res.cookie('refresh_token', tokens.refresh_token, {
-    //   maxAge: 86400000,
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === 'production' ? true : false,
-    //   sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
-    // });
+    res.cookie('access_token', tokens.access_token, {
+      maxAge: 900000,
+      httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+    });
+    res.cookie('refresh_token', tokens.refresh_token, {
+      maxAge: 86400000,
+      httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+    });
     return res.send({
       name: user.name,
       email: user.email,
@@ -89,20 +87,18 @@ export class AuthController {
   @ApiLogOutDoc()
   async logout(@Res() res, @Req() req) {
     const isLoggedOut = await this.authService.logOut(req.user.id);
-    res.setHeader('Set-Cookie', [
-      `access_token=; HttpOnly; Max-Age=900000; Path=/; SameSite=lax; Secure`,
-      `refresh_token=; HttpOnly; Max-Age=86400000; Path=/; SameSite=lax; Secure`,
-    ]);
-    // res.cookie('access_token', '', {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === 'production' ? true : false,
-    //   sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
-    // });
-    // res.cookie('refresh_token', '', {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === 'production' ? true : false,
-    //   sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
-    // });
+    res.cookie('access_token', '', {
+      httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+    });
+    res.cookie('refresh_token', '', {
+      httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+    });
 
     return res.send(isLoggedOut);
   }
@@ -112,27 +108,20 @@ export class AuthController {
   @ApiSignUpDoc()
   async verify(@Body() signUpDto: SignUpDto, @Res() res: Response) {
     const tokens = await this.authService.signUp(signUpDto);
-    res.setHeader(
-      'Set-Cookie',
-      `access_token=${tokens.access_token}; HttpOnly; Max-Age=900000; Path=/; SameSite=lax; Secure`,
-    );
-    res.setHeader(
-      'Set-Cookie',
-      `refresh_token=${tokens.refresh_token}; HttpOnly; Max-Age=900000; Path=/; SameSite=lax; Secure`,
-    );
-
-    // res.cookie('access_token', tokens.access_token, {
-    //   maxAge: 900000,
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === 'production' ? true : false,
-    //   sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
-    // });
-    // res.cookie('refresh_token', tokens.refresh_token, {
-    //   maxAge: 86400000,
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === 'production' ? true : false,
-    //   sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
-    // });
+    res.cookie('access_token', tokens.access_token, {
+      maxAge: 900000,
+      httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+    });
+    res.cookie('refresh_token', tokens.refresh_token, {
+      maxAge: 86400000,
+      httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+    });
     return res.send({ success: true });
   }
 
@@ -146,22 +135,20 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const tokens = await this.authService.refreshTokens(userId, refreshtoken);
-    res.setHeader(
-      'Set-Cookie',
-      `access_token=${tokens.access_token}; HttpOnly; Max-Age=900000; Path=/; SameSite=lax; Secure`,
-    );
-    // res.cookie('access_token', tokens.access_token, {
-    //   maxAge: 900000,
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === 'production' ? true : false,
-    //   sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
-    // });
-    // res.cookie('refresh_token', tokens.refresh_token, {
-    //   maxAge: 86400000,
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === 'production' ? true : false,
-    //   sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
-    // });
+    res.cookie('access_token', tokens.access_token, {
+      maxAge: 900000,
+      httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+    });
+    res.cookie('refresh_token', tokens.refresh_token, {
+      maxAge: 86400000,
+      httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+    });
     return res.send({ success: true });
   }
 
