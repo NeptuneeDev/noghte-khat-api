@@ -67,13 +67,13 @@ export class AuthController {
       maxAge: 900000,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 86400000,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
     return res.send({
       name: user.name,
@@ -88,12 +88,12 @@ export class AuthController {
     res.cookie('access_token', '', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
     res.cookie('refresh_token', '', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
 
     return res.send(isLoggedOut);
@@ -108,13 +108,13 @@ export class AuthController {
       maxAge: 900000,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 86400000,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
     return res.send({ success: true });
   }
@@ -133,13 +133,13 @@ export class AuthController {
       maxAge: 900000,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 86400000,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
     return res.send({ success: true });
   }
