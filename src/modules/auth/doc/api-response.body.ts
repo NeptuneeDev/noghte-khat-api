@@ -8,11 +8,13 @@ import {
   getSchemaPath,
   ApiBearerAuth,
   ApiResponse,
+  ApiForbiddenResponse,
 } from '@nestjs/swagger';
 import { stringify } from 'querystring';
 import { UserLoginDto } from '../Dto/user-login.Dto';
 import { LoginSuccess } from '../types/login.success.type';
 import { Success } from '../types/success.return.type';
+import { InValidJwtResponse } from '../types/token.expired.return';
 
 // export function ApiResponses(){
 
@@ -68,6 +70,33 @@ export const ApiSignUpDoc = () => {
     ApiOkResponse({
       description: 'signed up successfuly',
       type: Success,
+    }),
+  );
+};
+
+export const ApiRefreshTokensDoc = () => {
+  return applyDecorators(
+    ApiBearerAuth(),
+    ApiForbiddenResponse({ description: 'Access Denied' }),
+    ApiOkResponse({ type: Success }),
+  );
+};
+
+export const ApiForgetPasswordDoc = () => {
+  return applyDecorators(
+    ApiBadRequestResponse({ description: 'bad request' }),
+    ApiOkResponse({ type: Success }),
+  );
+};
+
+export const ApiResetPasswordDoc = () => {
+  return applyDecorators(
+    ApiBadRequestResponse({ description: 'bad request has been sent...' }),
+    ApiResponse({ status: 201, type: Success }),
+    ApiResponse({
+      status: 200,
+      type: InValidJwtResponse,
+      description: 'some thing is manipulated Or link is expired...',
     }),
   );
 };

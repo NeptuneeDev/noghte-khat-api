@@ -32,8 +32,11 @@ import {
 import { Verificaition } from './interfaces/verification.inteface';
 import { Success } from './types/success.return.type';
 import {
+  ApiForgetPasswordDoc,
   ApiLoginDoc,
   ApiLogOutDoc,
+  ApiRefreshTokensDoc,
+  ApiResetPasswordDoc,
   ApiSendCodeDoc,
   ApiSignUpDoc,
 } from './doc/api-response.body';
@@ -128,6 +131,7 @@ export class AuthController {
   @UseGuards(RtGuard)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
+  @ApiRefreshTokensDoc()
   async refreshTokens(
     @GetCurrentUserId() userId: number,
     @GetCurrentUser('refreshToken') refreshtoken: string,
@@ -151,11 +155,13 @@ export class AuthController {
 
   @Public()
   @Post('forgetPassword')
+  @ApiForgetPasswordDoc()
   async forgetPassword(@Body() body: ForgetPasswordDto) {
     return await this.authService.generateUniqueLink(body.email);
   }
 
   @Public()
+  @ApiResetPasswordDoc()
   @Get('resetPassword/:id/:token')
   async validateResetPasswordToken(
     @Param('id', ParseIntPipe) id: number,
@@ -165,6 +171,7 @@ export class AuthController {
   }
 
   @Public()
+  @ApiResetPasswordDoc()
   @Post('resetPassword/:id/:token')
   async RestPassword(
     @Param('id', ParseIntPipe) id: number,
