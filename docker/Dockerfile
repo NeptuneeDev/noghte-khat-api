@@ -1,43 +1,25 @@
-FROM node:18.12-alpine3.16 as common-build-stage
+FROM node:18.12-alpine3.16 AS builder
 
+# Create app directory
+WORKDIR /app
 
-# COPY package.json and package-lock.json files
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
-
-# generated prisma files
 COPY prisma ./prisma/
 
-# COPY ENV variable
-COPY .env ./
-
-# COPY tsconfig.json file
-COPY tsconfig.json ./
-
-# COPY node_modules ./
-
-RUN npm i
+# Install app dependencies
+RUN npm install
 
 COPY . .
 
+RUN npm run build
 
-RUN npx prisma generate
+FROM node:18.12-alpine3.16
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
 
 EXPOSE 3000
-
-# Development Build Stage
-FROM common-build-stage AS development-build-stage
-
-ENV NODE_ENV development
-
-CMD ["npm", "run", "start:dev"]
-
-# Production Build Stage
-FROM common-build-stage AS production-build-stage
-
-ENV NODE_ENV production
-
-RUN npm run prebuild \
-    npm run build
-
-CMD ["npm", "run", "start:prod"]
-
+CMD [ "npm", "run", "start:prod" ]
