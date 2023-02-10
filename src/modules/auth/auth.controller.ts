@@ -112,10 +112,15 @@ export class AuthController {
   @ApiSignUpDoc()
   async verify(@Body() signUpDto: SignUpDto, @Res() res: Response) {
     const tokens = await this.authService.signUp(signUpDto);
-    res.setHeader('Set-Cookie', [
+    res.setHeader(
+      'Set-Cookie',
       `access_token=${tokens.access_token}; HttpOnly; Max-Age=900000; Path=/; SameSite=lax; Secure`,
-      `refresh_token=${tokens.refresh_token}; HttpOnly; Max-Age=86400000; Path=/; SameSite=lax; Secure`,
-    ]);
+    );
+    res.setHeader(
+      'Set-Cookie',
+      `refresh_token=${tokens.refresh_token}; HttpOnly; Max-Age=900000; Path=/; SameSite=lax; Secure`,
+    );
+
     // res.cookie('access_token', tokens.access_token, {
     //   maxAge: 900000,
     //   httpOnly: true,
@@ -138,13 +143,13 @@ export class AuthController {
   async refreshTokens(
     @GetCurrentUserId() userId: number,
     @GetCurrentUser('refreshToken') refreshtoken: string,
-    @Res() res,
+    @Res() res: Response,
   ) {
     const tokens = await this.authService.refreshTokens(userId, refreshtoken);
-    res.setHeader('Set-Cookie', [
+    res.setHeader(
+      'Set-Cookie',
       `access_token=${tokens.access_token}; HttpOnly; Max-Age=900000; Path=/; SameSite=lax; Secure`,
-      `refresh_token=${tokens.refresh_token}; HttpOnly; Max-Age=86400000; Path=/; SameSite=lax; Secure`,
-    ]);
+    );
     // res.cookie('access_token', tokens.access_token, {
     //   maxAge: 900000,
     //   httpOnly: true,
