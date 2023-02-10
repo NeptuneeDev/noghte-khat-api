@@ -68,14 +68,14 @@ export class AuthController {
       httpOnly: true,
       domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
       secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 86400000,
       httpOnly: true,
       domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
       secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
     return res.send({
       name: user.name,
@@ -91,13 +91,13 @@ export class AuthController {
       httpOnly: true,
       domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
       secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
     res.cookie('refresh_token', '', {
       httpOnly: true,
       domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
       secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
 
     return res.send(isLoggedOut);
@@ -113,14 +113,14 @@ export class AuthController {
       httpOnly: true,
       domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
       secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 86400000,
       httpOnly: true,
       domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
       secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
     return res.send({ success: true });
   }
@@ -140,14 +140,14 @@ export class AuthController {
       httpOnly: true,
       domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
       secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 86400000,
       httpOnly: true,
       domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
       secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     });
     return res.send({ success: true });
   }
