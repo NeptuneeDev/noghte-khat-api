@@ -224,7 +224,7 @@ export class AuthService {
       const payload = await this.jwtService.verify(token, { secret: secret });
       return { sucess: true };
     } catch (error) {
-      return { message: 'some thing is manipulated...' };
+      return { message: 'some thing is manipulated Or link is expired...' };
     }
   }
 
@@ -248,7 +248,7 @@ export class AuthService {
 
       return { sucess: true };
     } catch (error) {
-      return { message: 'some thing is manipulated...' };
+      return { message: 'some thing is manipulated Or link is expired...' };
     }
   }
 }

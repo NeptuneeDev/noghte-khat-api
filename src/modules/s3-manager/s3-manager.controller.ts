@@ -26,6 +26,8 @@ export class S3ManagerController {
     return this.s3.listObjects(bucketName);
   }
 
+  // localhost:5000/s3-bucket
+
   @Post('buckets/:bucketName')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(
@@ -35,3 +37,5 @@ export class S3ManagerController {
     return this.s3.uploadFile(bucketName, file);
   }
 }
+
+

@@ -21,15 +21,20 @@ import {
 import { RtGuard } from '../../common/guards/rt.guard';
 import { AuthService } from './auth.service';
 import {
-  ApiLoginDoc,
-  ApiLogOutDoc,
-  ApiSendCodeDoc,
-  ApiSignUpDoc,
-} from './doc/api-response.body';
-import {
   ForgetPasswordDto,
   ResetPasswordtDto,
 } from './Dto/forget.password.dto';
+import { Verificaition } from './interfaces/verification.inteface';
+import { Success } from './types/success.return.type';
+import {
+  ApiForgetPasswordDoc,
+  ApiLoginDoc,
+  ApiLogOutDoc,
+  ApiRefreshTokensDoc,
+  ApiResetPasswordDoc,
+  ApiSendCodeDoc,
+  ApiSignUpDoc,
+} from './doc/api-response.body';
 import { UserInit } from './Dto/user-init.dto';
 import { UserLoginDto } from './Dto/user-login.Dto';
 import { SignUpDto, VerficationDto } from './Dto/user-signUp.dto';
@@ -129,6 +134,7 @@ export class AuthController {
   @UseGuards(RtGuard)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
+  @ApiRefreshTokensDoc()
   async refreshTokens(
     @GetCurrentUserId() userId: number,
     @GetCurrentUser('refreshToken') refreshtoken: string,
@@ -154,11 +160,13 @@ export class AuthController {
 
   @Public()
   @Post('forgetPassword')
+  @ApiForgetPasswordDoc()
   async forgetPassword(@Body() body: ForgetPasswordDto) {
     return await this.authService.generateUniqueLink(body.email);
   }
 
   @Public()
+  @ApiResetPasswordDoc()
   @Get('resetPassword/:id/:token')
   async validateResetPasswordToken(
     @Param('id', ParseIntPipe) id: number,
@@ -168,6 +176,7 @@ export class AuthController {
   }
 
   @Public()
+  @ApiResetPasswordDoc()
   @Post('resetPassword/:id/:token')
   async RestPassword(
     @Param('id', ParseIntPipe) id: number,
