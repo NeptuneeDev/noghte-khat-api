@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import { InjectAwsService } from 'nest-aws-sdk';
+import * as path from 'path';
 import { File } from '../../common/interfaces/file.interface';
 
 @Injectable()
@@ -32,7 +33,13 @@ export class S3ManagerService {
 
   async uploadFile(bucket: string, file: File): Promise<any> {
     try {
-      const key = 'files/' + file.originalname;
+      const unixSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9); //1,000,000,000
+      const ext = path.extname(file.originalname);
+      const fileName = `${path
+        .parse(file.originalname)
+        .name.replace(/\s/g, '')}${unixSuffix}${ext}`;
+
+      const key = `files/${fileName || file.originalname}`;
       await this.s3
         .putObject({
           Bucket: bucket,
@@ -40,7 +47,7 @@ export class S3ManagerService {
           ACL: 'public-read',
           Key: key,
         })
-        .promise()
+        .promise();
 
       return {
         key: key,

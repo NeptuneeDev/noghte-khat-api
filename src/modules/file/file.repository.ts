@@ -15,7 +15,7 @@ export class FileRepository {
     return this.prisma.file.create({
       data: {
         title: uploadFileDto.title,
-        fileName: fileName,
+        fileName: `storage.noghteh-khat.ir/${fileName}`,
         description: uploadFileDto.description,
         subject: { connect: { id: subjectId } },
         createdAt: new Date().toISOString(),

@@ -24,8 +24,6 @@ import {
   ForgetPasswordDto,
   ResetPasswordtDto,
 } from './Dto/forget.password.dto';
-import { Verificaition } from './interfaces/verification.inteface';
-import { Success } from './types/success.return.type';
 import {
   ApiForgetPasswordDoc,
   ApiLoginDoc,
@@ -109,7 +107,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post('signUp')
+  @Post('signup')
   @ApiSignUpDoc()
   async verify(@Body() signUpDto: SignUpDto, @Res() res: Response) {
     const tokens = await this.authService.signUp(signUpDto);
