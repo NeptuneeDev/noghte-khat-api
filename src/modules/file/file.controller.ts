@@ -19,23 +19,25 @@ import { Role } from '../auth/types/roles.enum';
 import { disk } from './disk.storage';
 import { File as FileModel } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
+import { File } from 'src/common/interfaces';
 
 @ApiTags('file')
 @Controller('file')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
   @Post(':subId')
-  @UseInterceptors(FileInterceptor('file', disk))
+  @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @UploadedFile(
       new ParseFilePipe({
         validators: [new MaxFileSizeValidator({ maxSize: 1042 * 1024 * 100 })],
       }),
     )
-    file: Express.Multer.File,
+    file: File,
     @Body() body: UploadedFileDto,
     @Param('subId', ParseIntPipe) subId: number,
   ) {
+    console.log(file);
     return await this.fileService.saveFile(subId, file, body);
   }
 

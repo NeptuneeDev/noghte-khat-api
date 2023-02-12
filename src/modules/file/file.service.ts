@@ -30,7 +30,7 @@ export class FileService {
 
     const saveToDB = await this.fileRepository.saveFile(
       subjectId,
-      file.originalname,
+      saveToStorage.key,
       uploadFileDto,
     );
 
