@@ -31,6 +31,19 @@ export class S3ManagerService {
     }
   }
 
+  async deleteObject(bucket: string, key: string): Promise<any> {
+    try {
+      return await this.s3
+        .deleteObject({
+          Bucket: bucket,
+          Key: key,
+        })
+        .promise();
+    } catch (error) {
+      throw new InternalServerErrorException(error.message, error);
+    }
+  }
+
   async uploadFile(bucket: string, file: File): Promise<any> {
     try {
       const unixSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9); //1,000,000,000
