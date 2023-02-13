@@ -1,5 +1,7 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -10,6 +12,7 @@ import { S3ManagerService } from './s3-manager.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { File } from '../../common/interfaces/file.interface';
 import { ApiTags } from '@nestjs/swagger';
+import { deleteObject } from './dto/deleteObject.dto';
 
 @ApiTags('aws-s3')
 @Controller('s3')
@@ -33,5 +36,13 @@ export class S3ManagerController {
     @UploadedFile() file: File,
   ): Promise<any> {
     return this.s3.uploadFile(bucketName, file);
+  }
+
+  @Delete('buckets/:bucketName')
+  deleteObject(
+    @Param('bucketName') bucketName: string,
+    @Body() body: deleteObject,
+  ) {
+    return this.s3.deleteObject(bucketName, body.key);
   }
 }
