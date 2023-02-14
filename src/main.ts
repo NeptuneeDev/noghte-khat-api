@@ -3,6 +3,8 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
+import { AuthModule } from './modules/auth/auth.module';
+import { Swagger } from './common/utils/swager';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,15 +21,10 @@ async function bootstrap() {
   app.use(cookieParser());
 
   if (process.env.NODE_ENV !== 'production') {
-    const config = new DocumentBuilder()
-      .addBearerAuth()
-      .setTitle('backend')
-      .setDescription('jozveh api discription')
-      .setVersion('1.0')
-      .build();
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api-docs', app, document);
+    const swagger = new Swagger(app);
+    swagger.buildDocument();
   }
-  await app.listen(7070, '0.0.0.0');
+  // await app.listen(7070, '0.0.0.0');
+  await app.listen(5000);
 }
 bootstrap();
