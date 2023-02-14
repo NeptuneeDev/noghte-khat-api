@@ -7,7 +7,7 @@ import { Swagger } from './common/utils/swager';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: process.env.FRONTEND_URL,
+    origin: 'https://noghteh-khat.ir',
     credentials: true,
   });
 
