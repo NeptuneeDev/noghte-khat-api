@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UploadedFileDto } from './Dto/upload.file.Dto';
 import { File as FileModel } from '@prisma/client';
-import { relative } from 'path/posix';
 
 @Injectable()
 export class FileRepository {
@@ -52,5 +51,4 @@ export class FileRepository {
   async reject(id: number): Promise<FileModel> {
     return this.prisma.file.delete({ where: { id: id } });
   }
-
 }

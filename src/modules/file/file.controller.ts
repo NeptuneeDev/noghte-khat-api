@@ -16,7 +16,6 @@ import { UploadedFileDto } from './Dto/upload.file.Dto';
 import { FileService } from './file.service';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../auth/types/roles.enum';
-import { disk } from './disk.storage';
 import { File as FileModel } from '@prisma/client';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { File } from 'src/common/interfaces';
@@ -28,7 +27,6 @@ export class FileController {
   constructor(private readonly fileService: FileService) {}
 
   @Post(':subId')
-  @UseInterceptors(FileInterceptor('file', disk))
   @ApiUploadFileDoc()
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))

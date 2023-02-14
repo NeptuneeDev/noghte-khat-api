@@ -23,13 +23,13 @@ export class FileService {
     subjectId: number,
     file: File,
     uploadFileDto: UploadedFileDto,
-  ){
+  ) {
     const subject = await this.subjectService.findById(subjectId);
     if (!subject) throw new BadRequestException('subject id not valid!');
 
     const saveToStorage = await this.s3.uploadFile('jozveh', file);
 
-    const saveToDB = await this.fileRepository.saveFile(
+    await this.fileRepository.saveFile(
       subjectId,
       saveToStorage.key,
       uploadFileDto,
@@ -44,11 +44,8 @@ export class FileService {
     if (!file)
       throw new BadRequestException('there is no file with this name.');
 
-    const deletedFile = await this.fileRepository.reject(file.id);
-    const deletedFromStorage = await this.s3.deleteFile(
-      'jozveh',
-      file.fileName,
-    );
+    await this.fileRepository.reject(file.id);
+    await this.s3.deleteFile('jozveh', file.fileName);
 
     return { sucess: true };
   }
