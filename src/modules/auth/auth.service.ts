@@ -198,7 +198,7 @@ export class AuthService {
     const user = await this.userRepository.find(email);
 
     if (!user) {
-      throw new BadRequestException('bad request');
+      throw new BadRequestException('email not found!');
     }
 
     const secret = process.env.SECRET_KEY + user.password;
@@ -207,7 +207,7 @@ export class AuthService {
       secret: secret,
       expiresIn: '15m',
     });
-    const link = `${process.env.HOST}/auth/resetPassword/${user.id}/${token}`;
+    const link = `${process.env.FRONTEND_URL}/auth/resetPassword/${user.id}/${token}`;
 
     await this.mailService.send(link, email);
     return { sucess: true };
