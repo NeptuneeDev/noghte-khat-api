@@ -19,7 +19,7 @@ import { Role } from '../auth/types/roles.enum';
 import { disk } from './disk.storage';
 import { File as FileModel } from '@prisma/client';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { relative } from 'path';
+import { File } from 'src/common/interfaces';
 import { ApiDeleteFileDoc, ApiUploadFileDoc } from './Doc/api.response';
 
 @ApiTags('file')
@@ -31,16 +31,18 @@ export class FileController {
   @UseInterceptors(FileInterceptor('file', disk))
   @ApiUploadFileDoc()
   @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @UploadedFile(
       new ParseFilePipe({
         validators: [new MaxFileSizeValidator({ maxSize: 1042 * 1024 * 100 })],
       }),
     )
-    file: Express.Multer.File,
+    file: File,
     @Body() body: UploadedFileDto,
     @Param('subId', ParseIntPipe) subId: number,
   ) {
+    console.log(file);
     return await this.fileService.saveFile(subId, file, body);
   }
 

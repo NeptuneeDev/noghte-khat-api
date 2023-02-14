@@ -16,7 +16,6 @@ import { JwtPayload, Tokens } from './types';
 import { VerficationDto } from './Dto/user-signUp.dto';
 import { User } from '../user/interfaces/user.interface';
 import _ from 'lodash';
-import { use } from 'passport';
 import { Success } from './doc/types/success.return.type';
 
 @Injectable()
@@ -31,6 +30,11 @@ export class AuthService {
   async sendCode(
     verificationDto: VerficationDto,
   ): Promise<Success | undefined> {
+    const userAlerdyExist = await this.userRepository.find(
+      verificationDto.email,
+    );
+    if (userAlerdyExist) throw new BadRequestException('email alerdy exist!');
+
     const varification = await this.authRepository.findVarification(
       verificationDto.email,
     );
@@ -47,10 +51,7 @@ export class AuthService {
     await this.mailService.sendOtp(otp, verificationDto.email);
     const hashedOtp = await Hash.hash(otp + '');
 
-    const verification1 = await this.authRepository.upsertVarification(
-      verificationDto,
-      hashedOtp,
-    );
+    await this.authRepository.upsertVarification(verificationDto, hashedOtp);
 
     return { success: true };
   }
@@ -197,7 +198,7 @@ export class AuthService {
     const user = await this.userRepository.find(email);
 
     if (!user) {
-      throw new BadRequestException('bad request');
+      throw new BadRequestException('email not found!');
     }
 
     const secret = process.env.SECRET_KEY + user.password;

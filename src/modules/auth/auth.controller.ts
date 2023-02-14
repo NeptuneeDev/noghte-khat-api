@@ -107,7 +107,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post('signUp')
+  @Post('signup')
   @ApiSignUpDoc()
   async verify(@Body() signUpDto: SignUpDto, @Res() res: Response) {
     const tokens = await this.authService.signUp(signUpDto);
