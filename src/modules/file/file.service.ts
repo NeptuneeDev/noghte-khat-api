@@ -10,6 +10,7 @@ import { FileRepository } from './file.repository';
 import { File } from '../../common/interfaces/file.interface';
 import { S3ManagerService } from '../s3-manager/s3-manager.service';
 import { File as FileModel } from '@prisma/client';
+// import { Success } from '../auth/types/success.return.type';
 
 @Injectable()
 export class FileService {
@@ -22,7 +23,7 @@ export class FileService {
     subjectId: number,
     file: File,
     uploadFileDto: UploadedFileDto,
-  ) {
+  ){
     const subject = await this.subjectService.findById(subjectId);
     if (!subject) throw new BadRequestException('subject id not valid!');
 
@@ -34,7 +35,7 @@ export class FileService {
       uploadFileDto,
     );
 
-    return { saveToStorage, saveToDB };
+    return { success: true };
   }
 
   async deleteFile(fileName: string) {

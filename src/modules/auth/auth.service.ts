@@ -17,7 +17,7 @@ import { VerficationDto } from './Dto/user-signUp.dto';
 import { User } from '../user/interfaces/user.interface';
 import _ from 'lodash';
 import { use } from 'passport';
-import { Success } from './types/success.return.type';
+import { Success } from './doc/types/success.return.type';
 
 @Injectable()
 export class AuthService {
@@ -206,7 +206,7 @@ export class AuthService {
       secret: secret,
       expiresIn: '15m',
     });
-    const link = `${process.env.HOST}/auth/resetPassword/${user.id}/${token}`;
+    const link = `${process.env.FRONTEND_URL}/auth/resetPassword/${user.id}/${token}`;
 
     await this.mailService.send(link, email);
     return { sucess: true };

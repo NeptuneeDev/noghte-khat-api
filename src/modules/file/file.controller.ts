@@ -18,15 +18,19 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../auth/types/roles.enum';
 import { disk } from './disk.storage';
 import { File as FileModel } from '@prisma/client';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { relative } from 'path';
+import { ApiDeleteFileDoc, ApiUploadFileDoc } from './Doc/api.response';
 
 @ApiTags('file')
 @Controller('file')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
+
   @Post(':subId')
   @UseInterceptors(FileInterceptor('file', disk))
+  @ApiUploadFileDoc()
+  @ApiConsumes('multipart/form-data')
   async uploadFile(
     @UploadedFile(
       new ParseFilePipe({
@@ -41,6 +45,7 @@ export class FileController {
   }
 
   @Roles(Role.Admin)
+  @ApiDeleteFileDoc()
   @Delete('delete/:fileName')
   async deleteFile(@Param('fileName') fileName: string) {
     return await this.fileService.deleteFile(fileName);

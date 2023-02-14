@@ -24,8 +24,6 @@ import {
   ForgetPasswordDto,
   ResetPasswordtDto,
 } from './Dto/forget.password.dto';
-import { Verificaition } from './interfaces/verification.inteface';
-import { Success } from './types/success.return.type';
 import {
   ApiForgetPasswordDoc,
   ApiLoginDoc,
