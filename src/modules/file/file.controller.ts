@@ -19,6 +19,7 @@ import { Role } from '../auth/types/roles.enum';
 import { disk } from './disk.storage';
 import { File as FileModel } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
+import { relative } from 'path';
 
 @ApiTags('file')
 @Controller('file')
@@ -40,6 +41,12 @@ export class FileController {
   }
 
   @Roles(Role.Admin)
+  @Delete('delete/:fileName')
+  async deleteFile(@Param('fileName') fileName: string) {
+    return await this.fileService.deleteFile(fileName);
+  }
+
+  @Roles(Role.Admin)
   @Get('unverifieds')
   async findUnverifieds(): Promise<FileModel[]> {
     return await this.fileService.findUnverifieds();
@@ -49,13 +56,5 @@ export class FileController {
   @Get('accept/:id')
   async accept(@Param('id', ParseIntPipe) fileId: number) {
     return await this.fileService.accept(fileId);
-  }
-
-  @Roles(Role.Admin)
-  @Delete('reject/:id')
-  async reject(
-    @Param('id', ParseIntPipe) fileId: number,
-  ): Promise<FileModel | undefined> {
-    return await this.fileService.reject(fileId);
   }
 }

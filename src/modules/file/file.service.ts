@@ -37,6 +37,21 @@ export class FileService {
     return { saveToStorage, saveToDB };
   }
 
+  async deleteFile(fileName: string) {
+    const file = await this.fileRepository.findByName(fileName);
+
+    if (!file)
+      throw new BadRequestException('there is no file with this name.');
+
+    const deletedFile = await this.fileRepository.reject(file.id);
+    const deletedFromStorage = await this.s3.deleteFile(
+      'jozveh',
+      file.fileName,
+    );
+
+    return { sucess: true };
+  }
+
   async findUnverifieds(): Promise<FileModel[]> {
     const files = await this.fileRepository.findUnverifieds();
     return files;
@@ -48,13 +63,5 @@ export class FileService {
     if (!file) throw new HttpException('not found file', HttpStatus.NOT_FOUND);
 
     return await this.fileRepository.accept(id);
-  }
-
-  async reject(id: number): Promise<FileModel> {
-    const file = await this.fileRepository.findById(id);
-
-    if (!file) throw new HttpException('not found file', HttpStatus.NOT_FOUND);
-
-    return await this.fileRepository.reject(id);
   }
 }

@@ -1,4 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ApiTooManyRequestsResponse } from '@nestjs/swagger';
 import { S3 } from 'aws-sdk';
 import { InjectAwsService } from 'nest-aws-sdk';
 import { File } from '../../common/interfaces/file.interface';
@@ -40,11 +41,25 @@ export class S3ManagerService {
           ACL: 'public-read',
           Key: key,
         })
-        .promise()
+        .promise();
 
       return {
         key: key,
       };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message, error);
+    }
+  }
+
+  async deleteFile(bucket: string, fileName: string) {
+    try {
+      const key = 'files/' + fileName;
+      await this.s3
+        .deleteObject({
+          Bucket: bucket,
+          Key: key,
+        })
+        .promise();
     } catch (error) {
       throw new InternalServerErrorException(error.message, error);
     }
