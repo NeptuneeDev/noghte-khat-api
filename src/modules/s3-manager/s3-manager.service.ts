@@ -14,19 +14,10 @@ export class S3ManagerService {
     return listBuckets.Buckets;
   }
 
-  async listBucketContents(bucket: string) {
-    const data = await this.s3.listObjectsV2({ Bucket: bucket }).promise();
-    return data.Contents.map((c) => c.Key);
-  }
-
   async listObjects(bucket: string): Promise<any> {
     try {
-      const result = await this.s3
-        .listObjects({
-          Bucket: bucket,
-        })
-        .promise();
-      return result;
+      const data = await this.s3.listObjects({ Bucket: bucket }).promise();
+      return data.Contents.map((c) => c.Key);
     } catch (error) {
       throw new InternalServerErrorException(error.message, error);
     }
@@ -60,7 +51,7 @@ export class S3ManagerService {
 
   async deleteFile(bucket: string, fileName: string) {
     try {
-      const key = 'files/' + fileName;
+      const key = fileName;
       await this.s3
         .deleteObject({
           Bucket: bucket,
