@@ -82,9 +82,9 @@ export class AuthService {
   }
 
   async signUp(signUPDto: SignUpDto): Promise<Tokens> {
-    const userExists = await this.userRepository.find(signUPDto.email);
+    const user = await this.userRepository.find(signUPDto.email);
 
-    if (userExists) {
+    if (user) {
       throw new BadRequestException(
         'user already exists with this email,Please login...',
       );
@@ -95,24 +95,27 @@ export class AuthService {
     );
 
     if (!verification) {
-      throw new BadRequestException("We haven't sent code to this email");
+      throw new BadRequestException(
+        'Verification code not found. Please request a new code',
+      );
     }
 
     const isValid = await this.isValidOtp(signUPDto.otp, verification);
 
     if (!isValid) {
-      throw new BadRequestException("the otp isn't valid ");
+      throw new BadRequestException('Invalid OTP.');
     }
+
     const hashedPassword = await Hash.hash(signUPDto.password);
 
-    const user = await this.userRepository.upsert({
+    const newUser = await this.userRepository.upsert({
       email: signUPDto.email,
       name: signUPDto.name,
       password: hashedPassword,
     });
 
-    const tokens = await this.getTokens(user);
-    await this.updateRtHash(user.id, tokens.refresh_token);
+    const tokens = await this.getTokens(newUser);
+    await this.updateRtHash(newUser.id, tokens.refresh_token);
 
     return tokens;
   }
@@ -140,7 +143,7 @@ export class AuthService {
       Date.now()
     );
     if (isExpird) {
-      throw new NotAcceptableException('time has expired...');
+      throw new NotAcceptableException('Time has expired');
     }
     const isValid = await Hash.compare(otp + '', verification.code);
     return isValid;
@@ -189,16 +192,12 @@ export class AuthService {
     };
   }
 
-  async findById(id: number): Promise<User | undefined> {
-    return await this.userRepository.findById(id);
-  }
-
   // forget password sequence of requests
   async generateUniqueLink(email: string) {
     const user = await this.userRepository.find(email);
 
     if (!user) {
-      throw new BadRequestException('email not found!');
+      throw new BadRequestException('User not found with the provided email.');
     }
 
     const secret = process.env.SECRET_KEY + user.password;
@@ -216,7 +215,7 @@ export class AuthService {
     const user = await this.userRepository.findById(id);
 
     if (!user) {
-      throw new BadRequestException('bad request has been sent...');
+      throw new BadRequestException('user does not exist');
     }
 
     const secret = process.env.SECRET_KEY + user.password;
@@ -228,12 +227,11 @@ export class AuthService {
       return { message: 'some thing is manipulated Or link is expired...' };
     }
   }
-
   async updatePassword(password: string, id: number, token: string) {
     const user = await this.userRepository.findById(id);
 
     if (!user) {
-      throw new BadRequestException('bad request has been sent...');
+      throw new BadRequestException('user does not exist.');
     }
 
     const secret = process.env.SECRET_KEY + user.password;
@@ -242,10 +240,7 @@ export class AuthService {
       const payload = await this.jwtService.verify(token, { secret: secret });
       const hashedPassword = await Hash.hash(password);
 
-      const resetdPasswordUser = await this.userRepository.updatePassword(
-        id,
-        hashedPassword,
-      );
+      await this.userRepository.updatePassword(id, hashedPassword);
 
       return { sucess: true };
     } catch (error) {

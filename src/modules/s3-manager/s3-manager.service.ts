@@ -1,5 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ApiTooManyRequestsResponse } from '@nestjs/swagger';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import { InjectAwsService } from 'nest-aws-sdk';
 import * as path from 'path';
@@ -25,13 +28,9 @@ export class S3ManagerService {
 
   async uploadFile(bucket: string, file: File): Promise<any> {
     try {
-      const unixSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9); //1,000,000,000
-      const ext = path.extname(file.originalname);
-      const fileName = `${path
-        .parse(file.originalname)
-        .name.replace(/\s/g, '')}${unixSuffix}${ext}`;
-
-      const key = `files/${fileName || file.originalname}`;
+      // create unique key
+      const fileUniqueName = await this.createUniqueFileKey(file.originalname);
+      const key = `files/${fileUniqueName || file.originalname}`;
       await this.s3
         .putObject({
           Bucket: bucket,
@@ -61,5 +60,13 @@ export class S3ManagerService {
     } catch (error) {
       throw new InternalServerErrorException(error.message, error);
     }
+  }
+
+  async createUniqueFileKey(fileOrginalName: string): Promise<string> {
+    const unixSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9); //1,000,000,000
+    const ext = path.extname(fileOrginalName);
+    return `${path
+      .parse(fileOrginalName)
+      .name.replace(/\s/g, '')}${unixSuffix}${ext}`;
   }
 }
