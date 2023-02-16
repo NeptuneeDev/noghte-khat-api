@@ -126,7 +126,7 @@ export class AuthService {
         2 * 7 * 24 * 60 * 60 * 1000 <
       Date.now();
 
-    return !isPassedTowWeeksFromLastResnd && numberOfAttampt > 30
+    return !isPassedTowWeeksFromLastResnd && numberOfAttampt > 10
       ? true
       : false;
   }
@@ -206,7 +206,7 @@ export class AuthService {
       secret: secret,
       expiresIn: '15m',
     });
-    const link = `${process.env.FRONTEND_URL}/auth/resetPassword/${user.id}/${token}`;
+    const link = `${process.env.FRONTEND_URL}/new-password/${user.id}/${token}`;
 
     await this.mailService.send(link, email);
     return { sucess: true };
@@ -217,7 +217,6 @@ export class AuthService {
     if (!user) {
       throw new BadRequestException('user does not exist');
     }
-
 
     const secret = process.env.SECRET_KEY + user.password;
 

@@ -12,6 +12,7 @@ import { S3ManagerService } from '../s3-manager/s3-manager.service';
 import { File as FileModel } from '@prisma/client';
 import * as mime from 'mime-types';
 import { retry } from 'rxjs';
+import { Kendra } from 'aws-sdk';
 // import { Success } from '../auth/types/success.return.type';
 
 @Injectable()
@@ -42,13 +43,13 @@ export class FileService {
     return { success: true };
   }
 
-  async deleteFile(fileName: string) {
-    const file = await this.fileRepository.findByName(fileName);
+  async deleteFile(id: number) {
+    const file = await this.fileRepository.findById(id);
 
     if (!file)
       throw new BadRequestException('there is no file with this name.');
 
-    await this.fileRepository.reject(file.id);
+    await this.fileRepository.delete(id);
     await this.s3.deleteFile('jozveh', file.fileName);
 
     return { sucess: true };
@@ -68,7 +69,7 @@ export class FileService {
   }
 
   async checkFileType(mimeType: string): Promise<boolean> {
-    const allowedFileExtensions = ['pdf', 'doc', 'docx', 'word', 'pptx'];
+    const allowedFileExtensions = ['pdf', 'doc', 'docx', 'word', 'pptx',"txt"];
     const fileExt = `${mime.extension(mimeType)}`;
 
     if (allowedFileExtensions.includes(fileExt)) {

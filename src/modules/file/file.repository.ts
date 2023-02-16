@@ -24,7 +24,7 @@ export class FileRepository {
     });
   }
 
-  async findById(id: number): Promise<object> {
+  async findById(id: number): Promise<FileModel> {
     return this.prisma.file.findUnique({ where: { id: id } });
   }
 
@@ -48,7 +48,7 @@ export class FileRepository {
     });
   }
 
-  async reject(id: number): Promise<FileModel> {
+  async delete(id: number): Promise<FileModel> {
     return this.prisma.file.delete({ where: { id: id } });
   }
 }

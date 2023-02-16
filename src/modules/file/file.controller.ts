@@ -45,9 +45,9 @@ export class FileController {
 
   @Roles(Role.Admin)
   @ApiDeleteFileDoc()
-  @Delete('delete/:fileName')
-  async deleteFile(@Param('fileName') fileName: string) {
-    return await this.fileService.deleteFile(fileName);
+  @Delete('delete/:id')
+  async deleteFile(@Param('id') id: number) {
+    return await this.fileService.deleteFile(id);
   }
 
   @Roles(Role.Admin)
