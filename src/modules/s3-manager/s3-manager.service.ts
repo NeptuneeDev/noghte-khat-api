@@ -1,5 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ApiTooManyRequestsResponse } from '@nestjs/swagger';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import { InjectAwsService } from 'nest-aws-sdk';
 import * as path from 'path';
@@ -14,19 +17,10 @@ export class S3ManagerService {
     return listBuckets.Buckets;
   }
 
-  async listBucketContents(bucket: string) {
-    const data = await this.s3.listObjectsV2({ Bucket: bucket }).promise();
-    return data.Contents.map((c) => c.Key);
-  }
-
   async listObjects(bucket: string): Promise<any> {
     try {
-      const result = await this.s3
-        .listObjects({
-          Bucket: bucket,
-        })
-        .promise();
-      return result;
+      const data = await this.s3.listObjects({ Bucket: bucket }).promise();
+      return data.Contents.map((c) => c.Key);
     } catch (error) {
       throw new InternalServerErrorException(error.message, error);
     }
@@ -34,13 +28,9 @@ export class S3ManagerService {
 
   async uploadFile(bucket: string, file: File): Promise<any> {
     try {
-      const unixSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9); //1,000,000,000
-      const ext = path.extname(file.originalname);
-      const fileName = `${path
-        .parse(file.originalname)
-        .name.replace(/\s/g, '')}${unixSuffix}${ext}`;
-
-      const key = `files/${fileName || file.originalname}`;
+      // create unique key
+      const fileUniqueName = await this.createUniqueFileKey(file.originalname);
+      const key = `files/${fileUniqueName || file.originalname}`;
       await this.s3
         .putObject({
           Bucket: bucket,
@@ -60,7 +50,7 @@ export class S3ManagerService {
 
   async deleteFile(bucket: string, fileName: string) {
     try {
-      const key = 'files/' + fileName;
+      const key = fileName;
       await this.s3
         .deleteObject({
           Bucket: bucket,
@@ -70,5 +60,13 @@ export class S3ManagerService {
     } catch (error) {
       throw new InternalServerErrorException(error.message, error);
     }
+  }
+
+  async createUniqueFileKey(fileOrginalName: string): Promise<string> {
+    const unixSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9); //1,000,000,000
+    const ext = path.extname(fileOrginalName);
+    return `${path
+      .parse(fileOrginalName)
+      .name.replace(/\s/g, '')}${unixSuffix}${ext}`;
   }
 }

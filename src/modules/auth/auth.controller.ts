@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
+import { CookieOptions, Response } from 'express';
 import {
   GetCurrentUser,
   GetCurrentUserId,
@@ -40,6 +40,21 @@ import { SignUpDto, VerficationDto } from './Dto/user-signUp.dto';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+  private setCookie = (
+    res: Response,
+    name: string,
+    value: string,
+    maxAge: number,
+  ) => {
+    const cookieOptions: CookieOptions = {
+      maxAge,
+      httpOnly: true,
+      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
+    };
+    res.cookie(name, value, cookieOptions);
+  };
 
   @Get('')
   @HttpCode(HttpStatus.OK)
@@ -66,42 +81,25 @@ export class AuthController {
   @ApiLoginDoc()
   async login(@Body() userLogInDto: UserLoginDto, @Res() res: Response) {
     const { tokens, user } = await this.authService.logIn(userLogInDto);
-    res.cookie('access_token', tokens.access_token, {
-      maxAge: 900000,
-      httpOnly: true,
-      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
-    });
-    res.cookie('refresh_token', tokens.refresh_token, {
-      maxAge: 86400000,
-      httpOnly: true,
-      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
-    });
-    return res.send({
-      name: user.name,
-      email: user.email,
-    });
+    this.setCookie(res, 'access_token', tokens.access_token, 900000);
+    this.setCookie(res, 'refresh_token', tokens.access_token, 86400000);
+
+    return res.send({ name: user.name, email: user.email });
   }
 
   @Post('logout')
   @ApiLogOutDoc()
   async logout(@Res() res: Response, @Req() req) {
     const isLoggedOut = await this.authService.logOut(req.user.id);
-    res.clearCookie('access_token', {
+
+    const clearCookieOptions: CookieOptions = {
       httpOnly: true,
       domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
       secure: process.env.NODE_ENV === 'production' ? true : false,
       sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
-    });
-    res.clearCookie('refresh_token', {
-      httpOnly: true,
-      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
-    });
+    };
+    res.clearCookie('access_token', clearCookieOptions);
+    res.clearCookie('refresh_token', clearCookieOptions);
 
     return res.send(isLoggedOut);
   }
@@ -109,22 +107,11 @@ export class AuthController {
   @Public()
   @Post('signup')
   @ApiSignUpDoc()
-  async verify(@Body() signUpDto: SignUpDto, @Res() res: Response) {
+  async signup(@Body() signUpDto: SignUpDto, @Res() res: Response) {
     const tokens = await this.authService.signUp(signUpDto);
-    res.cookie('access_token', tokens.access_token, {
-      maxAge: 900000,
-      httpOnly: true,
-      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
-    });
-    res.cookie('refresh_token', tokens.refresh_token, {
-      maxAge: 86400000,
-      httpOnly: true,
-      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
-    });
+    this.setCookie(res, 'access_token', tokens.access_token, 900000);
+    this.setCookie(res, 'refresh_token', tokens.access_token, 86400000);
+
     return res.send({ success: true });
   }
 
@@ -139,20 +126,9 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const tokens = await this.authService.refreshTokens(userId, refreshtoken);
-    res.cookie('access_token', tokens.access_token, {
-      maxAge: 900000,
-      httpOnly: true,
-      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
-    });
-    res.cookie('refresh_token', tokens.refresh_token, {
-      maxAge: 86400000,
-      httpOnly: true,
-      domain: process.env.NODE_ENV === 'production' ? '.noghteh-khat.ir' : '',
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
-    });
+    this.setCookie(res, 'access_token', tokens.access_token, 900000);
+    this.setCookie(res, 'refresh_token', tokens.access_token, 86400000);
+
     return res.send({ success: true });
   }
 
