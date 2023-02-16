@@ -40,7 +40,6 @@ export class FileController {
     @Body() body: UploadedFileDto,
     @Param('subId', ParseIntPipe) subId: number,
   ) {
-    console.log(file);
     return await this.fileService.saveFile(subId, file, body);
   }
 
