@@ -219,6 +219,7 @@ export class AuthService {
       throw new BadRequestException('bad request has been sent...');
     }
 
+
     const secret = process.env.SECRET_KEY + user.password;
 
     try {
