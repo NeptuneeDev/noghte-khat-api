@@ -207,7 +207,7 @@ export class AuthService {
       expiresIn: '15m',
     });
     const link = `${process.env.FRONTEND_URL}/new-password/${user.id}/${token}`;
-
+    console.log(link);
     await this.mailService.send(link, email);
     return { sucess: true };
   }
