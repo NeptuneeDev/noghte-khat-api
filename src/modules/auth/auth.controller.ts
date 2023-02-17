@@ -39,6 +39,8 @@ import { SignUpDto, VerficationDto } from './Dto/user-signUp.dto';
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
+  private acExp = 15 * 60 * 1000; // access token expiration time 15m
+  private refExp = 7 * 24 * 60 * 60 * 1000; //refresh token expiration 7d
   constructor(private readonly authService: AuthService) {}
   private setCookie = (
     res: Response,
@@ -81,8 +83,8 @@ export class AuthController {
   @ApiLoginDoc()
   async login(@Body() userLogInDto: UserLoginDto, @Res() res: Response) {
     const { tokens, user } = await this.authService.logIn(userLogInDto);
-    this.setCookie(res, 'access_token', tokens.access_token, 900000);
-    this.setCookie(res, 'refresh_token', tokens.access_token, 86400000);
+    this.setCookie(res, 'access_token', tokens.access_token, this.acExp);
+    this.setCookie(res, 'refresh_token', tokens.refresh_token, this.refExp);
 
     return res.send({ name: user.name, email: user.email });
   }
@@ -109,8 +111,8 @@ export class AuthController {
   @ApiSignUpDoc()
   async signup(@Body() signUpDto: SignUpDto, @Res() res: Response) {
     const tokens = await this.authService.signUp(signUpDto);
-    this.setCookie(res, 'access_token', tokens.access_token, 900000);
-    this.setCookie(res, 'refresh_token', tokens.access_token, 86400000);
+    this.setCookie(res, 'access_token', tokens.access_token, this.acExp);
+    this.setCookie(res, 'refresh_token', tokens.refresh_token, this.refExp);
 
     return res.send({ success: true });
   }
@@ -127,7 +129,7 @@ export class AuthController {
   ) {
     const tokens = await this.authService.refreshTokens(userId, refreshtoken);
     this.setCookie(res, 'access_token', tokens.access_token, 900000);
-    this.setCookie(res, 'refresh_token', tokens.access_token, 86400000);
+    this.setCookie(res, 'refresh_token', tokens.refresh_token, 86400000);
 
     return res.send({ success: true });
   }
