@@ -17,6 +17,7 @@ export class VerficationDto {
   @ApiProperty()
   @IsEmail()
   @IsNotEmpty()
+  @Transform(({ value }) => value.toLowerCase())
   email: string;
 }
 

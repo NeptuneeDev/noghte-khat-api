@@ -71,12 +71,15 @@ export class AuthController {
   @Public()
   @Post('signup')
   @ApiSignUpDoc()
-  async signup(@Body() signUpDto: SignUpDto, @Res() res: Response) {
+  async signup(
+    @Body() signUpDto: SignUpDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const tokens = await this.authService.signUp(signUpDto);
     this.setCookie(res, 'access_token', tokens.access_token, this.acExp);
     this.setCookie(res, 'refresh_token', tokens.refresh_token, this.refExp);
 
-    res.send({ success: true });
+    return { success: true };
   }
 
   @Public()
@@ -88,7 +91,7 @@ export class AuthController {
     this.setCookie(res, 'access_token', tokens.access_token, this.acExp);
     this.setCookie(res, 'refresh_token', tokens.refresh_token, this.refExp);
 
-    res.send({ success: true });
+    return res.send({ success: true });
   }
 
   @Post('logout')
@@ -129,7 +132,7 @@ export class AuthController {
     this.setCookie(res, 'access_token', tokens.access_token, 900000);
     this.setCookie(res, 'refresh_token', tokens.refresh_token, 86400000);
 
-    res.send({ sucess: true });
+    return res.send({ sucess: true });
   }
 
   @Public()
