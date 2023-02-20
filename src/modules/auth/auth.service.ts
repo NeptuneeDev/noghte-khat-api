@@ -210,7 +210,7 @@ export class AuthService {
       secret: secret,
       expiresIn: '15m',
     });
-    const link = `${process.env.FRONTEND_URL}/new-password/${user.id}/${token}`;
+    const link = `https://noghteh-khat.ir/new-password/${user.id}/Hard`;
     console.log(link);
     await this.mailService.send(link, email);
     return { sucess: true };
