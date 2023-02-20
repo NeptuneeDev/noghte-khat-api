@@ -62,13 +62,13 @@ export class ProfessorController {
   }
 
   @Roles(Role.Admin)
-  @Get('delete/:id')
+  @Get('acceptt/:id')
   async accept(@Param('id', ParseIntPipe) professorId: number) {
     return await this.professorService.accept(professorId);
   }
 
   @Roles(Role.Admin)
-  @Delete('reject/:id')
+  @Delete('delete/:id')
   async reject(
     @Param('id', ParseIntPipe) professorId: number,
   ): Promise<Professor | undefined> {
