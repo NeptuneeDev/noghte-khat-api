@@ -26,12 +26,14 @@ export class ProfessorService {
   async findById(id: number): Promise<Professor | undefined> {
     const prof = await this.professorRepository.findById(id);
 
-    if (prof && prof.isVerified) return prof;
-    else
+    if (!prof || !prof.isVerified) {
       throw new HttpException(
         'NOT found prof or not verified',
         HttpStatus.NOT_FOUND,
       );
+    }
+
+    return prof;
   }
 
   async findByName(name: string): Promise<Partial<Professor>[]> {
