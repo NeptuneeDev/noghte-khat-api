@@ -13,7 +13,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { File } from '../../common/interfaces/file.interface';
 import { ApiTags } from '@nestjs/swagger';
 import { deleteObject } from './dto/deleteObject.dto';
-
+import { Professor } from '@prisma/client';
 @ApiTags('aws-s3')
 @Controller('s3')
 export class S3ManagerController {

@@ -36,6 +36,7 @@ import {
 import { UserInit } from './Dto/user-init.dto';
 import { UserLoginDto } from './Dto/user-login.Dto';
 import { SignUpDto, VerficationDto } from './Dto/user-signUp.dto';
+import { PassThrough } from 'stream';
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
@@ -68,25 +69,34 @@ export class AuthController {
       role: user.role,
     };
   }
-
   @Public()
-  @Post('sendCode')
-  @ApiSendCodeDoc()
-  @HttpCode(HttpStatus.CREATED)
-  async sendCode(@Body() verificationDto: VerficationDto) {
-    return await this.authService.sendCode(verificationDto);
+  @Post('signup')
+  @ApiSignUpDoc()
+  async signup(
+    @Body() signUpDto: SignUpDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const tokens = await this.authService.signUp(signUpDto);
+    this.setCookie(res, 'access_token', tokens.access_token, this.acExp);
+    this.setCookie(res, 'refresh_token', tokens.refresh_token, this.refExp);
+
+    return { success: true };
   }
 
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiLoginDoc()
-  async login(@Body() userLogInDto: UserLoginDto, @Res() res: Response) {
+  async login(
+    @Body() userLogInDto: UserLoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    console.log(userLogInDto.email);
     const { tokens, user } = await this.authService.logIn(userLogInDto);
     this.setCookie(res, 'access_token', tokens.access_token, this.acExp);
     this.setCookie(res, 'refresh_token', tokens.refresh_token, this.refExp);
 
-    return res.send({ name: user.name, email: user.email });
+    return { name: user.name, email: user.email };
   }
 
   @Post('logout')
@@ -105,16 +115,12 @@ export class AuthController {
 
     return res.send(isLoggedOut);
   }
-
   @Public()
-  @Post('signup')
-  @ApiSignUpDoc()
-  async signup(@Body() signUpDto: SignUpDto, @Res() res: Response) {
-    const tokens = await this.authService.signUp(signUpDto);
-    this.setCookie(res, 'access_token', tokens.access_token, this.acExp);
-    this.setCookie(res, 'refresh_token', tokens.refresh_token, this.refExp);
-
-    return res.send({ success: true });
+  @Post('sendCode')
+  @ApiSendCodeDoc()
+  @HttpCode(HttpStatus.CREATED)
+  async sendCode(@Body() verificationDto: VerficationDto) {
+    return await this.authService.sendCode(verificationDto);
   }
 
   @Public()
@@ -125,13 +131,13 @@ export class AuthController {
   async refreshTokens(
     @GetCurrentUserId() userId: number,
     @GetCurrentUser('refreshToken') refreshtoken: string,
-    @Res() res: Response,
+    @Res({ passthrough: true }) res: Response,
   ) {
     const tokens = await this.authService.refreshTokens(userId, refreshtoken);
     this.setCookie(res, 'access_token', tokens.access_token, 900000);
     this.setCookie(res, 'refresh_token', tokens.refresh_token, 86400000);
 
-    return res.send({ success: true });
+    return { success: true };
   }
 
   @Public()

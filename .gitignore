@@ -2,6 +2,7 @@
 # compiled output
 /dist
 /node_modules
+/prisma/migratins
 .env
 # Logs
 logs

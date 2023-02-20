@@ -7,28 +7,33 @@ import {
   Param,
   ParseFilePipe,
   ParseIntPipe,
+  Patch,
   Post,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UploadedFileDto } from './Dto/upload.file.Dto';
+import { UploadFileDto } from './Dto/upload.file.Dto';
 import { FileService } from './file.service';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../auth/types/roles.enum';
 import { File as FileModel } from '@prisma/client';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { File } from 'src/common/interfaces';
-import { ApiDeleteFileDoc, ApiUploadFileDoc } from './Doc/api.response';
-
+import {
+  ApiDeleteFileDoc,
+  ApiUpdateFileDoc,
+  ApiUploadFileDoc,
+} from './Doc/api.response';
+import { UpdateFileDto } from './Dto/update.file.Dto';
 @ApiTags('file')
 @Controller('file')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
   @Post(':subId')
-  @ApiUploadFileDoc()
   @ApiConsumes('multipart/form-data')
+  @ApiUploadFileDoc()
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @UploadedFile(
@@ -37,7 +42,7 @@ export class FileController {
       }),
     )
     file: File,
-    @Body() body: UploadedFileDto,
+    @Body() body: UploadFileDto,
     @Param('subId', ParseIntPipe) subId: number,
   ) {
     return await this.fileService.saveFile(subId, file, body);
@@ -60,5 +65,15 @@ export class FileController {
   @Get('accept/:id')
   async accept(@Param('id', ParseIntPipe) fileId: number) {
     return await this.fileService.accept(fileId);
+  }
+
+  @Roles(Role.Admin)
+  @Patch('update/:id')
+  @ApiUpdateFileDoc()
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateFileDto: UpdateFileDto,
+  ) {
+    return await this.fileService.update(id, updateFileDto);
   }
 }

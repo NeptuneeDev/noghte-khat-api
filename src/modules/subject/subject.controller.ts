@@ -51,7 +51,7 @@ export class SubjectController {
   }
 
   @Roles(Role.Admin)
-  @Delete('reject/:id')
+  @Delete('delete/:id')
   async reject(
     @Param('id', ParseIntPipe) subjectId: number,
   ): Promise<Subject | undefined> {

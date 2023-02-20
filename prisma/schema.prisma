@@ -57,6 +57,8 @@ model File {
   title String
   description String 
   fileName    String
+  type String
+  size   Int
   isVerified  Boolean  @default(false)  
   subject Subject @relation(fields: [subjectId],references: [id])
   subjectId Int

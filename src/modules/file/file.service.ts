@@ -5,15 +5,15 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { SubjectService } from '../subject/subject.service';
-import { UploadedFileDto } from './Dto/upload.file.Dto';
+import { UploadFileDto } from './Dto/upload.file.Dto';
 import { FileRepository } from './file.repository';
 import { File } from '../../common/interfaces/file.interface';
 import { S3ManagerService } from '../s3-manager/s3-manager.service';
 import { File as FileModel } from '@prisma/client';
 import * as mime from 'mime-types';
-import { retry } from 'rxjs';
-import { Kendra } from 'aws-sdk';
-// import { Success } from '../auth/types/success.return.type';
+import { UpdateFileDto } from './Dto/update.file.Dto';
+import { Success } from '../auth/doc/types/success.return.type';
+import { bool } from 'aws-sdk/clients/signer';
 
 @Injectable()
 export class FileService {
@@ -22,21 +22,24 @@ export class FileService {
     private readonly subjectService: SubjectService,
     private readonly s3: S3ManagerService,
   ) {}
-  async saveFile(
-    subjectId: number,
-    file: File,
-    uploadFileDto: UploadedFileDto,
-  ) {
+  async saveFile(subjectId: number, file: File, uploadFileDto: UploadFileDto) {
     const subject = await this.subjectService.findById(subjectId);
-    if (!subject) throw new BadRequestException('subject id not valid!');
+    if (!subject) {
+      throw new BadRequestException('subject id not valid!');
+    }
+    const size = Math.round(file.size / 1000);
+    const fileType = `${mime.extension(file.mimetype)}`;
 
-    await this.checkFileType(file.mimetype);
+    if (!this.isValidType(file.mimetype))
+      throw new HttpException('File type not valid!', HttpStatus.FORBIDDEN);
 
     const saveToStorage = await this.s3.uploadFile('jozveh', file);
 
     await this.fileRepository.saveFile(
-      subjectId,
+      subject.id,
       saveToStorage.key,
+      fileType,
+      size,
       uploadFileDto,
     );
 
@@ -46,8 +49,7 @@ export class FileService {
   async deleteFile(id: number) {
     const file = await this.fileRepository.findById(id);
 
-    if (!file)
-      throw new BadRequestException('there is no file with this name.');
+    if (!file) throw new BadRequestException('File Not Found');
 
     await this.fileRepository.delete(id);
     await this.s3.deleteFile('jozveh', file.fileName);
@@ -55,6 +57,17 @@ export class FileService {
     return { sucess: true };
   }
 
+  async update(
+    id: number,
+    updateFileDto: UpdateFileDto,
+  ): Promise<Success | undefined> {
+    const file = await this.fileRepository.findById(id);
+    if (!file) {
+      throw new BadRequestException('file not found');
+    }
+    await this.fileRepository.update(id, updateFileDto);
+    return { success: true };
+  }
   async findUnverifieds(): Promise<FileModel[]> {
     const files = await this.fileRepository.findUnverifieds();
     return files;
@@ -68,14 +81,23 @@ export class FileService {
     return await this.fileRepository.accept(id);
   }
 
-  async checkFileType(mimeType: string): Promise<boolean> {
-    const allowedFileExtensions = ['pdf', 'doc', 'docx', 'word', 'pptx',"txt"];
+  isValidType(mimeType: string): Boolean {
+    const allowedFileExtensions = [
+      'pdf',
+      'doc',
+      'docx',
+      'word',
+      'pptx',
+      'txt',
+      'jpg',
+      'png',
+    ];
     const fileExt = `${mime.extension(mimeType)}`;
 
     if (allowedFileExtensions.includes(fileExt)) {
       return true;
-    } else {
-      throw new BadRequestException('File type not valid!');
     }
+
+    return false;
   }
 }

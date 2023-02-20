@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   Injectable,
   NotAcceptableException,
 } from '@nestjs/common';
@@ -17,6 +19,7 @@ import { VerficationDto } from './Dto/user-signUp.dto';
 import { User } from '../user/interfaces/user.interface';
 import _ from 'lodash';
 import { Success } from './doc/types/success.return.type';
+import { STATUS_CODES } from 'http';
 
 @Injectable()
 export class AuthService {
@@ -85,8 +88,9 @@ export class AuthService {
     const user = await this.userRepository.find(signUPDto.email);
 
     if (user) {
-      throw new BadRequestException(
+      throw new HttpException(
         'user already exists with this email,Please login...',
+        400,
       );
     }
 

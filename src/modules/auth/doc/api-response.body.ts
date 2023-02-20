@@ -56,7 +56,7 @@ export const ApiLogOutDoc = () => {
 export const ApiSignUpDoc = () => {
   return applyDecorators(
     ApiResponse({
-      status: 403,
+      status: 400,
       description: 'user already exists with this email,Please login...',
     }),
     ApiResponse({
@@ -94,7 +94,7 @@ export const ApiResetPasswordDoc = () => {
     ApiBadRequestResponse({ description: 'bad request has been sent...' }),
     ApiResponse({ status: 201, type: Success }),
     ApiResponse({
-      status: 200,
+      status: 403,
       type: InValidJwtResponse,
       description: 'some thing is manipulated Or link is expired...',
     }),

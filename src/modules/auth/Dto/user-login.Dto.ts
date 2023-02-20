@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
@@ -17,6 +18,7 @@ export class UserLoginDto {
   @IsEmail()
   @IsString()
   @IsNotEmpty()
+  @Transform(({ value }) => value.toLowerCase())
   email: string;
 
   @ApiProperty({ description: 'password should be', minimum: 6, maximum: 30 })

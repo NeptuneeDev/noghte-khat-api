@@ -1,11 +1,13 @@
-import { applyDecorators } from '@nestjs/common';
+import { applyDecorators, HttpStatus } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiBody,
   ApiOkResponse,
+  ApiResponse,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { Success } from 'src/modules/auth/doc/types/success.return.type';
-import { UploadedFileDto } from '../Dto/upload.file.Dto';
 
 export const ApiUploadFileDoc = () => {
   return applyDecorators(
@@ -15,6 +17,10 @@ export const ApiUploadFileDoc = () => {
     }),
 
     ApiBadRequestResponse({ description: 'subject id not valid!' }),
+    ApiResponse({
+      description: 'File type not valid!',
+      status: HttpStatus.FORBIDDEN,
+    }),
     ApiBearerAuth(),
   );
 };
@@ -22,7 +28,15 @@ export const ApiUploadFileDoc = () => {
 export const ApiDeleteFileDoc = () => {
   return applyDecorators(
     ApiOkResponse({ description: 'deleted successfuly', type: Success }),
-    ApiBadRequestResponse({ description: 'there is no file with this name.' }),
+    ApiBadRequestResponse({ description: 'File Not Found' }),
+    ApiBearerAuth(),
+  );
+};
+
+export const ApiUpdateFileDoc = () => {
+  return applyDecorators(
+    ApiOkResponse({ description: 'update successfuly', type: Success }),
+    ApiBadRequestResponse({ description: 'file Not found' }),
     ApiBearerAuth(),
   );
 };

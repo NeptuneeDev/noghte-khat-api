@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { UploadedFileDto } from './Dto/upload.file.Dto';
+import { UploadFileDto } from './Dto/upload.file.Dto';
 import { File as FileModel } from '@prisma/client';
+import { UpdateFileDto } from './Dto/update.file.Dto';
 
 @Injectable()
 export class FileRepository {
@@ -10,11 +11,15 @@ export class FileRepository {
   async saveFile(
     subjectId: number,
     fileName: string,
-    uploadFileDto: UploadedFileDto,
-  ): Promise<object> {
+    type: string,
+    size: number,
+    uploadFileDto: UploadFileDto,
+  ): Promise<FileModel> {
     return this.prisma.file.create({
       data: {
         title: uploadFileDto.title,
+        type: type,
+        size: size,
         fileName: fileName,
         description: uploadFileDto.description,
         subject: { connect: { id: subjectId } },
@@ -30,6 +35,20 @@ export class FileRepository {
 
   async findByName(fileName: string) {
     return await this.prisma.file.findFirst({ where: { fileName: fileName } });
+  }
+
+  async update(
+    id: number,
+    updateFileDto: UpdateFileDto,
+  ): Promise<FileModel | undefined> {
+    return this.prisma.file.update({
+      where: { id },
+      data: {
+        title: updateFileDto.title,
+        description: updateFileDto.description,
+        updatedAt: new Date().toISOString(),
+      },
+    });
   }
   async findUnverifieds(): Promise<FileModel[]> {
     return this.prisma.file.findMany({
