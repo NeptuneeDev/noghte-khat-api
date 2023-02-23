@@ -10,7 +10,7 @@ export class UploadFileDto {
   @ApiProperty()
   @IsString()
   @MaxLength(255, {
-    message: "disciption shouldn't be more than 30 characters",
+    message: "disciption shouldn't be more than 255 characters",
   })
   description: string;
 

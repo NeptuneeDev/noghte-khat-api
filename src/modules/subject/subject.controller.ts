@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { SubjectService } from './subject.service';
 import { CreateSubjectDto } from './dto/create-update.dto';
@@ -15,6 +17,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../auth/types/roles.enum';
 import { Subject } from './interfaces/subject.interface';
+import { ApiDeleteFileDoc, ApiUpdateFileDoc } from '../file/Doc/api.response';
 @ApiTags('Subject')
 @Controller('subject')
 export class SubjectController {
@@ -37,6 +40,8 @@ export class SubjectController {
   }
 
   @Patch(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiUpdateFileDoc()
   update(
     @Param('id', ParseIntPipe) id: string,
     @Body() updateSubjectDto: UpdateSubjectDto,
@@ -51,10 +56,10 @@ export class SubjectController {
   }
 
   @Roles(Role.Admin)
+  @HttpCode(HttpStatus.OK)
+  @ApiDeleteFileDoc()
   @Delete('delete/:id')
-  async reject(
-    @Param('id', ParseIntPipe) subjectId: number,
-  ): Promise<Subject | undefined> {
-    return await this.subjectService.reject(subjectId);
+  async reject(@Param('id', ParseIntPipe) subjectId: number) {
+    return await this.subjectService.delete(subjectId);
   }
 }

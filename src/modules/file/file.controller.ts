@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   MaxFileSizeValidator,
   Param,
   ParseFilePipe,
@@ -34,6 +36,7 @@ export class FileController {
   @Post(':subId')
   @ApiConsumes('multipart/form-data')
   @ApiUploadFileDoc()
+  @HttpCode(HttpStatus.OK)
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @UploadedFile(
@@ -50,6 +53,7 @@ export class FileController {
 
   @Roles(Role.Admin)
   @ApiDeleteFileDoc()
+  @HttpCode(HttpStatus.OK)
   @Delete('delete/:id')
   async deleteFile(@Param('id') id: number) {
     return await this.fileService.deleteFile(id);
@@ -69,6 +73,7 @@ export class FileController {
 
   @Roles(Role.Admin)
   @Patch('update/:id')
+  @HttpCode(HttpStatus.OK)
   @ApiUpdateFileDoc()
   async update(
     @Param('id', ParseIntPipe) id: number,

@@ -51,8 +51,8 @@ export class FileService {
 
     if (!file) throw new BadRequestException('File Not Found');
 
-    await this.fileRepository.delete(id);
     await this.s3.deleteFile('jozveh', file.fileName);
+    await this.fileRepository.delete(id);
 
     return { sucess: true };
   }
