@@ -67,6 +67,7 @@ export class S3ManagerService {
     const ext = path.extname(fileOrginalName);
     return `${path
       .parse(fileOrginalName)
-      .name.replace(/\s/g, '')}${unixSuffix}${ext}`;
+      .name.replace(/\s/g, '')
+      .slice(-4)}${unixSuffix}${ext}`;
   }
 }

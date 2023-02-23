@@ -8,21 +8,25 @@ import { ProfessorModule } from 'src/modules/professor/professor.module';
 export class Swagger {
   constructor(private readonly app: INestApplication) {}
   buildDocument() {
-    const authOption = this.createOption('auth');
-    this.createDocument(AuthModule, 'auth', authOption);
+    const option = this.createOption('Noghteh khat API Description');
+    const document = SwaggerModule.createDocument(this.app, option);
+    SwaggerModule.setup('api-docs', this.app, document);
 
-    const fileOption = this.createOption('file');
-    this.createDocument(FileModule, 'file', fileOption);
+    // const authOption = this.createOption('auth');
+    // this.createDocument(AuthModule, 'auth', authOption);
 
-    const professorOption = this.createOption('professor');
-    this.createDocument(ProfessorModule, 'professor', professorOption);
+    // const fileOption = this.createOption('file');
+    // this.createDocument(FileModule, 'file', fileOption);
+
+    // const professorOption = this.createOption('professor');
+    // this.createDocument(ProfessorModule, 'professor', professorOption);
   }
 
   private createOption(moduleName: string) {
     return new DocumentBuilder()
       .addBearerAuth()
       .setTitle(`${moduleName}`)
-      .setDescription(`${moduleName} Document`)
+      .setDescription(` Document`)
       .setVersion('1.0')
       .build();
   }

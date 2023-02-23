@@ -22,7 +22,7 @@ async function bootstrap() {
     const swagger = new Swagger(app);
     swagger.buildDocument();
   }
-  await app.listen(7070, '0.0.0.0');
-  // await app.listen(5000);
+  // await app.listen(7070, '0.0.0.0');
+  await app.listen(5000);
 }
 bootstrap();
