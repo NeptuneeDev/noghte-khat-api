@@ -30,7 +30,7 @@ export class S3ManagerService {
     try {
       // create unique key
       const fileUniqueName = await this.createUniqueFileKey(file.originalname);
-      const key = `files/${fileUniqueName || file.originalname}`;
+      const key = `files/${fileUniqueName}`;
       await this.s3
         .putObject({
           Bucket: bucket,
@@ -68,6 +68,6 @@ export class S3ManagerService {
     return `${path
       .parse(fileOrginalName)
       .name.replace(/\s/g, '')
-      .slice(-4)}${unixSuffix}${ext}`;
+      }${unixSuffix}${ext}`;
   }
 }

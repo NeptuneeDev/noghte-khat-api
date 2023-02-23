@@ -27,11 +27,12 @@ export class FileService {
     if (!subject) {
       throw new BadRequestException('subject id not valid!');
     }
-    const size = Math.round(file.size / 1000);
-    const fileType = `${mime.extension(file.mimetype)}`;
 
     if (!this.isValidType(file.mimetype))
       throw new HttpException('File type not valid!', HttpStatus.FORBIDDEN);
+      
+    const size = Math.round(file.size / 1000);
+    const fileType = `${mime.extension(file.mimetype)}`;
 
     const saveToStorage = await this.s3.uploadFile('jozveh', file);
 
