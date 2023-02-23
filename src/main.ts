@@ -21,8 +21,9 @@ async function bootstrap() {
   if (process.env.NODE_ENV !== 'production') {
     const swagger = new Swagger(app);
     swagger.buildDocument();
+    await app.listen(5000);
+  } else {
+    await app.listen(7070, '0.0.0.0');
   }
-  // await app.listen(7070, '0.0.0.0');
-  await app.listen(5000);
 }
 bootstrap();
