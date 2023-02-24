@@ -62,7 +62,7 @@ export class ProfessorController {
   }
 
   @Roles(Role.Admin)
-  @Get('acceptt/:id')
+  @Get('accept/:id')
   async accept(@Param('id', ParseIntPipe) professorId: number) {
     return await this.professorService.accept(professorId);
   }
