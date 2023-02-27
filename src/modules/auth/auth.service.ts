@@ -19,8 +19,7 @@ import { VerficationDto } from './Dto/user-signUp.dto';
 import { User } from '../user/interfaces/user.interface';
 import _ from 'lodash';
 import { Success } from './doc/types/success.return.type';
-import { STATUS_CODES } from 'http';
-
+import * as clientMessages from '../../common/translation/fa/message.json';
 @Injectable()
 export class AuthService {
   constructor(
@@ -36,7 +35,8 @@ export class AuthService {
     const userAlerdyExist = await this.userRepository.find(
       verificationDto.email,
     );
-    if (userAlerdyExist) throw new BadRequestException('email alerdy exist!');
+    if (userAlerdyExist)
+      throw new BadRequestException(clientMessages.auth.alerdy);
 
     const varification = await this.authRepository.findVarification(
       verificationDto.email,
@@ -46,7 +46,7 @@ export class AuthService {
       varification &&
       this.isRequestedALot(varification.try, varification.lastResendTime)
     ) {
-      throw new BadRequestException('too much request for otp...');
+      throw new BadRequestException(clientMessages.auth.muchOtp);
     }
 
     const otp = await this.generateOtp();
@@ -62,7 +62,7 @@ export class AuthService {
   async logIn(userLogInDto: UserLoginDto) {
     const user = await this.userRepository.find(userLogInDto.email);
     if (!user) {
-      throw new BadRequestException("credintals aren't correct...");
+      throw new BadRequestException(clientMessages.auth.notValid);
     }
 
     const isPasswordValid = await Hash.compare(
@@ -70,7 +70,7 @@ export class AuthService {
       user.password,
     );
     if (!isPasswordValid) {
-      throw new BadRequestException("credintals aren't correct...");
+      throw new BadRequestException(clientMessages.auth.notValid);
     }
 
     const tokens = await this.getTokens(user);
@@ -88,10 +88,7 @@ export class AuthService {
     const user = await this.userRepository.find(signUPDto.email);
 
     if (user) {
-      throw new HttpException(
-        'user already exists with this email,Please login...',
-        400,
-      );
+      throw new HttpException(clientMessages.auth.alerdy, 400);
     }
 
     const verification = await this.authRepository.findVarification(
@@ -99,15 +96,13 @@ export class AuthService {
     );
 
     if (!verification) {
-      throw new BadRequestException(
-        'Verification code not found. Please request a new code',
-      );
+      throw new BadRequestException(clientMessages.auth.tryOtp);
     }
 
     const isValid = await this.isValidOtp(signUPDto.otp, verification);
 
     if (!isValid) {
-      throw new BadRequestException('Invalid OTP.');
+      throw new BadRequestException(clientMessages.auth.tryOtp);
     }
 
     const hashedPassword = await Hash.hash(signUPDto.password);
@@ -147,7 +142,7 @@ export class AuthService {
       Date.now()
     );
     if (isExpird) {
-      throw new NotAcceptableException('Time has expired');
+      throw new NotAcceptableException(clientMessages.auth.expireOtp);
     }
     const isValid = await Hash.compare(otp + '', verification.code);
     return isValid;
@@ -201,7 +196,7 @@ export class AuthService {
     const user = await this.userRepository.find(email);
 
     if (!user) {
-      throw new BadRequestException('User not found with the provided email.');
+      throw new BadRequestException(clientMessages.auth.notFoundEmail);
     }
 
     const secret = process.env.SECRET_KEY + user.password;
@@ -219,7 +214,7 @@ export class AuthService {
     const user = await this.userRepository.findById(id);
 
     if (!user) {
-      throw new BadRequestException('user does not exist');
+      throw new BadRequestException(clientMessages.auth.notFoundUser);
     }
 
     const secret = process.env.SECRET_KEY + user.password;
@@ -235,7 +230,7 @@ export class AuthService {
     const user = await this.userRepository.findById(id);
 
     if (!user) {
-      throw new BadRequestException('user does not exist.');
+      throw new BadRequestException(clientMessages.auth.notFoundUser);
     }
 
     const secret = process.env.SECRET_KEY + user.password;
