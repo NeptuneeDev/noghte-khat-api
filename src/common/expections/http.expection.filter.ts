@@ -5,7 +5,9 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
+import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { HttpAdapterHost } from '@nestjs/core';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
 @Catch()
 export class AllExpectionsFilter implements ExceptionFilter {
@@ -20,19 +22,32 @@ export class AllExpectionsFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const message =
-      exception instanceof HttpException
-        ? exception.getResponse()
-        : 'some thing went wrong, on server side';
-    const responseBody = {
-      statusCode: httpStatus,
-      timeStamp: new Date().toISOString(),
-      message: message,
-      path: httpAdapter.getRequestUrl(ctx.getRequest()),
-    };
-
+    const responseBody =
+      this.inferDateBaseErorr(exception) ??
+      this.inferSystemError(exception, ctx);
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
-    console.log('in filter expectino');
     console.log(exception);
+  }
+
+  inferDateBaseErorr(exception) {
+    if (exception instanceof PrismaClientKnownRequestError) {
+    }
+    return undefined;
+  }
+
+  
+  inferSystemError(exception, ctx: HttpArgumentsHost) {
+    const { httpAdapter } = this.httpAdapterHost;
+    if (exception instanceof HttpException) {
+      const message = exception.getResponse();
+      return {
+        statusCode: HttpStatus,
+        timeStamp: new Date().toISOString(),
+        message: message,
+        path: httpAdapter.getRequestUrl(ctx.getRequest()),
+      };
+    }
+
+    return undefined;
   }
 }
