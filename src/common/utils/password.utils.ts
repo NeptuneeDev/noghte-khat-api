@@ -3,7 +3,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-
+import * as clientMessage from '../translation/fa/message.json';
 @ValidatorConstraint({ name: 'CustomMatchPasswords', async: false })
 export class CustomMatchPasswords implements ValidatorConstraintInterface {
   validate(password: string, args: ValidationArguments) {
@@ -12,6 +12,6 @@ export class CustomMatchPasswords implements ValidatorConstraintInterface {
   }
 
   defaultMessage(args: ValidationArguments) {
-    return 'Passwords do not match!';
+    return clientMessage.auth["passworsDon'tMatch"];
   }
 }
