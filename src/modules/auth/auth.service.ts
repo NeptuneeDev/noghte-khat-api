@@ -36,7 +36,7 @@ export class AuthService {
       verificationDto.email,
     );
     if (userAlerdyExist)
-      throw new BadRequestException(clientMessages.auth.alerdy);
+      throw new BadRequestException(clientMessages.auth.notExistUser);
 
     const varification = await this.authRepository.findVarification(
       verificationDto.email,
@@ -46,7 +46,7 @@ export class AuthService {
       varification &&
       this.isRequestedALot(varification.try, varification.lastResendTime)
     ) {
-      throw new BadRequestException(clientMessages.auth.muchOtp);
+      throw new BadRequestException(clientMessages.auth.tooMuchOtp);
     }
 
     const otp = await this.generateOtp();
@@ -62,7 +62,7 @@ export class AuthService {
   async logIn(userLogInDto: UserLoginDto) {
     const user = await this.userRepository.find(userLogInDto.email);
     if (!user) {
-      throw new BadRequestException(clientMessages.auth.notValid);
+      throw new BadRequestException(clientMessages.auth.alreadyExists);
     }
 
     const isPasswordValid = await Hash.compare(
@@ -70,7 +70,7 @@ export class AuthService {
       user.password,
     );
     if (!isPasswordValid) {
-      throw new BadRequestException(clientMessages.auth.notValid);
+      throw new BadRequestException(clientMessages.auth.invalidCredentials);
     }
 
     const tokens = await this.getTokens(user);
@@ -88,7 +88,7 @@ export class AuthService {
     const user = await this.userRepository.find(signUPDto.email);
 
     if (user) {
-      throw new HttpException(clientMessages.auth.alerdy, 400);
+      throw new HttpException(clientMessages.auth.alreadyExists, 400);
     }
 
     const verification = await this.authRepository.findVarification(
@@ -142,7 +142,7 @@ export class AuthService {
       Date.now()
     );
     if (isExpird) {
-      throw new NotAcceptableException(clientMessages.auth.expireOtp);
+      throw new NotAcceptableException(clientMessages.auth.expiredOtp);
     }
     const isValid = await Hash.compare(otp + '', verification.code);
     return isValid;

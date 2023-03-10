@@ -4,18 +4,21 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
-import { HttpArgumentsHost } from '@nestjs/common/interfaces';
+import { ExecutionContext, HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { HttpAdapterHost } from '@nestjs/core';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-
+import * as clientMessages from '../../common/translation/fa/message.json';
+import * as Sentry from '@sentry/node';
 @Catch()
 export class AllExpectionsFilter implements ExceptionFilter {
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
+  private logger = new Logger('HTTP');
   catch(exception: unknown, host: ArgumentsHost) {
-    const { httpAdapter } = this.httpAdapterHost;
     const ctx = host.switchToHttp();
+    const { httpAdapter } = this.httpAdapterHost;
 
     const httpStatus =
       exception instanceof HttpException
@@ -23,23 +26,25 @@ export class AllExpectionsFilter implements ExceptionFilter {
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
     const responseBody =
-      this.inferDateBaseErorr(exception) ??
-      this.inferSystemError(exception, ctx);
+      this.inferSystemError(exception, ctx) ??
+      this.inferDateBaseErorr(exception, ctx) ??
+      this.inferUnHandeledErorr(exception, ctx);
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
     console.log(exception);
   }
-
-  inferDateBaseErorr(exception) {
-    if (exception instanceof PrismaClientKnownRequestError) {
-    }
-    return undefined;
-  }
-
-  
   inferSystemError(exception, ctx: HttpArgumentsHost) {
     const { httpAdapter } = this.httpAdapterHost;
+
     if (exception instanceof HttpException) {
-      const message = exception.getResponse();
+      if (exception.getStatus() >= 500) {
+        Sentry.captureException(exception);
+        this.logger.log(`a prisma expection occures ${exception}`);
+      }
+      const message =
+        exception.getStatus() >= 500
+          ? clientMessages.server.internalServer
+          : exception.getResponse();
+
       return {
         statusCode: HttpStatus,
         timeStamp: new Date().toISOString(),
@@ -49,5 +54,34 @@ export class AllExpectionsFilter implements ExceptionFilter {
     }
 
     return undefined;
+  }
+
+  inferDateBaseErorr(exception, ctx: HttpArgumentsHost) {
+    const { httpAdapter } = this.httpAdapterHost;
+
+    if (exception instanceof PrismaClientKnownRequestError) {
+      Sentry.captureException(exception);
+      this.logger.log(`a prisma expection occures ${exception}`);
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        timeStamp: new Date().toISOString(),
+        message: clientMessages.server.internalServer,
+        path: httpAdapter.getRequestUrl(ctx.getRequest()),
+      };
+    }
+    return undefined;
+  }
+
+  inferUnHandeledErorr(exception, ctx: HttpArgumentsHost) {
+    const { httpAdapter } = this.httpAdapterHost;
+    Sentry.captureException(exception);
+    this.logger.log(`a new wierd expection  occures ${exception}`);
+
+    return {
+      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+      timeStamp: new Date().toISOString(),
+      message: clientMessages.server.internalServer,
+      path: httpAdapter.getRequestUrl(ctx.getRequest()),
+    };
   }
 }

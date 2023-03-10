@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpException,
+  InternalServerErrorException,
   Param,
   ParseIntPipe,
   Post,

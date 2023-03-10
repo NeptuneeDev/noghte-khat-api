@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import e from 'express';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProfessorDto } from './Dto/professor.Dto';
 import { Professor } from './interfaces/professor.interface';

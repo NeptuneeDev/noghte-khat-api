@@ -14,6 +14,7 @@ import { FileModule } from './modules/file/file.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { S3ManagerModule } from './modules/s3-manager/s3-manager.module';
 import { AwsSdkModule } from 'nest-aws-sdk';
+import * as Sentry from '@sentry/node';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AwsSdkModule } from 'nest-aws-sdk';
     FileModule,
     S3ManagerModule,
     MulterModule.register(),
+
     AwsSdkModule.forRoot({
       defaultServiceOptions: {
         accessKeyId: process.env.LIARA_ACCESS_KEY,
@@ -33,6 +35,7 @@ import { AwsSdkModule } from 'nest-aws-sdk';
         endpoint: process.env.LIARA_ENDPOINT,
       },
     }),
+  
   ],
   providers: [
     {
@@ -49,6 +52,8 @@ import { AwsSdkModule } from 'nest-aws-sdk';
     },
   ],
 })
+
+
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');
