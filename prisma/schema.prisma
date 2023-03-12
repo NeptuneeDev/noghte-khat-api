@@ -14,6 +14,8 @@ model User {
   id         Int        @default(autoincrement()) @id
   email      String     @unique
   name       String
+  likesFiles  LikeFile[] 
+  dislikesFiles DisLikeFile[]
   createdAt  DateTime   @default(now())
   updateAt   DateTime   @default(now())
   password   String
@@ -21,6 +23,12 @@ model User {
   hashedRT   String?
   lastLoggedInTime DateTime?
 }
+
+enum Role {
+  user
+  admin
+}
+
 model Verification { // not loggedin user
   id     Int     @default(autoincrement()) @id
   email  String  @unique()
@@ -62,12 +70,27 @@ model File {
   isVerified  Boolean  @default(false)
   subject Subject @relation(fields: [subjectId],references: [id])
   subjectId Int
+  likes  LikeFile[]
+  dislikes DisLikeFile[]
   createdAt DateTime
   updatedAt DateTime
 }
 
-enum Role {
-  user
-  admin
+model LikeFile {
+ file File @relation(fields: [fileId],references: [id])
+ fileId Int 
+ 
+ user User @relation(fields: [userId],references: [id])
+ userId Int
+ @@id([fileId,userId])
 }
 
+
+model DisLikeFile {
+ file File @relation(fields: [fileId],references: [id])
+ fileId Int 
+ 
+ user User @relation(fields: [userId],references: [id])
+ userId Int
+ @@id([fileId,userId])
+}

@@ -12,6 +12,7 @@ export interface Professor {
   isVerified: boolean;
   subject?: Subject[];
   file?: File[];
+  
   createdAt: Date;
 
   updatedAt: Date;

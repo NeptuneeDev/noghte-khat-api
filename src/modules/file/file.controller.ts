@@ -28,6 +28,7 @@ import {
   ApiUploadFileDoc,
 } from './Doc/api.response';
 import { UpdateFileDto } from './Dto/update.file.Dto';
+import { GetCurrentUserId } from 'src/common/decorators';
 @ApiTags('file')
 @Controller('file')
 export class FileController {
@@ -80,5 +81,14 @@ export class FileController {
     @Body() updateFileDto: UpdateFileDto,
   ) {
     return await this.fileService.update(id, updateFileDto);
+  }
+
+  @Post('like/:id')
+  async likeFile(
+    @GetCurrentUserId() userId: number,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    console.log(userId);
+    return  userId;
   }
 }
