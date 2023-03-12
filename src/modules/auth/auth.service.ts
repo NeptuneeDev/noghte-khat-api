@@ -63,7 +63,7 @@ export class AuthService {
   async logIn(userLogInDto: UserLoginDto) {
     const user = await this.userRepository.find(userLogInDto.email);
     if (!user) {
-      throw new BadRequestException(clientMessages.auth.alreadyExists);
+      throw new BadRequestException(clientMessages.auth.notExistUser);
     }
 
     const isPasswordValid = await Hash.compare(

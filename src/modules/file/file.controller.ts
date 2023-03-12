@@ -11,7 +11,9 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Req,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -29,6 +31,9 @@ import {
 } from './Doc/api.response';
 import { UpdateFileDto } from './Dto/update.file.Dto';
 import { GetCurrentUserId } from 'src/common/decorators';
+import { RtGuard } from 'src/common/guards/rt.guard';
+import { Request } from 'express';
+
 @ApiTags('file')
 @Controller('file')
 export class FileController {
@@ -83,12 +88,15 @@ export class FileController {
     return await this.fileService.update(id, updateFileDto);
   }
 
+  @UseGuards(RtGuard)
   @Post('like/:id')
   async likeFile(
     @GetCurrentUserId() userId: number,
     @Param('id', ParseIntPipe) id: number,
+    @Req() req: Request,
   ) {
-    console.log(userId);
-    return  userId;
+    const user = req;
+
+    return userId;
   }
 }

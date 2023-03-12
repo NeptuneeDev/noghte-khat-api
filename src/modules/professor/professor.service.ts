@@ -28,14 +28,7 @@ export class ProfessorService {
     const prof = await this.professorRepository.findById(id);
 
     if (!prof || !prof.isVerified) {
-<<<<<<< HEAD
-      throw new BadRequestException('NOT found prof or not verified');
-=======
-      throw new HttpException(
-        clientMessages.professor.prfessorNorFound,
-        HttpStatus.NOT_FOUND,
-      );
->>>>>>> 92b151b26e6cbf36ee631d7043a7efa1e2cc012f
+      throw new BadRequestException(clientMessages.professor.prfessorNorFound);
     }
 
     return prof;
