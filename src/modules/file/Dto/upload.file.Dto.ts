@@ -1,16 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsString, MaxLength } from 'class-validator';
+import clientMessages from 'src/common/translation/fa';
 
 export class UploadFileDto {
   @ApiProperty()
   @IsString()
-  @MaxLength(30, { message: "title shouldn't be more than 30 characters" })
+  @MaxLength(30, { message: clientMessages.file.validation.maxTitle })
   title: string;
 
   @ApiProperty()
   @IsString()
   @MaxLength(255, {
-    message: "disciption shouldn't be more than 255 characters",
+    message: clientMessages.file.validation.maxDescription,
   })
   description: string;
 

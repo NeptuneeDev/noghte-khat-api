@@ -12,6 +12,7 @@ import {
   Validate,
 } from 'class-validator';
 import { CustomMatchPasswords } from 'src/common/utils/password.utils';
+import clientMessages from 'src/common/translation/fa';
 
 export class UserLoginDto {
   @ApiProperty()
@@ -23,8 +24,8 @@ export class UserLoginDto {
 
   @ApiProperty({ description: 'password should be', minimum: 6, maximum: 30 })
   @IsNotEmpty()
-  @MinLength(6, { message: 'password shouldn be more than 6 characters ' })
-  @MaxLength(30, { message: 'password should be less than 30 characters' })
+  @MinLength(8, { message: clientMessages.auth.validation.minPassword })
+  @MaxLength(50, { message: clientMessages.auth.validation.maxPassword })
   password: string;
 }
 // sendCOde email

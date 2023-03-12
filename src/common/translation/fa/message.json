@@ -1,5 +1,9 @@
 {
   "auth": {
+    "validation": {
+      "minPassword": "رمز عبور حداقل باید 8 کاراکتر باشد",
+      "maxPassword": "رمز عبور حداکثر 50 کاراکتر میتواند باشد"
+    },
     "alreadyExists": "ایمیل وارد شده در سایت وجود دارد",
     "notFoundEmail": "کاربری با ایمیل وارد شده شده پیدا نشد.",
     "tooMuchOtp": "درخواست بیش از حد برای کد تایید.",
@@ -8,9 +12,29 @@
     "expiredOtp": "کد تایید شما منقضی شده است",
     "notFoundUser": "کاربر مورد نظر یافت نشد",
     "notExistUser": "کاربری یا این ایمیل وجود ندارد",
-    "passworsDon'tMatch": "رمز و تایید رمز یکسان نمیباشند"
+    "passworsDontMatch": "رمز و تایید رمز یکسان نمیباشند"
   },
+
   "server": {
     "internalServer": "اتفاقی در سرور افتاده ،لطفا صبور باشید"
+  },
+
+  "file": {
+    "notValidType": "نوع فایل معتبر نمی باشد",
+    "notValidSubject": "درس وارد شده معتبر نمی باشد",
+    "fileNotFound": "فایل موردنظر وجود ندارد",
+    "validation": {
+      "maxTitle": "عنوان حداکثر 30 کارکتر می تواند باشد",
+      "maxDescription": "توضیحات حداکثر 255 کاراکتر می تواند باشد"
+    }
+  },
+  "professor": {
+    "professorAlredyExists": "با ایمیل مورد نظر استاد ثبت شده است یا در انتظار تایید استاد می باشد",
+    "prfessorNorFound": "استاد پیدا نشد",
+    "validation": {}
+  },
+  "subject": {
+    "subjectNotFound": "درس مورد نظر یافت نشد",
+    "subjectAlerdyExist": "درس مورد نظر وجود دارد"
   }
 }

@@ -13,7 +13,7 @@ import { File as FileModel } from '@prisma/client';
 import * as mime from 'mime-types';
 import { UpdateFileDto } from './Dto/update.file.Dto';
 import { Success } from '../auth/doc/types/success.return.type';
-import { bool } from 'aws-sdk/clients/signer';
+import clientMessages from 'src/common/translation/fa';
 
 @Injectable()
 export class FileService {
@@ -29,8 +29,11 @@ export class FileService {
     }
 
     if (!this.isValidType(file.mimetype))
-      throw new HttpException('File type not valid!', HttpStatus.FORBIDDEN);
-      
+      throw new HttpException(
+        clientMessages.file.notValidType,
+        HttpStatus.FORBIDDEN,
+      );
+
     const size = Math.round(file.size / 1000);
     const fileType = `${mime.extension(file.mimetype)}`;
 
@@ -50,7 +53,7 @@ export class FileService {
   async deleteFile(id: number) {
     const file = await this.fileRepository.findById(id);
 
-    if (!file) throw new BadRequestException('File Not Found');
+    if (!file) throw new BadRequestException(clientMessages.file.fileNotFound);
 
     await this.s3.deleteFile('jozveh', file.fileName);
     await this.fileRepository.delete(id);
@@ -64,7 +67,7 @@ export class FileService {
   ): Promise<Success | undefined> {
     const file = await this.fileRepository.findById(id);
     if (!file) {
-      throw new BadRequestException('file not found');
+      throw new BadRequestException(clientMessages.file.fileNotFound);
     }
     await this.fileRepository.update(id, updateFileDto);
     return { success: true };
@@ -77,12 +80,16 @@ export class FileService {
   async accept(id: number): Promise<FileModel> {
     const file = await this.fileRepository.findById(id);
 
-    if (!file) throw new HttpException('not found file', HttpStatus.NOT_FOUND);
+    if (!file)
+      throw new HttpException(
+        clientMessages.file.fileNotFound,
+        HttpStatus.NOT_FOUND,
+      );
 
     return await this.fileRepository.accept(id);
   }
 
-  isValidType(mimeType: string): Boolean {
+  isValidType(mimeType: string): boolean {
     const allowedFileExtensions = [
       'pdf',
       'doc',
