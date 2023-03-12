@@ -8,6 +8,7 @@ import { CreateProfessorDto } from './Dto/professor.Dto';
 import { Professor } from './interfaces/professor.interface';
 import { ProfessorRepository } from './professor.repository';
 import * as _ from 'lodash';
+import clientMessages from 'src/common/translation/fa';
 @Injectable()
 export class ProfessorService {
   constructor(private readonly professorRepository: ProfessorRepository) {}
@@ -18,7 +19,7 @@ export class ProfessorService {
     const existsProfessr = await this.findByEmail(createProfessorDto.email);
     if (existsProfessr && !existsProfessr.isVerified)
       throw new BadRequestException(
-        "professor with this email already exists or not verified yet ,please change email or do with existed professor's  prifle...",
+        clientMessages.professor.professorAlredyExists,
       );
     return this.professorRepository.create(createProfessorDto);
   }
@@ -28,7 +29,7 @@ export class ProfessorService {
 
     if (!prof || !prof.isVerified) {
       throw new HttpException(
-        'NOT found prof or not verified',
+        clientMessages.professor.prfessorNorFound,
         HttpStatus.NOT_FOUND,
       );
     }
@@ -67,7 +68,10 @@ export class ProfessorService {
     const professor = await this.professorRepository.findById(id);
 
     if (!professor) {
-      throw new HttpException('professor not found', HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        clientMessages.professor.prfessorNorFound,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     return await this.professorRepository.deletetProfessor(id);
@@ -76,7 +80,10 @@ export class ProfessorService {
   async accept(id: number) {
     const professor = await this.professorRepository.findById(id);
     if (!professor) {
-      throw new HttpException('professor not found', HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        clientMessages.professor.prfessorNorFound,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     return await this.professorRepository.accept(id);
@@ -85,13 +92,12 @@ export class ProfessorService {
   async reject(id: number) {
     const professor = await this.professorRepository.findById(id);
     if (!professor) {
-      throw new HttpException('professor not found', HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        clientMessages.professor.prfessorNorFound,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     return await this.professorRepository.reject(id);
   }
 }
-
-/// model for email that is unique
-
-// api/professor/university/  body{"uni":""}
