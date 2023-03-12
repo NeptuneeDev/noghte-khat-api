@@ -19,7 +19,8 @@ import { VerficationDto } from './Dto/user-signUp.dto';
 import { User } from '../user/interfaces/user.interface';
 import _ from 'lodash';
 import { Success } from './doc/types/success.return.type';
-import * as clientMessages from '../../common/translation/fa/message.json';
+import clientMessages from 'src/common/translation/fa';
+
 @Injectable()
 export class AuthService {
   constructor(
