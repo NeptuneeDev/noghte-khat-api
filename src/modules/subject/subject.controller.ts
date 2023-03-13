@@ -11,7 +11,7 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { SubjectService } from './subject.service';
-import { CreateSubjectDto } from './dto/create-update.dto';
+import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Roles } from '../../common/decorators/roles.decorator';

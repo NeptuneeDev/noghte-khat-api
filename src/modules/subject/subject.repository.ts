@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { includes } from 'lodash';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateSubjectDto } from './dto/create-update.dto';
+import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { Subject } from './interfaces/subject.interface';
 @Injectable()

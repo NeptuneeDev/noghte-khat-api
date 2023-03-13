@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateSubjectDto } from './dto/create-update.dto';
+import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { SubjectRepository } from './subject.repository';
 import { Subject } from './interfaces/subject.interface';

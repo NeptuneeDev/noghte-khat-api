@@ -30,7 +30,7 @@ import {
   ApiUploadFileDoc,
 } from './Doc/api.response';
 import { UpdateFileDto } from './Dto/update.file.Dto';
-import { GetCurrentUserId } from 'src/common/decorators';
+import { GetCurrentUserId, Public } from 'src/common/decorators';
 import { RtGuard } from 'src/common/guards/rt.guard';
 import { Request } from 'express';
 
@@ -88,15 +88,71 @@ export class FileController {
     return await this.fileService.update(id, updateFileDto);
   }
 
+  ////////////////////////////////////--------------------
+
   @UseGuards(RtGuard)
-  @Post('like/:id')
-  async likeFile(
+  @Post(':id/like')
+  async like(
     @GetCurrentUserId() userId: number,
     @Param('id', ParseIntPipe) id: number,
-    @Req() req: Request,
   ) {
-    const user = req;
+    return await this.fileService.like(userId, id);
+  }
 
-    return userId;
+  @UseGuards(RtGuard)
+  @Get(':id/liked')
+  async userHasLikedFile(
+    @GetCurrentUserId() userId: number,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return await this.fileService.userHasLikedFile(userId, id);
+  }
+
+  @Public()
+  @Get(':id/likes')
+  async getNumberOfLikes(@Param('id', ParseIntPipe) id: number) {
+    return await this.fileService.getNumberOfLikes(id);
+  }
+
+  @UseGuards(RtGuard)
+  @Post(':id/removalLike')
+  async removalLike(
+    @GetCurrentUserId() userId: number,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return await this.fileService.removalLike(userId, id);
+  }
+  ////////////////////////////////////////////////////////////
+
+  @UseGuards(RtGuard)
+  @Post(':id/dislike')
+  async disLike(
+    @GetCurrentUserId() userId: number,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return await this.fileService.disLike(userId, id);
+  }
+
+  @UseGuards(RtGuard)
+  @Get(':id/disLiked')
+  async userHasDisLikedFile(
+    @GetCurrentUserId() userId: number,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return await this.fileService.userHasDisLikedFile(userId, id);
+  }
+
+  @Public()
+  @Get(':id/disLikes')
+  async getNumberOfDisLikes(@Param('id', ParseIntPipe) id: number) {
+    return await this.fileService.getNumberOfDisLikes(id);
+  }
+  @UseGuards(RtGuard)
+  @Post(':id/removalDislike')
+  async removalDisLike(
+    @GetCurrentUserId() userId: number,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return await this.fileService.removalDisLike(userId, id);
   }
 }

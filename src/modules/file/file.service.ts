@@ -108,4 +108,85 @@ export class FileService {
 
     return false;
   }
+  async findByIdOrThrowExpection(
+    fileId: number,
+  ): Promise<FileModel | undefined> {
+    const file = await this.fileRepository.findById(fileId);
+    if (!file || !file.isVerified) {
+      throw new BadRequestException(clientMessages.file.fileNotFound);
+    }
+    return file;
+  }
+
+  async like(userId: number, fileId: number): Promise<Success | undefined> {
+    await this.findByIdOrThrowExpection(fileId);
+    const hasLiked = await this.fileRepository.userHasLikedFile(userId, fileId);
+    if (hasLiked) {
+      throw new BadRequestException(clientMessages.file.hasAlreadyLiked);
+    }
+    await this.fileRepository.like(userId, fileId);
+    return { success: true };
+  }
+
+  async userHasLikedFile(userId: number, fileId: number): Promise<boolean> {
+    await this.findByIdOrThrowExpection(fileId);
+    const hasLiked = await this.fileRepository.userHasLikedFile(userId, fileId);
+    return hasLiked ? true : false;
+  }
+
+  async getNumberOfLikes(fileId: number) {
+    await this.findByIdOrThrowExpection(fileId);
+    return await this.fileRepository.getNumberOFlikes(fileId);
+  }
+
+  async removalLike(
+    userId: number,
+    fileId: number,
+  ): Promise<Success | undefined> {
+    await this.findByIdOrThrowExpection(fileId);
+    const hasLiked = await this.fileRepository.userHasLikedFile(userId, fileId);
+    if (!hasLiked) {
+      throw new BadRequestException(clientMessages.file.userDidnotLike);
+    }
+    await this.fileRepository.removalLike(userId, fileId);
+    return { success: true };
+  }
+
+  async disLike(userId: number, fileId: number): Promise<Success | undefined> {
+    await this.findByIdOrThrowExpection(fileId);
+    const disLiked = await this.userHasDisLikedFile(userId, fileId);
+    if (disLiked) {
+      throw new BadRequestException(clientMessages.file.hasAlreadyDisliked);
+    }
+    await this.fileRepository.disLike(userId, fileId);
+
+    return { success: true };
+  }
+
+  async userHasDisLikedFile(userId: number, fileId: number): Promise<boolean> {
+    await this.findByIdOrThrowExpection(fileId);
+    const hasDisLiked = await this.fileRepository.userHasDisLikedFile(
+      userId,
+      fileId,
+    );
+    return hasDisLiked ? true : false;
+  }
+
+  async getNumberOfDisLikes(fileId: number) {
+    await this.findByIdOrThrowExpection(fileId);
+    return await this.fileRepository.getNumberOFDisLikes(fileId);
+  }
+
+  async removalDisLike(
+    userId: number,
+    fileId: number,
+  ): Promise<Success | undefined> {
+    await this.findByIdOrThrowExpection(fileId);
+    const disLiked = await this.userHasDisLikedFile(userId, fileId);
+    if (!disLiked) {
+      throw new BadRequestException(clientMessages.file.userdidnotDislike);
+    }
+    await this.fileRepository.removalDisLike(userId, fileId);
+    return { success: true };
+  }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UploadFileDto } from './Dto/upload.file.Dto';
-import { File as FileModel } from '@prisma/client';
+import { DisLikeFile, File as FileModel, LikeFile } from '@prisma/client';
 import { UpdateFileDto } from './Dto/update.file.Dto';
 
 @Injectable()
@@ -63,6 +63,90 @@ export class FileRepository {
       data: {
         isVerified: true,
         updatedAt: new Date().toISOString(),
+      },
+    });
+  }
+
+  async like(userId: number, fileId: number): Promise<LikeFile> {
+    return await this.prisma.likeFile.create({
+      data: {
+        user: {
+          connect: { id: userId },
+        },
+        file: {
+          connect: { id: fileId },
+        },
+      },
+    });
+  }
+
+  async removalLike(userId: number, fileId: number): Promise<LikeFile> {
+    return await this.prisma.likeFile.delete({
+      where: {
+        fileId_userId: {
+          fileId: fileId,
+          userId: userId,
+        },
+      },
+    });
+  }
+
+  async getNumberOFlikes(fileId: number): Promise<number> {
+    return await this.prisma.likeFile.count({ where: { fileId: fileId } });
+  }
+
+  async disLike(userId: number, fileId: number): Promise<DisLikeFile> {
+    return await this.prisma.disLikeFile.create({
+      data: {
+        user: {
+          connect: { id: userId },
+        },
+        file: {
+          connect: { id: fileId },
+        },
+      },
+    });
+  }
+
+  async removalDisLike(userId: number, fileId: number): Promise<DisLikeFile> {
+    return await this.prisma.disLikeFile.delete({
+      where: {
+        fileId_userId: {
+          fileId: fileId,
+          userId: userId,
+        },
+      },
+    });
+  }
+
+  async getNumberOFDisLikes(fileId: number): Promise<number> {
+    return await this.prisma.disLikeFile.count({ where: { fileId: fileId } });
+  }
+
+  async userHasLikedFile(
+    userId: number,
+    fileId: number,
+  ): Promise<LikeFile | undefined> {
+    return await this.prisma.likeFile.findUnique({
+      where: {
+        fileId_userId: {
+          fileId: fileId,
+          userId: userId,
+        },
+      },
+    });
+  }
+
+  async userHasDisLikedFile(
+    userId: number,
+    fileId: number,
+  ): Promise<DisLikeFile | undefined> {
+    return await this.prisma.likeFile.findUnique({
+      where: {
+        fileId_userId: {
+          fileId: fileId,
+          userId: userId,
+        },
       },
     });
   }
