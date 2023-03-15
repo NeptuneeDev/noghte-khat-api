@@ -38,7 +38,7 @@ export class AllExpectionsFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       if (exception.getStatus() >= 500) {
         Sentry.captureException(exception);
-        this.logger.log(`a prisma expection occures ${exception}`);
+        this.logger.log(`server side expection occured${exception}`);
       }
       const message =
         exception.getStatus() >= 500

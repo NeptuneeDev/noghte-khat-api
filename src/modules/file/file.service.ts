@@ -14,7 +14,7 @@ import * as mime from 'mime-types';
 import { UpdateFileDto } from './Dto/update.file.Dto';
 import { Success } from '../auth/doc/types/success.return.type';
 import clientMessages from 'src/common/translation/fa';
-
+import { ReactionType } from './Dto/reaction.file.Dto';
 @Injectable()
 export class FileService {
   constructor(
@@ -118,75 +118,42 @@ export class FileService {
     return file;
   }
 
-  async like(userId: number, fileId: number): Promise<Success | undefined> {
-    await this.findByIdOrThrowExpection(fileId);
-    const hasLiked = await this.fileRepository.userHasLikedFile(userId, fileId);
-    if (hasLiked) {
-      throw new BadRequestException(clientMessages.file.hasAlreadyLiked);
-    }
-    await this.fileRepository.like(userId, fileId);
-    return { success: true };
-  }
-
-  async userHasLikedFile(userId: number, fileId: number): Promise<boolean> {
-    await this.findByIdOrThrowExpection(fileId);
-    const hasLiked = await this.fileRepository.userHasLikedFile(userId, fileId);
-    return hasLiked ? true : false;
-  }
-
-  async getNumberOfLikes(fileId: number) {
-    await this.findByIdOrThrowExpection(fileId);
-    return await this.fileRepository.getNumberOFlikes(fileId);
-  }
-
-  async removalLike(
+  async saveUserReaction(
     userId: number,
     fileId: number,
+    reactionType: ReactionType,
   ): Promise<Success | undefined> {
     await this.findByIdOrThrowExpection(fileId);
-    const hasLiked = await this.fileRepository.userHasLikedFile(userId, fileId);
-    if (!hasLiked) {
-      throw new BadRequestException(clientMessages.file.userDidnotLike);
-    }
-    await this.fileRepository.removalLike(userId, fileId);
-    return { success: true };
-  }
-
-  async disLike(userId: number, fileId: number): Promise<Success | undefined> {
-    await this.findByIdOrThrowExpection(fileId);
-    const disLiked = await this.userHasDisLikedFile(userId, fileId);
-    if (disLiked) {
-      throw new BadRequestException(clientMessages.file.hasAlreadyDisliked);
-    }
-    await this.fileRepository.disLike(userId, fileId);
-
-    return { success: true };
-  }
-
-  async userHasDisLikedFile(userId: number, fileId: number): Promise<boolean> {
-    await this.findByIdOrThrowExpection(fileId);
-    const hasDisLiked = await this.fileRepository.userHasDisLikedFile(
+    const existingReaction = await this.fileRepository.getReactOf(
       userId,
       fileId,
     );
-    return hasDisLiked ? true : false;
+    if (existingReaction && existingReaction.reaction === reactionType) {
+      throw new BadRequestException(clientMessages.file.reaction.same);
+    }
+    await this.fileRepository.saveUserReaction(userId, fileId, reactionType);
+
+    return { success: true };
   }
 
-  async getNumberOfDisLikes(fileId: number) {
-    await this.findByIdOrThrowExpection(fileId);
-    return await this.fileRepository.getNumberOFDisLikes(fileId);
-  }
-
-  async removalDisLike(
+  async romveUserReaction(
     userId: number,
     fileId: number,
   ): Promise<Success | undefined> {
     await this.findByIdOrThrowExpection(fileId);
-    const disLiked = await this.userHasDisLikedFile(userId, fileId);
-    if (!disLiked) {
-      throw new BadRequestException(clientMessages.file.userdidnotDislike);
+    const existedReact = await this.fileRepository.getReactOf(userId, fileId);
+    if (!existedReact) {
+      throw new BadRequestException(clientMessages.file.reaction.notFound);
     }
-    await this.fileRepository.removalDisLike(userId, fileId);
+    await this.fileRepository.removeUserReaction(userId, fileId);
     return { success: true };
   }
+
+  async getUserReactionToFillesOFSubject(userId: number, subjectId: number) {
+    return await this.fileRepository.getUserReactedFilesInSubject(
+      userId,
+      subjectId,
+    );
+  }
+ 
 }

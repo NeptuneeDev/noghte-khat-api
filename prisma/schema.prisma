@@ -14,8 +14,7 @@ model User {
   id         Int        @default(autoincrement()) @id
   email      String     @unique
   name       String
-  likesFiles  LikeFile[] 
-  dislikesFiles DisLikeFile[]
+  UserFileReactions   UserFileReaction[]
   createdAt  DateTime   @default(now())
   updateAt   DateTime   @default(now())
   password   String
@@ -70,27 +69,30 @@ model File {
   isVerified  Boolean  @default(false)
   subject Subject @relation(fields: [subjectId],references: [id])
   subjectId Int
-  likes  LikeFile[]
-  dislikes DisLikeFile[]
+  UserFileReactions UserFileReaction[]   
+  numberOfLikes Int @default(0)
+  numberOfDisLikes Int @default(0)
   createdAt DateTime
   updatedAt DateTime
 }
 
-model LikeFile {
- file File @relation(fields: [fileId],references: [id])
+
+
+model UserFileReaction{
+
+ file File @relation(fields: [fileId],references: [id] , onDelete: Cascade)
  fileId Int 
  
  user User @relation(fields: [userId],references: [id])
  userId Int
+
+ reaction UserReaction
+ 
  @@id([fileId,userId])
+
 }
 
-
-model DisLikeFile {
- file File @relation(fields: [fileId],references: [id])
- fileId Int 
- 
- user User @relation(fields: [userId],references: [id])
- userId Int
- @@id([fileId,userId])
+enum UserReaction {
+  like
+  dislike
 }

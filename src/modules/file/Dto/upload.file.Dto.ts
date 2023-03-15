@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, MaxLength } from 'class-validator';
 import clientMessages from 'src/common/translation/fa';
-
 export class UploadFileDto {
   @ApiProperty()
   @IsString()
