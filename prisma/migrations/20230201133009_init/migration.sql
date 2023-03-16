@@ -1,9 +1,6 @@
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('user', 'admin');
 
--- CreateEnum
-CREATE TYPE "UserReaction" AS ENUM ('like', 'dislike');
-
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
@@ -61,25 +58,12 @@ CREATE TABLE "File" (
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "fileName" TEXT NOT NULL,
-    "type" TEXT NOT NULL DEFAULT '',
-    "size" INTEGER NOT NULL DEFAULT 0,
     "isVerified" BOOLEAN NOT NULL DEFAULT false,
     "subjectId" INTEGER NOT NULL,
-    "numberOfLikes" INTEGER NOT NULL DEFAULT 0,
-    "numberOfDisLikes" INTEGER NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "File_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "UserFileReaction" (
-    "fileId" INTEGER NOT NULL,
-    "userId" INTEGER NOT NULL,
-    "reaction" "UserReaction" NOT NULL,
-
-    CONSTRAINT "UserFileReaction_pkey" PRIMARY KEY ("fileId","userId")
 );
 
 -- CreateIndex
@@ -96,9 +80,3 @@ ALTER TABLE "Subject" ADD CONSTRAINT "Subject_professorId_fkey" FOREIGN KEY ("pr
 
 -- AddForeignKey
 ALTER TABLE "File" ADD CONSTRAINT "File_subjectId_fkey" FOREIGN KEY ("subjectId") REFERENCES "Subject"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "UserFileReaction" ADD CONSTRAINT "UserFileReaction_fileId_fkey" FOREIGN KEY ("fileId") REFERENCES "File"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "UserFileReaction" ADD CONSTRAINT "UserFileReaction_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
