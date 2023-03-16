@@ -8,7 +8,8 @@ import { CreateProfessorDto } from './Dto/professor.Dto';
 import { Professor } from './interfaces/professor.interface';
 import { ProfessorRepository } from './professor.repository';
 import * as _ from 'lodash';
-import clientMessages from 'src/common/translation/fa';
+import clientMessages from '../../common/translation/fa';
+
 @Injectable()
 export class ProfessorService {
   constructor(private readonly professorRepository: ProfessorRepository) {}
