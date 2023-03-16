@@ -33,6 +33,7 @@ import { UpdateFileDto } from './Dto/update.file.Dto';
 import { GetCurrentUserId, Public } from 'src/common/decorators';
 import { RtGuard } from 'src/common/guards/rt.guard';
 import { Request } from 'express';
+import { ReactionDto, ReactionType } from './Dto/reaction.file.Dto';
 
 @ApiTags('file')
 @Controller('file')
@@ -70,6 +71,13 @@ export class FileController {
   async findUnverifieds(): Promise<FileModel[]> {
     return await this.fileService.findUnverifieds();
   }
+  @Public()
+  @Get(':id')
+  async findById(
+    @Param('id', ParseIntPipe) fileId: number,
+  ): Promise<FileModel | undefined> {
+    return await this.fileService.findByIdOrThrowExpection(fileId);
+  }
 
   @Roles(Role.Admin)
   @Get('accept/:id')
@@ -88,71 +96,38 @@ export class FileController {
     return await this.fileService.update(id, updateFileDto);
   }
 
-  ////////////////////////////////////--------------------
-
   @UseGuards(RtGuard)
-  @Post(':id/like')
-  async like(
+  @Post(':fileId/react')
+  async react(
     @GetCurrentUserId() userId: number,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('fileId', ParseIntPipe) fileId: number,
+    @Body() reaction: ReactionDto,
   ) {
-    return await this.fileService.like(userId, id);
-  }
-
-  @UseGuards(RtGuard)
-  @Get(':id/liked')
-  async userHasLikedFile(
-    @GetCurrentUserId() userId: number,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
-    return await this.fileService.userHasLikedFile(userId, id);
-  }
-
-  @Public()
-  @Get(':id/likes')
-  async getNumberOfLikes(@Param('id', ParseIntPipe) id: number) {
-    return await this.fileService.getNumberOfLikes(id);
+    return await this.fileService.saveUserReaction(
+      userId,
+      fileId,
+      reaction.type,
+    );
   }
 
   @UseGuards(RtGuard)
-  @Post(':id/removalLike')
-  async removalLike(
+  @Get(':subjectId/userReactions')
+  async reara(
     @GetCurrentUserId() userId: number,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('subjectId', ParseIntPipe) subjectId: number,
   ) {
-    return await this.fileService.removalLike(userId, id);
-  }
-  ////////////////////////////////////////////////////////////
-
-  @UseGuards(RtGuard)
-  @Post(':id/dislike')
-  async disLike(
-    @GetCurrentUserId() userId: number,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
-    return await this.fileService.disLike(userId, id);
+    return await this.fileService.getUserReactionToFillesOFSubject(
+      userId,
+      subjectId,
+    );
   }
 
   @UseGuards(RtGuard)
-  @Get(':id/disLiked')
-  async userHasDisLikedFile(
+  @Delete(':fileId/react')
+  async removeUserReaction(
     @GetCurrentUserId() userId: number,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('fileId', ParseIntPipe) fileId: number,
   ) {
-    return await this.fileService.userHasDisLikedFile(userId, id);
-  }
-
-  @Public()
-  @Get(':id/disLikes')
-  async getNumberOfDisLikes(@Param('id', ParseIntPipe) id: number) {
-    return await this.fileService.getNumberOfDisLikes(id);
-  }
-  @UseGuards(RtGuard)
-  @Post(':id/removalDislike')
-  async removalDisLike(
-    @GetCurrentUserId() userId: number,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
-    return await this.fileService.removalDisLike(userId, id);
+    return await this.fileService.romveUserReaction(userId, fileId);
   }
 }

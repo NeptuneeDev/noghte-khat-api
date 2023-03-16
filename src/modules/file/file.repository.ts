@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UploadFileDto } from './Dto/upload.file.Dto';
-import { DisLikeFile, File as FileModel, LikeFile } from '@prisma/client';
 import { UpdateFileDto } from './Dto/update.file.Dto';
-
+import { File as FileModel } from '@prisma/client';
+import { ReactionType } from './Dto/reaction.file.Dto';
 @Injectable()
 export class FileRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -22,6 +22,8 @@ export class FileRepository {
         size: size,
         fileName: fileName,
         description: uploadFileDto.description,
+        numberOfDisLikes: 0,
+        numberOfLikes: 0,
         subject: { connect: { id: subjectId } },
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -67,21 +69,8 @@ export class FileRepository {
     });
   }
 
-  async like(userId: number, fileId: number): Promise<LikeFile> {
-    return await this.prisma.likeFile.create({
-      data: {
-        user: {
-          connect: { id: userId },
-        },
-        file: {
-          connect: { id: fileId },
-        },
-      },
-    });
-  }
-
-  async removalLike(userId: number, fileId: number): Promise<LikeFile> {
-    return await this.prisma.likeFile.delete({
+  async getReactOf(userId: number, fileId: number) {
+    return await this.prisma.userFileReaction.findUnique({
       where: {
         fileId_userId: {
           fileId: fileId,
@@ -91,62 +80,92 @@ export class FileRepository {
     });
   }
 
-  async getNumberOFlikes(fileId: number): Promise<number> {
-    return await this.prisma.likeFile.count({ where: { fileId: fileId } });
-  }
-
-  async disLike(userId: number, fileId: number): Promise<DisLikeFile> {
-    return await this.prisma.disLikeFile.create({
-      data: {
-        user: {
-          connect: { id: userId },
-        },
-        file: {
-          connect: { id: fileId },
-        },
-      },
-    });
-  }
-
-  async removalDisLike(userId: number, fileId: number): Promise<DisLikeFile> {
-    return await this.prisma.disLikeFile.delete({
-      where: {
-        fileId_userId: {
-          fileId: fileId,
-          userId: userId,
-        },
-      },
-    });
-  }
-
-  async getNumberOFDisLikes(fileId: number): Promise<number> {
-    return await this.prisma.disLikeFile.count({ where: { fileId: fileId } });
-  }
-
-  async userHasLikedFile(
+  async saveUserReaction(
     userId: number,
     fileId: number,
-  ): Promise<LikeFile | undefined> {
-    return await this.prisma.likeFile.findUnique({
-      where: {
-        fileId_userId: {
-          fileId: fileId,
-          userId: userId,
+    reaction: 'like' | 'dislike',
+  ) {
+    await this.prisma.$transaction(async (ctx) => {
+      await this.prisma.userFileReaction.upsert({
+        where: {
+          fileId_userId: {
+            fileId,
+            userId,
+          },
         },
-      },
+        update: {
+          reaction: reaction,
+        },
+        create: {
+          userId,
+          fileId,
+          reaction: reaction,
+        },
+      });
+
+      const numberOfLikes = await ctx.userFileReaction.count({
+        where: { fileId, reaction: 'like' },
+      });
+
+      const numberOfDisLikes = await ctx.userFileReaction.count({
+        where: { fileId, reaction: 'dislike' },
+      });
+
+      await ctx.file.update({
+        where: { id: fileId },
+        data: {
+          numberOfLikes,
+          numberOfDisLikes,
+        },
+      });
     });
   }
 
-  async userHasDisLikedFile(
-    userId: number,
-    fileId: number,
-  ): Promise<DisLikeFile | undefined> {
-    return await this.prisma.likeFile.findUnique({
-      where: {
-        fileId_userId: {
-          fileId: fileId,
-          userId: userId,
+  async removeUserReaction(userId: number, fileId: number) {
+    await this.prisma.$transaction(async (ctx) => {
+      await this.prisma.userFileReaction.delete({
+        where: {
+          fileId_userId: {
+            fileId,
+            userId,
+          },
         },
+      });
+
+      const numberOfLikes = await ctx.userFileReaction.count({
+        where: { fileId, reaction: 'like' },
+      });
+
+      const numberOfDisLikes = await ctx.userFileReaction.count({
+        where: { fileId, reaction: 'dislike' },
+      });
+
+      await ctx.file.update({
+        where: { id: fileId },
+        data: {
+          numberOfLikes,
+          numberOfDisLikes,
+        },
+      });
+    });
+  }
+  async getUserReactedFilesInSubject(userId: number, subjectId) {
+    return this.prisma.file.findMany({
+      where: {
+        subject: {
+          id: subjectId,
+        },
+        UserFileReactions: {
+          some: {
+            user: {
+              id: userId,
+            },
+          },
+        },
+      },
+
+      select: {
+        id: true,
       },
     });
   }
