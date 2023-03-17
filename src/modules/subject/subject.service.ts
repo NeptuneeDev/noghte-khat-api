@@ -10,7 +10,7 @@ import { SubjectRepository } from './subject.repository';
 import { Subject } from './interfaces/subject.interface';
 import { ProfessorService } from '../professor/professor.service';
 import { Success } from '../auth/doc/types/success.return.type';
-import clientMessages from 'src/common/translation/fa';
+import clientMessages from '../../common/translation/fa';
 
 @Injectable()
 export class SubjectService {

@@ -129,31 +129,26 @@ export class FileService {
       fileId,
     );
     if (existingReaction && existingReaction.reaction === reactionType) {
-      throw new BadRequestException(clientMessages.file.reaction.same);
+      await this.fileRepository.removeUserReaction(userId, fileId);
+      return { success: true };
     }
     await this.fileRepository.saveUserReaction(userId, fileId, reactionType);
 
     return { success: true };
   }
 
-  async romveUserReaction(
-    userId: number,
-    fileId: number,
-  ): Promise<Success | undefined> {
-    await this.findByIdOrThrowExpection(fileId);
-    const existedReact = await this.fileRepository.getReactOf(userId, fileId);
-    if (!existedReact) {
-      throw new BadRequestException(clientMessages.file.reaction.notFound);
-    }
-    await this.fileRepository.removeUserReaction(userId, fileId);
-    return { success: true };
-  }
-
   async getUserReactionToFillesOFSubject(userId: number, subjectId: number) {
-    return await this.fileRepository.getUserReactedFilesInSubject(
+    const reactions = await this.fileRepository.getUserReactedFilesInSubject(
       userId,
       subjectId,
     );
+
+    reactions.map((item) => {
+      const userFileReaction = item.UserFileReactions[0];
+      return {
+        fileId: userFileReaction.fileId,
+        reaction: userFileReaction.reaction,
+      };
+    });
   }
- 
 }

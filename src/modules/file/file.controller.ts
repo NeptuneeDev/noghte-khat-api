@@ -122,12 +122,5 @@ export class FileController {
     );
   }
 
-  @UseGuards(RtGuard)
-  @Delete(':fileId/react')
-  async removeUserReaction(
-    @GetCurrentUserId() userId: number,
-    @Param('fileId', ParseIntPipe) fileId: number,
-  ) {
-    return await this.fileService.romveUserReaction(userId, fileId);
-  }
+
 }

@@ -165,7 +165,12 @@ export class FileRepository {
       },
 
       select: {
-        id: true,
+        UserFileReactions: {
+          select: {
+            reaction: true,
+            fileId: true,
+          },
+        },
       },
     });
   }
