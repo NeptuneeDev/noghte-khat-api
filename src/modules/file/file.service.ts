@@ -143,7 +143,7 @@ export class FileService {
       subjectId,
     );
 
-    reactions.map((item) => {
+    return reactions.map((item) => {
       const userFileReaction = item.UserFileReactions[0];
       return {
         fileId: userFileReaction.fileId,

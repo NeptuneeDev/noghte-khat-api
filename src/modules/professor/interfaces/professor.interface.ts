@@ -1,4 +1,4 @@
-import { Subject } from '../../subject/interfaces/subject.interface';
+import { Subject } from '@prisma/client';
 import { File } from '@prisma/client';
 
 export interface Professor {
@@ -12,7 +12,7 @@ export interface Professor {
   isVerified: boolean;
   subject?: Subject[];
   file?: File[];
-  
+
   createdAt: Date;
 
   updatedAt: Date;

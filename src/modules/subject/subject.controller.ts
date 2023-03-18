@@ -16,7 +16,7 @@ import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../auth/types/roles.enum';
-import { Subject } from './interfaces/subject.interface';
+import { Subject } from '@prisma/client';
 import { ApiDeleteFileDoc, ApiUpdateFileDoc } from '../file/Doc/api.response';
 @ApiTags('Subject')
 @Controller('subject')

@@ -3,7 +3,7 @@ import { includes } from 'lodash';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
-import { Subject } from './interfaces/subject.interface';
+import { Subject } from '@prisma/client';
 @Injectable()
 export class SubjectRepository {
   constructor(private readonly prisma: PrismaService) {}
