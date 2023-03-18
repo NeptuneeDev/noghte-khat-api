@@ -12,13 +12,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { CookieOptions, Response } from 'express';
+import { CookieOptions, Request, Response } from 'express';
 import {
   GetCurrentUser,
   GetCurrentUserId,
   Public,
 } from '../../common/decorators';
-import { RtGuard } from '../../common/guards/rt.guard';
+import { RtGuard } from './guards/rt.guard';
 import { AuthService } from './auth.service';
 import {
   ForgetPasswordDto,
@@ -33,9 +33,12 @@ import {
   ApiSendCodeDoc,
   ApiSignUpDoc,
 } from './doc/api-response.body';
-import { UserInit } from './Dto/user-init.dto';
+import { UserInit } from './types/user-init.type';
 import { UserLoginDto } from './Dto/user-login.Dto';
 import { SignUpDto, VerficationDto } from './Dto/user-signUp.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { googleOAuthGuard } from './guards/google.ouath.guard';
+import { GoogleUserInfo } from './types/google.user';
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
@@ -87,7 +90,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiLoginDoc()
   async login(@Body() userLogInDto: UserLoginDto, @Res() res: Response) {
-    const { tokens, user } = await this.authService.logIn(userLogInDto);
+    const  tokens  = await this.authService.logIn(userLogInDto);
     this.setCookie(res, 'access_token', tokens.access_token, this.acExp);
     this.setCookie(res, 'refresh_token', tokens.refresh_token, this.refExp);
 
@@ -116,6 +119,32 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   async sendCode(@Body() verificationDto: VerficationDto) {
     return await this.authService.sendCode(verificationDto);
+  }
+
+  // auth/google
+  @Public()
+  @UseGuards(googleOAuthGuard)
+  @Get('google')
+  async logInBygoogle(@Req() req: Request) {}
+
+  //  auth/google-redirect
+  @Public()
+  @UseGuards()
+  @UseGuards(googleOAuthGuard)
+  @Get('google-redirect')
+  async redirectgoogle(@Req() req: Request, @Res() res: Response) {
+    const user: GoogleUserInfo = req.user as any;
+    const { firstName, lastName, email } = user;
+    const tokens  = await this.authService.loginBygoogle({
+      firstName,
+      lastName,
+      email,
+    });
+
+    this.setCookie(res, 'access_token', tokens.access_token, this.acExp);
+    this.setCookie(res, 'refresh_token', tokens.refresh_token, this.refExp);
+
+    return res.send({ success: true });
   }
 
   @Public()
