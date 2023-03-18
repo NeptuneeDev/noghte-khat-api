@@ -17,7 +17,7 @@ model User {
   UserFileReactions   UserFileReaction[]
   createdAt  DateTime   @default(now())
   updateAt   DateTime   @default(now())
-  password   String
+  password   String?
   role       Role        @default(user)
   hashedRT   String?
   lastLoggedInTime DateTime?
