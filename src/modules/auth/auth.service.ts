@@ -2,9 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   HttpException,
-  HttpStatus,
   Injectable,
-  NotAcceptableException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Hash } from 'src/common/utils/Hash';
@@ -12,16 +10,14 @@ import { userRepository } from '../user/user.repository';
 import { UserLoginDto } from './Dto/user-login.Dto';
 import { SignUpDto } from './Dto/user-signUp.dto';
 import { AuthRepository } from './auth.repository';
-import { Verification } from '@prisma/client';
 import { JwtPayload, Tokens } from './types';
 import { VerficationDto } from './Dto/user-signUp.dto';
 import { User } from '../user/interfaces/user.interface';
-import _ from 'lodash';
 import { Success } from './doc/types/success.return.type';
 import clientMessages from 'src/common/translation/fa';
 import { GoogleUserInfo } from './types/google.user';
-import { Otp } from 'src/common/utils/Otp';
 import { MailService } from '../mail/mail.service';
+import { OtpService } from './otp.service';
 
 @Injectable()
 export class AuthService {
@@ -30,7 +26,7 @@ export class AuthService {
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
     private readonly userRepository: userRepository,
-    private readonly otp: Otp,
+    private readonly otp: OtpService,
   ) {}
 
   async logIn(userLogInDto: UserLoginDto) {
@@ -70,7 +66,10 @@ export class AuthService {
   async loginBygoogle(googleUserInfo: GoogleUserInfo): Promise<Tokens> {
     const { firstName, lastName, email } = googleUserInfo;
     const name = firstName + ' ' + lastName;
-    let user: Partial<User> = await this.userRepository.upsert({ email, name });
+    const user: Partial<User> = await this.userRepository.upsert({
+      email,
+      name,
+    });
     return await this.getTokens({ sub: user.id, role: user.role });
   }
 
@@ -154,7 +153,7 @@ export class AuthService {
       expiresIn: '15m',
     });
     const link = `https://noghteh-khat.ir/new-password/${user.id}/Hard`;
-    await this.mailService.send(link, email);
+    await this.mailService.forgetPassword(link, email);
     return { sucess: true };
   }
   async validateResetPasswordToken(id: number, token: string) {
@@ -194,7 +193,7 @@ export class AuthService {
     }
   }
 
-  async validateEmailForSignUp(email: string): Promise<Boolean | undefined> {
+  async validateEmailForSignUp(email: string): Promise<boolean | undefined> {
     const user = await this.userRepository.find(email);
 
     if (user) {
@@ -206,7 +205,7 @@ export class AuthService {
   async validateVerifications(
     email: string,
     otp: number,
-  ): Promise<Boolean | undefined> {
+  ): Promise<boolean | undefined> {
     const verification = await this.authRepository.findVarification(email);
     if (!verification) {
       throw new BadRequestException(clientMessages.auth.tryOtp);
