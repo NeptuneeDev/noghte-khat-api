@@ -42,8 +42,8 @@ import { GoogleUserInfo } from './types/google.user';
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  private acExp = 15 * 60 * 1000; // access token expiration time 15m
-  private refExp = 7 * 24 * 60 * 60 * 1000; //refresh token expiration 7d
+  private readonly atExp = 15 * 60 * 1000; // access token expiration time 15m
+  private readonly rtExp = 7 * 24 * 60 * 60 * 1000; //refresh token expiration 7d
   constructor(private readonly authService: AuthService) {}
   private setCookie = (
     res: Response,
@@ -79,8 +79,8 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const tokens = await this.authService.signUp(signUpDto);
-    this.setCookie(res, 'access_token', tokens.access_token, this.acExp);
-    this.setCookie(res, 'refresh_token', tokens.refresh_token, this.refExp);
+    this.setCookie(res, 'access_token', tokens.access_token, this.atExp);
+    this.setCookie(res, 'refresh_token', tokens.refresh_token, this.rtExp);
 
     return { success: true };
   }
@@ -90,9 +90,9 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiLoginDoc()
   async login(@Body() userLogInDto: UserLoginDto, @Res() res: Response) {
-    const  tokens  = await this.authService.logIn(userLogInDto);
-    this.setCookie(res, 'access_token', tokens.access_token, this.acExp);
-    this.setCookie(res, 'refresh_token', tokens.refresh_token, this.refExp);
+    const tokens = await this.authService.logIn(userLogInDto);
+    this.setCookie(res, 'access_token', tokens.access_token, this.atExp);
+    this.setCookie(res, 'refresh_token', tokens.refresh_token, this.rtExp);
 
     return res.send({ success: true });
   }
@@ -135,14 +135,14 @@ export class AuthController {
   async redirectgoogle(@Req() req: Request, @Res() res: Response) {
     const user: GoogleUserInfo = req.user as any;
     const { firstName, lastName, email } = user;
-    const tokens  = await this.authService.loginBygoogle({
+    const tokens = await this.authService.loginBygoogle({
       firstName,
       lastName,
       email,
     });
 
-    this.setCookie(res, 'access_token', tokens.access_token, this.acExp);
-    this.setCookie(res, 'refresh_token', tokens.refresh_token, this.refExp);
+    this.setCookie(res, 'access_token', tokens.access_token, this.atExp);
+    this.setCookie(res, 'refresh_token', tokens.refresh_token, this.rtExp);
 
     return res.send({ success: true });
   }
@@ -158,8 +158,8 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const tokens = await this.authService.refreshTokens(userId, refreshtoken);
-    this.setCookie(res, 'access_token', tokens.access_token, 900000);
-    this.setCookie(res, 'refresh_token', tokens.refresh_token, 86400000);
+    this.setCookie(res, 'access_token', tokens.access_token, this.atExp);
+    this.setCookie(res, 'refresh_token', tokens.refresh_token, this.rtExp);
 
     return res.send({ sucess: true });
   }
