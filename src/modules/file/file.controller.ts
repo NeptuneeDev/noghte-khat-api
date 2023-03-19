@@ -31,7 +31,7 @@ import {
 } from './Doc/api.response';
 import { UpdateFileDto } from './Dto/update.file.Dto';
 import { GetCurrentUserId, Public } from 'src/common/decorators';
-import { RtGuard } from 'src/common/guards/rt.guard';
+import { RtGuard } from '../../modules/auth/guards/rt.guard';
 import { Request } from 'express';
 import { ReactionDto, ReactionType } from './Dto/reaction.file.Dto';
 
@@ -121,6 +121,4 @@ export class FileController {
       subjectId,
     );
   }
-
-
 }

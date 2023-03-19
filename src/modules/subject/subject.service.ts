@@ -7,7 +7,7 @@ import {
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { SubjectRepository } from './subject.repository';
-import { Subject } from './interfaces/subject.interface';
+import { Subject } from '@prisma/client';
 import { ProfessorService } from '../professor/professor.service';
 import { Success } from '../auth/doc/types/success.return.type';
 import clientMessages from '../../common/translation/fa';

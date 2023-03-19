@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Verificaition } from './interfaces/verification.inteface';
+import { Verification } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { VerficationDto } from './Dto/user-signUp.dto';
 
@@ -10,7 +10,7 @@ export class AuthRepository {
   async upsertVarification(
     user: VerficationDto,
     code: string,
-  ): Promise<Verificaition> {
+  ): Promise<Verification> {
     return this.prisma.verification.upsert({
       where: { email: user.email },
       create: {
@@ -26,32 +26,9 @@ export class AuthRepository {
     });
   }
 
-  findVarification(email: string): Promise<Verificaition | undefined> {
+  findVarification(email: string): Promise<Verification | undefined> {
     return this.prisma.verification.findFirst({ where: { email } });
   }
 
-  async logOut(userId: number): Promise<boolean> {
-    await this.prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        hashedRT: null,
-      },
-    });
-    return true;
-  }
-  async updateRtHash(
-    userId: number,
-    hashedRefreshToken: string,
-  ): Promise<void> {
-    await this.prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        hashedRT: hashedRefreshToken,
-      },
-    });
-  }
+ 
 }
