@@ -7,7 +7,7 @@ import {
   ApiResponse,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { Success } from 'src/modules/auth/doc/types/success.return.type';
+import { Success } from '../../auth/doc/types/success.return.type';
 
 export const ApiUploadFileDoc = () => {
   return applyDecorators(
