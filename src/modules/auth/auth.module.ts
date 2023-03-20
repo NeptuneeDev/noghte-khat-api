@@ -7,9 +7,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './startegies/at.startegy';
 import { RefreshTokenStrategy } from './startegies/rt.strategy';
 import { googleStrategy } from './startegies/google.strategy';
-import { Otp } from '../../common/utils/Otp';
 import { MaileModule } from '../mail/mail.module';
 import { MailService } from '../mail/mail.service';
+import { OtpService } from './otp.service';
 @Module({
   imports: [
     JwtModule.register({ secret: process.env.SECRET_KEY }),
@@ -23,7 +23,7 @@ import { MailService } from '../mail/mail.service';
     RefreshTokenStrategy,
     googleStrategy,
     JwtStrategy,
-    Otp,
+    OtpService,
   ],
   controllers: [AuthController],
 })

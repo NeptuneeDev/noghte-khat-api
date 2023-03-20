@@ -16,7 +16,7 @@ export class MailService {
     return response;
   }
 
-  async send(link: string, email: string) {
+  async forgetPassword(link: string, email: string) {
     const response = await this.mailService.sendMail({
       to: email,
       subject: 'لینک فراموشی رمز عبور',

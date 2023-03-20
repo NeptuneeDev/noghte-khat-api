@@ -4,11 +4,11 @@ import {
   NotAcceptableException,
 } from '@nestjs/common';
 import { Verification } from '@prisma/client';
-import clientMessages from '../translation/fa';
-import { Hash } from './Hash';
+import clientMessages from 'src/common/translation/fa';
+import { Hash } from 'src/common/utils/Hash';
 
 Injectable();
-export class Otp {
+export class OtpService {
   generate(): number {
     const code = Math.floor(Math.random() * 9000 + 1000);
     return code;
