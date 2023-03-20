@@ -47,7 +47,11 @@ export class AuthService {
       throw new BadRequestException(clientMessages.auth.invalidCredentials);
     }
 
-    return await this.getTokens({ sub: user.id, role: user.role });
+    return await this.getTokens({
+      sub: user.id,
+      role: user.role,
+      name: user.name,
+    });
   }
 
   async signUp(signUPDto: SignUpDto): Promise<Tokens> {
@@ -64,6 +68,7 @@ export class AuthService {
     return await this.getTokens({
       sub: user.id,
       role: user.role,
+      name: user.name,
     });
   }
 
@@ -71,7 +76,12 @@ export class AuthService {
     const { firstName, lastName, email } = googleUserInfo;
     const name = firstName + ' ' + lastName;
     let user: Partial<User> = await this.userRepository.upsert({ email, name });
-    return await this.getTokens({ sub: user.id, role: user.role });
+
+    return await this.getTokens({
+      sub: user.id,
+      role: user.role,
+      name: user.name,
+    });
   }
 
   async logOut(userId: number): Promise<boolean> {
@@ -80,6 +90,8 @@ export class AuthService {
   }
 
   async refreshTokens(userId: number, refreshToken: string): Promise<Tokens> {
+    console.log('in refresh token function', userId);
+    console.log('this is refresh token', refreshToken);
     const user = await this.userRepository.findById(userId);
 
     if (!user || !user.hashedRT) throw new ForbiddenException('Access Denied');
@@ -87,7 +99,11 @@ export class AuthService {
     const rtMatches = await Hash.compare(refreshToken, user.hashedRT);
     if (!rtMatches) throw new ForbiddenException('Access Denied');
 
-    return await this.getTokens({ sub: user.id, role: user.role });
+    return await this.getTokens({
+      sub: user.id,
+      role: user.role,
+      name: user.name,
+    });
   }
 
   async updateRtHash(userId: number, refreshToken: string): Promise<void> {
@@ -148,7 +164,11 @@ export class AuthService {
     }
 
     const secret = process.env.SECRET_KEY + user.password;
-    const jwtPayload: JwtPayload = { sub: user.id, role: user.role };
+    const jwtPayload: JwtPayload = {
+      sub: user.id,
+      role: user.role,
+      name: user.name,
+    };
     const token = await this.jwtService.sign(jwtPayload, {
       secret: secret,
       expiresIn: '15m',

@@ -13,7 +13,7 @@ import { File as FileModel } from '@prisma/client';
 import * as mime from 'mime-types';
 import { UpdateFileDto } from './Dto/update.file.Dto';
 import { Success } from '../auth/doc/types/success.return.type';
-import clientMessages from 'src/common/translation/fa';
+import clientMessages from '../../common/translation/fa';
 import { ReactionType } from './Dto/reaction.file.Dto';
 @Injectable()
 export class FileService {

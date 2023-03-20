@@ -8,27 +8,38 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Req,
   Res,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Role } from '../auth/types/roles.enum';
-import { Public } from '../../common/decorators';
+import { GetCurrentUserId, Public } from '../../common/decorators';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { CreateProfessorDto, SearchByNameDto } from './Dto/professor.Dto';
 import { Professor } from './interfaces/professor.interface';
 import { ProfessorService } from './professor.service';
-
+import { PayloadExtractor } from 'src/common/middlewares/token.middleware';
+import * as cookieParser from 'cookie-parser';
+import { CookieParserMiddleware } from 'src/common/middlewares/cooki.parser.middleware';
+import { AtGuard } from '../auth/guards/at.guard';
+import { Request } from 'express';
+import { TokenInterceptor } from 'src/common/interceptors/token.interceptor';
 @ApiTags('professor')
 @Controller('professor')
 export class ProfessorController {
   constructor(private readonly professorService: ProfessorService) {}
 
+  @UseGuards(AtGuard)
   @Post()
   async createProfessor(
     @Body() createProfessorDto: CreateProfessorDto,
   ): Promise<Partial<Professor>> {
     return await this.professorService.create(createProfessorDto);
   }
+
+  @UseGuards(AtGuard)
   @Roles(Role.Admin)
   @Get('unverifieds')
   async getUnverifieds(): Promise<Professor[]> {
@@ -56,18 +67,26 @@ export class ProfessorController {
     return await this.professorService.findAll();
   }
 
-  @Public()
+  @UseInterceptors(TokenInterceptor)
   @Get(':id')
-  async findById(@Param('id', ParseIntPipe) id: number) {
-    return await this.professorService.findById(id);
+  async findById(
+    @Param('id', ParseIntPipe) id: number,
+    @GetCurrentUserId() userId: number,
+    @Req() req: Request,
+  ) {
+    console.log(userId);
+    return userId;
+    // return await this.professorService.findById(id);
   }
 
+  @UseGuards(AtGuard)
   @Roles(Role.Admin)
   @Get('accept/:id')
   async accept(@Param('id', ParseIntPipe) professorId: number) {
     return await this.professorService.accept(professorId);
   }
 
+  @UseGuards(AtGuard)
   @Roles(Role.Admin)
   @Delete('delete/:id')
   async reject(

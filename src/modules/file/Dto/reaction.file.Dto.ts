@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsString, MaxLength } from 'class-validator';
-import clientMessages from 'src/common/translation/fa';
+import clientMessages from '../../../common/translation/fa';
 
 export enum ReactionType {
   like = 'like',
