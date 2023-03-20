@@ -34,7 +34,7 @@ export class SubjectRepository {
   findOne(id: number): Promise<Subject | undefined> {
     return this.prisma.subject.findUnique({
       where: { id: id },
-      include: { file: true },
+      include: { files: true },
     });
   }
 

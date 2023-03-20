@@ -10,8 +10,8 @@ export interface Professor {
 
   university: string;
   isVerified: boolean;
-  subject?: Subject[];
-  file?: File[];
+  subjectss?: Subject[];
+  files?: File[];
 
   createdAt: Date;
 

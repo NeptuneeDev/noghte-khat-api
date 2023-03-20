@@ -25,6 +25,21 @@ export class ProfessorService {
     return this.professorRepository.create(createProfessorDto);
   }
 
+  async getProfessorAndReactions(
+    id: number,
+    userId: number | undefined,
+  ): Promise<Professor | undefined> {
+         
+     
+    const prof = await this.professorRepository.getProfessorAndReactions(id, userId);
+
+    if (!prof || !prof.isVerified) {
+      throw new BadRequestException(clientMessages.professor.prfessorNorFound);
+    }
+
+    return prof;
+  }
+
   async findById(id: number): Promise<Professor | undefined> {
     const prof = await this.professorRepository.findById(id);
 

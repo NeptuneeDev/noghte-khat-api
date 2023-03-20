@@ -20,9 +20,6 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { CreateProfessorDto, SearchByNameDto } from './Dto/professor.Dto';
 import { Professor } from './interfaces/professor.interface';
 import { ProfessorService } from './professor.service';
-import { PayloadExtractor } from 'src/common/middlewares/token.middleware';
-import * as cookieParser from 'cookie-parser';
-import { CookieParserMiddleware } from 'src/common/middlewares/cooki.parser.middleware';
 import { AtGuard } from '../auth/guards/at.guard';
 import { Request } from 'express';
 import { TokenInterceptor } from 'src/common/interceptors/token.interceptor';
@@ -67,26 +64,22 @@ export class ProfessorController {
     return await this.professorService.findAll();
   }
 
+  @Public()
   @UseInterceptors(TokenInterceptor)
   @Get(':id')
   async findById(
     @Param('id', ParseIntPipe) id: number,
     @GetCurrentUserId() userId: number,
-    @Req() req: Request,
   ) {
-    console.log(userId);
-    return userId;
-    // return await this.professorService.findById(id);
+    return await this.professorService.getProfessorAndReactions(id, userId);
   }
 
-  @UseGuards(AtGuard)
   @Roles(Role.Admin)
   @Get('accept/:id')
   async accept(@Param('id', ParseIntPipe) professorId: number) {
     return await this.professorService.accept(professorId);
   }
 
-  @UseGuards(AtGuard)
   @Roles(Role.Admin)
   @Delete('delete/:id')
   async reject(

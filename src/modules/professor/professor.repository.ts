@@ -50,15 +50,33 @@ export class ProfessorRepository {
     return this.prisma.professor.delete({ where: { id } });
   }
 
-  async findById(id: number): Promise<Professor | undefined> {
+  async getProfessorAndReactions(
+    id: number,
+    userId: number,
+  ): Promise<Professor | undefined> {
     return this.prisma.professor.findUnique({
       where: { id },
       include: {
         lessons: {
           where: { isVerified: true },
-          include: { file: { where: { isVerified: true } } },
+          include: {
+            files: {
+              where: { isVerified: true },
+              include: {
+                UserFileReactions: {
+                  where: { userId: userId },
+                },
+              },
+            },
+          },
         },
       },
+    });
+  }
+
+  async findById(id: number) {
+    return this.prisma.professor.findUnique({
+      where: { id: id },
     });
   }
 

@@ -96,7 +96,6 @@ export class FileController {
     return await this.fileService.update(id, updateFileDto);
   }
 
-  @UseGuards(RtGuard)
   @Post(':fileId/react')
   async react(
     @GetCurrentUserId() userId: number,
@@ -110,7 +109,6 @@ export class FileController {
     );
   }
 
-  @UseGuards(RtGuard)
   @Get(':subjectId/userReactions')
   async reara(
     @GetCurrentUserId() userId: number,
