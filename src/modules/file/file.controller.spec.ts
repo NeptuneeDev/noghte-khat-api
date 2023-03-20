@@ -1,24 +1,35 @@
-// import { Test } from '@nestjs/testing';
+// import { Test, TestingModule } from '@nestjs/testing';
 // import { FileController } from './file.controller';
 // import { FileService } from './file.service';
+// import { SubjectService } from '../subject/subject.service';
+// import { FileRepository } from './file.repository';
+// import { SubjectRepository } from '../subject/subject.repository';
+// import { ProfessorModule } from '../professor/professor.module';
+// import { S3ManagerModule } from '../s3-manager/s3-manager.module';
+// import { SubjectModule } from '../subject/subject.module';
+// import { PrismaService } from '../prisma/prisma.service';
 
 // describe('FileController', () => {
 //   let fileController: FileController;
-//   let fileService: FileService;
-
 //   beforeEach(async () => {
-//     const moduleRef = await Test.createTestingModule({
+//     const module: TestingModule = await Test.createTestingModule({
+//       imports: [SubjectModule, ProfessorModule, S3ManagerModule],
 //       controllers: [FileController],
-//       providers: [FileService],
+//       providers: [
+//         FileService,
+//         FileRepository,
+//         SubjectService,
+//         SubjectRepository,
+//         PrismaService,
+//       ],
 //     }).compile();
 
-//     fileService = moduleRef.get<FileService>(FileService);
-//     fileController = moduleRef.get<FileController>(FileController);
+//     fileController = module.get<FileController>(FileController);
 //   });
 
 //   describe('findAll', () => {
 //     it('should return an array of cats', async () => {
-//       expect(fileController).toBeDefined();
+//       expect(FileController).toBeDefined();
 //     });
 //   });
 // });

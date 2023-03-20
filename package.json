@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "run:front": "npx prisma migrate dev && npx prisma generate && npm run start:dev",
+    "run:front": "npx prisma migrate dev --creat-only && npx prisma db push && npx prisma generate && npm run start:dev",
     "start:migrate:dev": "prisma migrate dev --name init && prisma generate",
     "prebuild": "rimraf dist",
     "build": "npx prisma generate && nest build",
@@ -87,24 +87,7 @@
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.1.1",
     "typescript": "^4.9.3"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
-  },
-  "moduleNameMapper": {
-    "^src/(.*)$": "<rootDir>/$1"
   }
+  
 }
+
