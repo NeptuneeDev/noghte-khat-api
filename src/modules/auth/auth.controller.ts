@@ -125,14 +125,7 @@ export class AuthController {
   @Public()
   @UseGuards(googleOAuthGuard)
   @Get('google')
-  async logInBygoogle(@Req() req: Request) {}
-
-  //  auth/google-redirect
-  @Public()
-  @UseGuards()
-  @UseGuards(googleOAuthGuard)
-  @Get('google-redirect')
-  async redirectgoogle(@Req() req: Request, @Res() res: Response) {
+  async logInBygoogle(@Req() req: Request, @Res() res: Response) {
     const user: GoogleUserInfo = req.user as any;
     const { firstName, lastName, email } = user;
     const tokens = await this.authService.loginBygoogle({
