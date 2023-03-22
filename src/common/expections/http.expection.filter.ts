@@ -29,7 +29,7 @@ export class AllExpectionsFilter implements ExceptionFilter {
       this.inferSystemError(exception, ctx) ??
       this.inferDateBaseErorr(exception, ctx) ??
       this.inferUnHandeledErorr(exception, ctx);
-    httpAdapter.reply(ctx.getResponse(), responseBody);
+    httpAdapter.reply(ctx.getResponse(), responseBody, responseBody.statusCode);
     console.log(exception);
   }
   inferSystemError(exception, ctx: HttpArgumentsHost) {
