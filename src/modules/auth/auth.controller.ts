@@ -99,8 +99,8 @@ export class AuthController {
 
   @Post('logout')
   @ApiLogOutDoc()
-  async logout(@Res() res: Response, @Req() req) {
-    const isLoggedOut = await this.authService.logOut(req.user.id);
+  async logout(@Res() res: Response, @GetCurrentUserId() userId: number) {
+    const isLoggedOut = await this.authService.logOut(userId);
 
     const clearCookieOptions: CookieOptions = {
       httpOnly: true,
