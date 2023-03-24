@@ -87,8 +87,7 @@ export class AuthService {
   }
 
   async refreshTokens(userId: number, refreshToken: string): Promise<Tokens> {
-    console.log('in refresh token function', userId);
-    console.log('this is refresh token', refreshToken);
+  
     const user = await this.userRepository.findById(userId);
 
     if (!user || !user.hashedRT) throw new ForbiddenException('Access Denied');
