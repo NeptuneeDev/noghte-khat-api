@@ -137,7 +137,13 @@ export class AuthController {
     this.setCookie(res, 'access_token', tokens.access_token, this.atExp);
     this.setCookie(res, 'refresh_token', tokens.refresh_token, this.rtExp);
 
-    return res.send({ success: true });
+    const url =
+      process.env.NODE_ENV !== 'production'
+        ? process.env.FRONTEND_URL
+        : process.env.ONLIEN_LANDING_PAGE;
+
+
+    return res.redirect(url);
   }
 
   @Public()
