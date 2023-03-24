@@ -125,7 +125,16 @@ export class AuthController {
   @Public()
   @UseGuards(googleOAuthGuard)
   @Get('google')
-  async logInBygoogle(@Req() req: Request, @Res() res: Response) {
+  async logInBygoogle(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {}
+
+
+  
+  @Get('google/redirect')
+  @UseGuards(googleOAuthGuard)
+  async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
     const user: GoogleUserInfo = req.user as any;
     const { firstName, lastName, email } = user;
     const tokens = await this.authService.loginBygoogle({
@@ -141,7 +150,6 @@ export class AuthController {
       process.env.NODE_ENV !== 'production'
         ? process.env.FRONTEND_URL
         : process.env.ONLIEN_LANDING_PAGE;
-
 
     return res.redirect(url);
   }
