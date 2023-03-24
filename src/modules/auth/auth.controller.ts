@@ -131,7 +131,7 @@ export class AuthController {
   ): Promise<void> {}
 
 
-  
+  @Public()
   @Get('google/redirect')
   @UseGuards(googleOAuthGuard)
   async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
