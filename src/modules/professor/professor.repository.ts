@@ -61,6 +61,7 @@ export class ProfessorRepository {
           where: { isVerified: true },
           include: {
             files: {
+              orderBy: [{ id: 'asc' }],
               where: { isVerified: true },
               include: {
                 UserFileReactions: {
