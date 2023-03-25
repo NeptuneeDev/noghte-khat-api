@@ -84,8 +84,7 @@ export class AuthService {
   }
 
   async logOut(userId: number): Promise<boolean> {
-    const isLogeddOut = await this.userRepository.logOut(userId);
-    return isLogeddOut;
+    return await this.userRepository.logOut(userId);
   }
 
   async refreshTokens(userId: number, refreshToken: string): Promise<Tokens> {
@@ -110,27 +109,33 @@ export class AuthService {
   }
 
   async getTokens(jwtPayload: JwtPayload): Promise<Tokens> {
-    const [at, rt] = await Promise.all([
-      this.jwtService.signAsync(jwtPayload, {
-        secret: process.env.SECRET_KEY,
-        expiresIn: '15m',
-      }),
-      this.jwtService.signAsync(jwtPayload, {
-        secret: process.env.SECRET_KEY,
-        expiresIn: '7d',
-      }),
-    ]);
+    const secretKey = process.env.SECRET_KEY;
+    const accessTokenOptions = { expiresIn: '15m' };
+    const refreshTokenOptions = { expiresIn: '7d' };
 
-    await this.updateRtHash(jwtPayload.sub, rt);
+    const accessToken = await this.signToken(
+      jwtPayload,
+      secretKey,
+      accessTokenOptions,
+    );
+    const refreshToken = await this.signToken(
+      jwtPayload,
+      secretKey,
+      refreshTokenOptions,
+    );
+    await this.updateRtHash(jwtPayload.sub, refreshToken);
 
-    return {
-      access_token: at,
-      refresh_token: rt,
-    };
+    return { access_token: accessToken, refresh_token: refreshToken };
   }
-  async sendCode(
-    verificationDto: VerficationDto,
-  ): Promise<Success | undefined> {
+
+  async signToken(payload: JwtPayload, secretKey: string, options: any) {
+    return await this.jwtService.signAsync(payload, {
+      secret: secretKey,
+      ...options,
+    });
+  }
+
+  async sendCode(verificationDto: VerficationDto): Promise<Success> {
     await this.validateEmailForSignUp(verificationDto.email);
     const varification = await this.authRepository.findVarification(
       verificationDto.email,
@@ -143,11 +148,10 @@ export class AuthService {
       throw new BadRequestException(clientMessages.auth.tooMuchOtp);
     }
 
-    const otp = this.otp.generate();
+    const otp = this.otp.generate().toString();
+    const hashedOtp = await Hash.hash(otp);
 
-    await this.mailService.sendOtp(otp, verificationDto.email);
-    const hashedOtp = await Hash.hash(otp + '');
-
+    await this.mailService.sendOtp(+otp, verificationDto.email);
     await this.authRepository.upsertVarification(verificationDto, hashedOtp);
 
     return { success: true };
@@ -172,6 +176,7 @@ export class AuthService {
     });
     const link = `https://noghteh-khat.ir/new-password/${user.id}/${token}`;
     await this.mailService.forgetPassword(link, email);
+
     return { sucess: true };
   }
 
@@ -191,6 +196,7 @@ export class AuthService {
       return { message: 'some thing is manipulated Or link is expired...' };
     }
   }
+
   async updatePassword(password: string, id: number, token: string) {
     const user = await this.userRepository.findById(id);
 
