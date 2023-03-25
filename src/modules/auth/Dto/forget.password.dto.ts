@@ -3,11 +3,8 @@ import { Transform } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
-  IsNumber,
   IsString,
-  Max,
   MaxLength,
-  Min,
   MinLength,
   Validate,
 } from 'class-validator';

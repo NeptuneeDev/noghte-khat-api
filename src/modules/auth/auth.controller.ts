@@ -38,6 +38,7 @@ import { UserLoginDto } from './Dto/user-login.Dto';
 import { SignUpDto, VerficationDto } from './Dto/user-signUp.dto';
 import { googleOAuthGuard } from './guards/google.ouath.guard';
 import { GoogleUserInfo } from './types/google.user';
+
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
@@ -129,7 +130,6 @@ export class AuthController {
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<void> {}
-
 
   @Public()
   @Get('google/redirect')
