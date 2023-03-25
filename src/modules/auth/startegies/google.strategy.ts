@@ -11,7 +11,7 @@ export class googleStrategy extends PassportStrategy(Strategy, 'google') {
       callbackURL:
         process.env.NODE_ENV !== 'production'
           ? 'http://localhost:5000/auth/google'
-          : 'https://api.noghteh-khat.ir/auth/google',
+          : 'https://api.noghteh-khat.ir/auth/google/redirect',
       scope: ['email', 'profile'],
     });
   }
