@@ -8,8 +8,8 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { GetCurrentUserId } from 'src/common/decorators';
-import { Roles } from 'src/common/decorators/roles.decorator';
+import { GetCurrentUserId } from '../../common/decorators/get-current-user-id.decorator';
+import { Roles } from '../../common/decorators/roles.decorator';
 import { RtGuard } from '../auth/guards/rt.guard';
 import { Role } from '../auth/types/roles.enum';
 import { CommentService } from './comment.service';
