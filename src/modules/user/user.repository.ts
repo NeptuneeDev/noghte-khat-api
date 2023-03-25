@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { PartiQLBatchResponse } from 'aws-sdk/clients/dynamodb';
 import { PrismaService } from '../prisma/prisma.service';
 import { User } from './interfaces/user.interface';
 @Injectable()
-export class userRepository {
+export class UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   find(email: string): Promise<User | undefined> {

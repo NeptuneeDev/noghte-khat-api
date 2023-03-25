@@ -26,7 +26,7 @@ export class AtGuard extends AuthGuard('jwt') {
   }
 
   handleRequest(err, user, info: Error) {
-    if (err || info) throw new HttpException( clientMessages.auth.login, 498);
+    if (err || info) throw new HttpException(clientMessages.auth.login, 498);
 
     if (!user) throw new UnauthorizedException('Access Denied.');
 

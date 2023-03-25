@@ -5,7 +5,6 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Observable } from 'rxjs/internal/Observable';
 import { JwtPayload } from 'src/modules/auth/types/jwtPayload.type';
 // import { Observable } from "rxjs";
 
