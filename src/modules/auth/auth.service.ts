@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Hash } from 'src/common/utils/Hash';
-import { userRepository } from '../user/user.repository';
 import { UserLoginDto } from './Dto/user-login.Dto';
 import { SignUpDto } from './Dto/user-signUp.dto';
 import { AuthRepository } from './auth.repository';
@@ -18,6 +17,7 @@ import clientMessages from 'src/common/translation/fa';
 import { GoogleUserInfo } from './types/google.user';
 import { MailService } from '../mail/mail.service';
 import { OtpService } from './otp.service';
+import { UserRepository } from '../user/user.repository';
 
 @Injectable()
 export class AuthService {
@@ -25,7 +25,7 @@ export class AuthService {
     private readonly authRepository: AuthRepository,
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
-    private readonly userRepository: userRepository,
+    private readonly userRepository: UserRepository,
     private readonly otp: OtpService,
   ) {}
 
@@ -71,14 +71,16 @@ export class AuthService {
   async loginBygoogle(googleUserInfo: GoogleUserInfo): Promise<Tokens> {
     const { firstName, lastName, email } = googleUserInfo;
     const name = firstName + ' ' + lastName;
-    let user: Partial<User> = await this.userRepository.upsert({ email, name });
+    const user: Partial<User> = await this.userRepository.upsert({
+      email,
+      name,
+    });
 
     return await this.getTokens({
       sub: user.id,
       role: user.role,
       name: user.name,
     });
-  
   }
 
   async logOut(userId: number): Promise<boolean> {
@@ -87,7 +89,6 @@ export class AuthService {
   }
 
   async refreshTokens(userId: number, refreshToken: string): Promise<Tokens> {
-  
     const user = await this.userRepository.findById(userId);
 
     if (!user || !user.hashedRT) throw new ForbiddenException('Access Denied');
@@ -169,10 +170,11 @@ export class AuthService {
       secret: secret,
       expiresIn: '15m',
     });
-    const link = `https://noghteh-khat.ir/new-password/${user.id}/Hard`;
+    const link = `https://noghteh-khat.ir/new-password/${user.id}/${token}`;
     await this.mailService.forgetPassword(link, email);
     return { sucess: true };
   }
+
   async validateResetPasswordToken(id: number, token: string) {
     const user = await this.userRepository.findById(id);
 
@@ -183,7 +185,7 @@ export class AuthService {
     const secret = process.env.SECRET_KEY + user.password;
 
     try {
-      const payload = await this.jwtService.verify(token, { secret: secret });
+      await this.jwtService.verify(token, { secret: secret });
       return { sucess: true };
     } catch (error) {
       return { message: 'some thing is manipulated Or link is expired...' };
@@ -199,7 +201,7 @@ export class AuthService {
     const secret = process.env.SECRET_KEY + user.password;
 
     try {
-      const payload = await this.jwtService.verify(token, { secret: secret });
+      await this.jwtService.verify(token, { secret: secret });
       const hashedPassword = await Hash.hash(password);
 
       await this.userRepository.updatePassword(id, hashedPassword);

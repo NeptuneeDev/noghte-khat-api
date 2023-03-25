@@ -29,6 +29,4 @@ export class AuthRepository {
   findVarification(email: string): Promise<Verification | undefined> {
     return this.prisma.verification.findFirst({ where: { email } });
   }
-
- 
 }

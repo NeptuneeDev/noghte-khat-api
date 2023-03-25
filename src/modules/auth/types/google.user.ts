@@ -1,5 +1,5 @@
-export class GoogleUserInfo  {
+export class GoogleUserInfo {
   firstName: string;
   lastName: string;
   email: string;
-};
+}
