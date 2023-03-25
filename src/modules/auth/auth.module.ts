@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { userRepository } from '../user/user.repository';
+import { UserRepository } from '../user/user.repository';
 import { AuthController } from './auth.controller';
 import { AuthRepository } from './auth.repository';
 import { AuthService } from './auth.service';
@@ -19,7 +19,7 @@ import { OtpService } from './otp.service';
     AuthService,
     AuthRepository,
     MailService,
-    userRepository,
+    UserRepository,
     RefreshTokenStrategy,
     googleStrategy,
     JwtStrategy,

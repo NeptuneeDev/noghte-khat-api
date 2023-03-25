@@ -1,17 +1,13 @@
 // import { ApiResponseOptions,ApiResponse } from "@nestjs/swagger";
 
-import { applyDecorators, Type } from '@nestjs/common';
+import { applyDecorators } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
-  ApiBody,
   ApiOkResponse,
-  getSchemaPath,
   ApiBearerAuth,
   ApiResponse,
   ApiForbiddenResponse,
 } from '@nestjs/swagger';
-import { stringify } from 'querystring';
-import { UserLoginDto } from '../Dto/user-login.Dto';
 import { LoginSuccess } from './types/login.success.type';
 import { Success } from './types/success.return.type';
 import { InValidJwtResponse } from './types/token.expired.return';

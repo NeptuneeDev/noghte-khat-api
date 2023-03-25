@@ -36,9 +36,9 @@ import {
 import { UserInit } from './types/user-init.type';
 import { UserLoginDto } from './Dto/user-login.Dto';
 import { SignUpDto, VerficationDto } from './Dto/user-signUp.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { googleOAuthGuard } from './guards/google.ouath.guard';
 import { GoogleUserInfo } from './types/google.user';
+
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
@@ -71,6 +71,7 @@ export class AuthController {
       role: user.role,
     };
   }
+
   @Public()
   @Post('signup')
   @ApiSignUpDoc()
@@ -113,6 +114,7 @@ export class AuthController {
 
     return res.send(isLoggedOut);
   }
+
   @Public()
   @Post('sendCode')
   @ApiSendCodeDoc()
@@ -121,7 +123,6 @@ export class AuthController {
     return await this.authService.sendCode(verificationDto);
   }
 
-  // auth/google
   @Public()
   @UseGuards(googleOAuthGuard)
   @Get('google')
@@ -129,7 +130,6 @@ export class AuthController {
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<void> {}
-
 
   @Public()
   @Get('google/redirect')
