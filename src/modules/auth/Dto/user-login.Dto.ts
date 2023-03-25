@@ -3,15 +3,10 @@ import { Transform } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
-  IsNumber,
   IsString,
-  Max,
   MaxLength,
-  Min,
   MinLength,
-  Validate,
 } from 'class-validator';
-import { CustomMatchPasswords } from 'src/common/utils/password.utils';
 import clientMessages from 'src/common/translation/fa';
 
 export class UserLoginDto {

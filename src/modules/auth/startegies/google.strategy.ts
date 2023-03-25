@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PassportSerializer, PassportStrategy } from '@nestjs/passport';
+import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-google-oauth20';
 
 @Injectable()
