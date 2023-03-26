@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import { InjectAwsService } from 'nest-aws-sdk';
 import * as path from 'path';
@@ -26,7 +22,7 @@ export class S3ManagerService {
     }
   }
 
-  async uploadFile(bucket: string, file: File): Promise<any> {
+  async uploadFile(bucket: string, file: File): Promise<{ key: string }> {
     try {
       // create unique key
       const fileUniqueName = await this.createUniqueFileKey(file.originalname);
@@ -40,23 +36,20 @@ export class S3ManagerService {
         })
         .promise();
 
-      return {
-        key: key,
-      };
+      return { key };
     } catch (error) {
       throw new InternalServerErrorException(error.message, error);
     }
   }
 
   async deleteFile(bucket: string, fileName: string) {
+    const params = {
+      Bucket: bucket,
+      Key: fileName,
+    };
+
     try {
-      const key = fileName;
-      await this.s3
-        .deleteObject({
-          Bucket: bucket,
-          Key: key,
-        })
-        .promise();
+      await this.s3.deleteObject(params).promise();
     } catch (error) {
       throw new InternalServerErrorException(error.message, error);
     }
