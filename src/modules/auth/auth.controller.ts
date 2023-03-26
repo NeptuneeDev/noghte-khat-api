@@ -126,10 +126,7 @@ export class AuthController {
   @Public()
   @UseGuards(googleOAuthGuard)
   @Get('google')
-  async logInBygoogle(
-    @Req() req: Request,
-    @Res() res: Response,
-  ): Promise<void> {}
+  async logInBygoogle(): Promise<void> {}
 
   @Public()
   @Get('google/redirect')
