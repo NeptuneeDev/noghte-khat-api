@@ -5,7 +5,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 export class MailService {
   constructor(private mailService: MailerService) {}
   async sendOtp(otp: number, email: string) {
-    const response = await this.mailService.sendMail({
+    return await this.mailService.sendMail({
       to: email,
       subject: 'کد تایید ایمیل شما',
       template: './otp',
@@ -13,11 +13,10 @@ export class MailService {
         otp,
       },
     });
-    return response;
   }
 
   async forgetPassword(link: string, email: string) {
-    const response = await this.mailService.sendMail({
+    return await this.mailService.sendMail({
       to: email,
       subject: 'لینک فراموشی رمز عبور',
       template: './forgetPassword',
@@ -25,6 +24,5 @@ export class MailService {
         link,
       },
     });
-    return response;
   }
 }

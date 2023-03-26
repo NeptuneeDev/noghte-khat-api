@@ -23,30 +23,34 @@ export class S3ManagerController {
 
   @Roles(Role.Admin)
   @Get('buckets')
-  getBuckets(): Promise<any> {
-    return this.s3.listBuckets();
+  async getBuckets(): Promise<any> {
+    return await this.s3.listBuckets();
   }
 
   @Roles(Role.Admin)
   @Get('buckets/:bucketName')
-  getObjectsByBucket(@Param('bucketName') bucketName: string): Promise<any> {
-    return this.s3.listObjects(bucketName);
+  async getObjectsByBucket(
+    @Param('bucketName') bucketName: string,
+  ): Promise<any> {
+    return await this.s3.listObjects(bucketName);
   }
+
   @Roles(Role.Admin)
   @Post('buckets/:bucketName')
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile(
+  async uploadFile(
     @Param('bucketName') bucketName: string,
     @UploadedFile() file: File,
   ): Promise<any> {
-    return this.s3.uploadFile(bucketName, file);
+    return await this.s3.uploadFile(bucketName, file);
   }
+
   @Roles(Role.Admin)
   @Delete('buckets/:bucketName')
-  deleteObject(
+  async deleteObject(
     @Param('bucketName') bucketName: string,
     @Body() body: deleteObject,
   ) {
-    return this.s3.deleteFile(bucketName, body.key);
+    return await this.s3.deleteFile(bucketName, body.key);
   }
 }
