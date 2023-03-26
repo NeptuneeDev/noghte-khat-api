@@ -1,4 +1,3 @@
-import { classType } from '@prisma/client';
 import {
   IsOptional,
   IsString,
@@ -14,39 +13,31 @@ export class CreateCommentDto {
   subjectName: string;
 
   @IsString()
-  rollcall: string;
-
-  @IsOptional()
-  @IsEnum(classType)
-  type: classType;
+  presenceRoll: string;
 
   @IsOptional()
   @IsInt()
   @Min(0)
-  @Max(10)
-  teaching: number;
+  @Max(5)
+  subjectMastry: number;
 
   @IsOptional()
   @IsInt()
   @Min(0)
-  @Max(10)
-  rhetorical: number;
+  @Max(5)
+  classRoomManagement: number;
 
   @IsOptional()
   @IsInt()
   @Min(0)
-  @Max(10)
-  manageClass: number;
+  @Max(5)
+  teachingCoherence: number;
 
   @IsOptional()
   @IsInt()
   @Min(0)
-  @Max(10)
-  ability: number;
-
-  @IsOptional()
-  @IsDateString()
-  semester?: Date;
+  @Max(5)
+  grading: number;
 
   @IsString()
   description: string;
