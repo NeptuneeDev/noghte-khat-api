@@ -10,21 +10,19 @@ import { Hash } from 'src/common/utils/Hash';
 Injectable();
 export class OtpService {
   generate(): number {
-    const code = Math.floor(Math.random() * 9000 + 1000);
-    return code;
+    return Math.floor(Math.random() * 9000 + 1000);
   }
 
   async isValid(otp: number, verification: Verification): Promise<boolean> {
-    const isExpird = !(
-      new Date(new Date(verification.lastResendTime)).getTime() +
-        5 * 60 * 1000 >
-      Date.now()
-    );
+    const isExpird =
+      Date.now() >
+      new Date(verification.lastResendTime).getTime() + 5 * 60 * 1000;
+
     if (isExpird) {
       throw new NotAcceptableException(clientMessages.auth.expiredOtp);
     }
-    const isValid = await Hash.compare(otp + '', verification.code);
-    return isValid;
+
+    return await Hash.compare(`${otp}`, verification.code);
   }
 
   requestesALot(numberOfAttampt: number, lastResendTime: Date): boolean {
