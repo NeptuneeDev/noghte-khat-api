@@ -22,7 +22,7 @@ import { Professor } from './interfaces/professor.interface';
 import { ProfessorService } from './professor.service';
 import { AtGuard } from '../auth/guards/at.guard';
 import { Request } from 'express';
-import { TokenInterceptor } from 'src/common/interceptors/token.interceptor';
+import { TokenInterceptor } from '../../common/interceptors/token.interceptor';
 @ApiTags('professor')
 @Controller('professor')
 export class ProfessorController {

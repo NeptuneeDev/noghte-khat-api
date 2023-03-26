@@ -8,12 +8,15 @@
 // import { S3ManagerModule } from '../s3-manager/s3-manager.module';
 // import { SubjectModule } from '../subject/subject.module';
 // import { PrismaService } from '../prisma/prisma.service';
+// import { PrismaModule } from '../prisma/prisma.module';
 
 // describe('FileController', () => {
 //   let fileController: FileController;
+//   let fileService: FileService;
+//   let fileRepository: FileRepository;
 //   beforeEach(async () => {
 //     const module: TestingModule = await Test.createTestingModule({
-//       imports: [SubjectModule, ProfessorModule, S3ManagerModule],
+//       imports: [SubjectModule, ProfessorModule, S3ManagerModule, PrismaModule],
 //       controllers: [FileController],
 //       providers: [
 //         FileService,
@@ -25,6 +28,8 @@
 //     }).compile();
 
 //     fileController = module.get<FileController>(FileController);
+//     fileService = module.get<FileService>(FileService);
+//     fileRepository = module.get<FileRepository>(FileRepository);
 //   });
 
 //   describe('findAll', () => {

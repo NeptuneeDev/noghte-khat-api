@@ -13,7 +13,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { File } from '../../common/interfaces/file.interface';
 import { ApiTags } from '@nestjs/swagger';
 import { deleteObject } from './dto/deleteObject.dto';
-import { Roles } from 'src/common/decorators/roles.decorator';
+import { Professor } from '@prisma/client';
+import { Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../auth/types/roles.enum';
 @ApiTags('aws-s3')
 @Controller('s3')
