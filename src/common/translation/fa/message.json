@@ -47,5 +47,11 @@
   "subject": {
     "subjectNotFound": "درس مورد نظر یافت نشد",
     "subjectAlerdyExist": "درس مورد نظر وجود دارد"
+  },
+  "rate": {
+    "fieldMustBeValid": "باید اعداد نظر بین 0 , 5 باشد"
+  },
+  "comment": {
+    "existsByUser": "شما نظر خود را نسبت به این استاد ثبت کرده اید"
   }
 }

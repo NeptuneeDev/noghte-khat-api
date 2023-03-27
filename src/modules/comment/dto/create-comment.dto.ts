@@ -6,8 +6,12 @@ import {
   Min,
   Max,
   IsDateString,
+  IsDecimal,
+  Validate,
+  MaxLength,
 } from 'class-validator';
-
+import { Prisma } from '@prisma/client';
+import { IsValidRatingField, RatingValidator } from './custom.validator';
 export class CreateCommentDto {
   @IsString()
   subjectName: string;
@@ -15,29 +19,17 @@ export class CreateCommentDto {
   @IsString()
   presenceRoll: string;
 
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  @Max(5)
-  subjectMastry: number;
+  @IsValidRatingField()
+  subjectMastry: string;
 
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  @Max(5)
-  classRoomManagement: number;
+  @IsValidRatingField()
+  classRoomManagement: string;
 
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  @Max(5)
-  teachingCoherence: number;
+  @IsValidRatingField()
+  teachingCoherence: Prisma.Decimal;
 
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  @Max(5)
-  grading: number;
+  @IsValidRatingField()
+  grading: string;
 
   @IsString()
   description: string;

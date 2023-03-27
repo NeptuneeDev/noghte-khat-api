@@ -100,12 +100,11 @@ model Comment {
   
   professorId Int
   userId      Int
-  rateId Int?
 
 
-  professor   Professor  @relation(fields: [professorId], references: [id])
+  professor   Professor  @relation(fields: [professorId], references: [id],onDelete: Cascade)
   user        User       @relation(fields: [userId], references: [id])
-  professorRate ProfessorRate? 
+  professorRate ProfessorRate?
 
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @default(now())
@@ -125,9 +124,10 @@ model ProfessorRate{
   professorId Int
  
 
-  professor Professor @relation(fields: [professorId],references: [id])
+   
+  professor Professor @relation(fields: [professorId],references: [id] ,onDelete: Cascade )
   user      User    @relation(fields: [userId],references: [id])
-  comment Comment  @relation(fields: [commentId], references: [id])
+  comment Comment  @relation(fields: [commentId], references: [id],onDelete: Cascade)
 
  @@id([professorId,userId,commentId])  
 }

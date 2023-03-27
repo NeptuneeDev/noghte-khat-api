@@ -58,11 +58,6 @@ export class ProfessorController {
     return await this.professorService.findByUni(uni);
   }
 
-  @Public()
-  @Get()
-  async findAll(): Promise<Professor[]> {
-    return await this.professorService.findAll();
-  }
 
   @Public()
   @UseInterceptors(TokenInterceptor)
