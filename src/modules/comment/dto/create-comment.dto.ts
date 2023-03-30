@@ -1,15 +1,4 @@
-import {
-  IsOptional,
-  IsString,
-  IsEnum,
-  IsInt,
-  Min,
-  Max,
-  IsDateString,
-  IsDecimal,
-  Validate,
-  MaxLength,
-} from 'class-validator';
+import { IsString } from 'class-validator';
 import { Prisma } from '@prisma/client';
 import { IsValidRatingField, RatingValidator } from './custom.validator';
 export class CreateCommentDto {
