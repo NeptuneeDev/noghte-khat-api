@@ -8,18 +8,19 @@ datasource db {
 }
 
 model User {
-  id                Int                @id @default(autoincrement())
-  email             String             @unique
-  name              String
-  createdAt         DateTime           @default(now())
-  updateAt          DateTime           @default(now())
-  password          String?
-  role              Role               @default(user)
-  hashedRT          String?
-  lastLoggedInTime  DateTime?
-  comments          Comment[]
-  UserFileReactions UserFileReaction[]
-  rates             ProfessorRate[]
+  id                   Int                   @id @default(autoincrement())
+  email                String                @unique
+  name                 String
+  createdAt            DateTime              @default(now())
+  updateAt             DateTime              @default(now())
+  password             String?
+  role                 Role                  @default(user)
+  hashedRT             String?
+  lastLoggedInTime     DateTime?
+  comments             Comment[]
+  UserCommentReactions UserCommentReaction[]
+  UserFileReactions    UserFileReaction[]
+  rates                ProfessorRate[]
 }
 
 model Verification {
@@ -99,6 +100,10 @@ model Comment {
   professorId Int
   userId      Int
 
+  numberOfDisLikes Int                   @default(0)
+  numberOfLikes    Int                   @default(0)
+  reactions        UserCommentReaction[]
+
   professor     Professor      @relation(fields: [professorId], references: [id], onDelete: Cascade)
   user          User           @relation(fields: [userId], references: [id])
   professorRate ProfessorRate?
@@ -132,4 +137,15 @@ enum Role {
 enum UserReaction {
   like
   dislike
+}
+
+model UserCommentReaction {
+  commentId Int
+  userId    Int
+  reaction  UserReaction
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([commentId, userId])
 }
