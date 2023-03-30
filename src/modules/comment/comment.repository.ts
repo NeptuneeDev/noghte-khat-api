@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { ProfessorRate } from '@prisma/client';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { ReactionType } from './dto/reaction.file.Dto';
 @Injectable()
 export class CommentRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -161,15 +162,123 @@ export class CommentRepository {
         description: true,
         isVerified: true,
         professorId: true,
+        numberOfDisLikes: true,
+        numberOfLikes: true,
         createdAt: true,
         updatedAt: true,
-
         professorRate: {
           select: {
             subjectMastry: true,
             classRoomManagement: true,
             teachingCoherence: true,
             grading: true,
+          },
+        },
+      },
+    });
+  }
+
+  async getReactOf(userId: number, commentId: number) {
+    return await this.prisma.userCommentReaction.findUnique({
+      where: {
+        commentId_userId: {
+          commentId: commentId,
+          userId: userId,
+        },
+      },
+    });
+  }
+
+  async saveUserReaction(
+    userId: number,
+    commentId: number,
+    reaction: ReactionType,
+  ) {
+    await this.prisma.$transaction(async (ctx) => {
+      await this.prisma.userCommentReaction.upsert({
+        where: {
+          commentId_userId: {
+            commentId,
+            userId,
+          },
+        },
+        update: {
+          reaction: reaction,
+        },
+        create: {
+          userId,
+          commentId,
+          reaction: reaction,
+        },
+      });
+
+      const numberOfLikes = await ctx.userCommentReaction.count({
+        where: { commentId, reaction: 'like' },
+      });
+
+      const numberOfDisLikes = await ctx.userCommentReaction.count({
+        where: { commentId, reaction: 'dislike' },
+      });
+
+      await ctx.comment.update({
+        where: { id: commentId },
+        data: {
+          numberOfLikes,
+          numberOfDisLikes,
+        },
+      });
+    });
+  }
+  async removeUserReaction(userId: number, commentId: number) {
+    await this.prisma.$transaction(async (ctx) => {
+      await this.prisma.userCommentReaction.delete({
+        where: {
+          commentId_userId: {
+            commentId,
+            userId,
+          },
+        },
+      });
+
+      const numberOfLikes = await ctx.userCommentReaction.count({
+        where: { commentId, reaction: 'like' },
+      });
+
+      const numberOfDisLikes = await ctx.userCommentReaction.count({
+        where: { commentId, reaction: 'dislike' },
+      });
+
+      await ctx.comment.update({
+        where: { id: commentId },
+        data: {
+          numberOfLikes,
+          numberOfDisLikes,
+        },
+      });
+    });
+  }
+  async getUserReactedCommentsForProfessor(
+    userId: number,
+    professorId: number,
+  ) {
+    return this.prisma.comment.findMany({
+      where: {
+        professor: {
+          id: professorId,
+        },
+        reactions: {
+          some: {
+            user: {
+              id: userId,
+            },
+          },
+        },
+      },
+      select: {
+        reactions: {
+          select: {
+            reaction: true,
+            commentId: true,
           },
         },
       },
