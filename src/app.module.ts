@@ -14,7 +14,6 @@ import { FileModule } from './modules/file/file.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { S3ManagerModule } from './modules/s3-manager/s3-manager.module';
 import { AwsSdkModule } from 'nest-aws-sdk';
-import * as Sentry from '@sentry/node';
 import { PassportModule } from '@nestjs/passport';
 import { CommentModule } from './modules/comment/comment.module';
 
