@@ -7,20 +7,22 @@ import {
   Param,
   Delete,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
+import { Public } from 'src/common/decorators';
 import { GetCurrentUserId } from '../../common/decorators/get-current-user-id.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { RtGuard } from '../auth/guards/rt.guard';
 import { Role } from '../auth/types/roles.enum';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { ReactionDto } from './dto/reaction.file.Dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Controller('comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
-  @UseGuards(RtGuard)
   @Post(':professorId')
   create(
     @Body() createCommentDto: CreateCommentDto,
@@ -30,9 +32,10 @@ export class CommentController {
     return this.commentService.create(createCommentDto, professorId, userId);
   }
 
+  @Public()
   @Get(':professorId')
-  findAll(@Param('professorId') professorId: number) {
-    return this.commentService.findAll(professorId);
+  async findAll(@Param('professorId') professorId: number) {
+    return await this.commentService.findByProfessorId(professorId);
   }
 
   @Get(':id')
@@ -41,27 +44,46 @@ export class CommentController {
   }
 
   @Roles(Role.Admin)
-  @Get('accept/:id')
+  @Post('accept/:id')
   async accept(@Param('id') commentId: number) {
-    return await this.commentService.accept(commentId);
+    return await this.commentService.acceptAndUpdateAverge(commentId);
   }
 
   @Roles(Role.Admin)
-  @Delete('delete/:id')
+  @Delete('reject/:id')
   async reject(@Param('id') commentId: number) {
-    return await this.commentService.remove(commentId);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') commentId: number) {
-    return this.commentService.remove(commentId);
+    return await this.commentService.delete(commentId);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') commentId: number,
     @Body() updateCommentDto: UpdateCommentDto,
   ) {
     return this.commentService.update(commentId, updateCommentDto);
+  }
+
+  @Post(':commentId/react')
+  async react(
+    @GetCurrentUserId() userId: number,
+    @Param('commentId', ParseIntPipe) commentId: number,
+    @Body() reaction: ReactionDto,
+  ) {
+    return await this.commentService.saveUserReaction(
+      userId,
+      commentId,
+      reaction.type,
+    );
+  }
+
+  @Get(':professorId/userReactions')
+  async reara(
+    @GetCurrentUserId() userId: number,
+    @Param('professorId', ParseIntPipe) professorId: number,
+  ) {
+    return await this.commentService.getUserReactionToCommentsOfProfessor(
+      userId,
+      professorId,
+    );
   }
 }
