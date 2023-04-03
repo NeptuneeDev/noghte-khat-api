@@ -9,16 +9,20 @@ import { Hash } from 'src/common/utils/Hash';
 
 Injectable();
 export class OtpService {
+  private readonly TWO_WEEKS_IN_MS = 2 * 7 * 24 * 60 * 60 * 1000;
+  private readonly OTP_EXPIRATION_TIME_MS = 5 * 60 * 1000;
+  private readonly MAX_OTP_REQUEST_ATTEMPTS = 10;
+
   generate(): number {
     return Math.floor(Math.random() * 9000 + 1000);
   }
 
   async isValid(otp: number, verification: Verification): Promise<boolean> {
-    const isExpird =
-      Date.now() >
-      new Date(verification.lastResendTime).getTime() + 5 * 60 * 1000;
+    const timeNow = Date.now();
+    const lastResendTime = new Date(verification.lastResendTime).getTime();
+    const expirationTime = lastResendTime + this.OTP_EXPIRATION_TIME_MS;
 
-    if (isExpird) {
+    if (timeNow > expirationTime) {
       throw new NotAcceptableException(clientMessages.auth.expiredOtp);
     }
 
@@ -26,14 +30,14 @@ export class OtpService {
   }
 
   requestesALot(numberOfAttampt: number, lastResendTime: Date): boolean {
-    const isPassedTowWeeksFromLastResnd =
-      new Date(new Date(lastResendTime)).getTime() +
-        2 * 7 * 24 * 60 * 60 * 1000 <
-      Date.now();
+    const lastResendTimeMs = new Date(lastResendTime).getTime();
+    const isPassedTwoWeeksFromLastResend =
+      lastResendTimeMs + this.TWO_WEEKS_IN_MS < Date.now();
 
-    return !isPassedTowWeeksFromLastResnd && numberOfAttampt > 10
-      ? true
-      : false;
+    return (
+      numberOfAttampt > this.MAX_OTP_REQUEST_ATTEMPTS &&
+      !isPassedTwoWeeksFromLastResend
+    );
   }
 
   async validate(otp: number, verification: Verification) {
