@@ -6,13 +6,11 @@ import {
   Patch,
   Param,
   Delete,
-  UseGuards,
   ParseIntPipe,
 } from '@nestjs/common';
 import { Public } from 'src/common/decorators';
 import { GetCurrentUserId } from '../../common/decorators/get-current-user-id.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
-import { RtGuard } from '../auth/guards/rt.guard';
 import { Role } from '../auth/types/roles.enum';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -26,7 +24,7 @@ export class CommentController {
   @Post(':professorId')
   create(
     @Body() createCommentDto: CreateCommentDto,
-    @Param('professorId') professorId: number,
+    @Param('professorId', ParseIntPipe) professorId: number,
     @GetCurrentUserId() userId: number,
   ) {
     return this.commentService.create(createCommentDto, professorId, userId);
@@ -34,30 +32,30 @@ export class CommentController {
 
   @Public()
   @Get(':professorId')
-  async findAll(@Param('professorId') professorId: number) {
+  async findAll(@Param('professorId', ParseIntPipe) professorId: number) {
     return await this.commentService.findByProfessorId(professorId);
   }
 
   @Get(':id')
-  findOne(@Param('id') commentId: number) {
+  findOne(@Param('id', ParseIntPipe) commentId: number) {
     return this.commentService.findOne(commentId);
   }
 
   @Roles(Role.Admin)
   @Post('accept/:id')
-  async accept(@Param('id') commentId: number) {
+  async accept(@Param('id', ParseIntPipe) commentId: number) {
     return await this.commentService.acceptAndUpdateAverge(commentId);
   }
 
   @Roles(Role.Admin)
   @Delete('reject/:id')
-  async reject(@Param('id') commentId: number) {
+  async reject(@Param('id', ParseIntPipe) commentId: number) {
     return await this.commentService.delete(commentId);
   }
 
   @Patch(':id')
   async update(
-    @Param('id') commentId: number,
+    @Param('id', ParseIntPipe) commentId: number,
     @Body() updateCommentDto: UpdateCommentDto,
   ) {
     return this.commentService.update(commentId, updateCommentDto);
