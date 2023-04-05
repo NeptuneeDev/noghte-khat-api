@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "run:front": "npx prisma migrate dev --creat-only && npx prisma db push && npx prisma generate && npm run start:dev",
+    "run:front": "npx prisma migrate dev --create-only && npx prisma migrate deploy && npm run start:dev",
     "start:migrate:dev": "prisma migrate dev --name init && prisma generate",
     "prebuild": "rimraf dist",
     "build": "npx prisma generate && nest build",
