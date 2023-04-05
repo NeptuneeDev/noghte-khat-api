@@ -33,7 +33,7 @@ export class CommentService {
       userId,
     );
 
-    return { success: true };
+    return comment;
   }
 
   async acceptAndUpdateAverge(commentId: number) {
@@ -46,7 +46,6 @@ export class CommentService {
 
   async validateCommentId(commentId: number): Promise<Comment | undefined> {
     const comment = await this.commentRepository.findById(commentId);
-    console.log(comment);
     if (!comment) {
       throw new NotFoundException('Comment not found!');
     }
@@ -79,10 +78,6 @@ export class CommentService {
     return await this.commentRepository.getProfessorComments(professorId);
   }
 
-  findOne(id: number) {
-    return this.commentRepository.findById(id);
-  }
-
   async update(commentId: number, updateCommentDto: UpdateCommentDto) {
     return await this.commentRepository.findByIdAndUpdate(
       commentId,
@@ -94,4 +89,10 @@ export class CommentService {
     const comment = await this.validateCommentId(id);
     return await this.commentRepository.findByIdAndDelete(id);
   }
+
+  async getUnverifieds() {
+    return await this.commentRepository.getUnverified();
+  }
+
+  
 }

@@ -21,6 +21,13 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
+  @Public()
+  @Get('unverifieds')
+  async getUnverifieds() {
+    console.log('hi there');
+    return await this.commentService.getUnverifieds();
+  }
+
   @Post(':professorId')
   create(
     @Body() createCommentDto: CreateCommentDto,
@@ -34,11 +41,6 @@ export class CommentController {
   @Get(':professorId')
   async findAll(@Param('professorId') professorId: number) {
     return await this.commentService.findByProfessorId(professorId);
-  }
-
-  @Get(':id')
-  findOne(@Param('id') commentId: number) {
-    return this.commentService.findOne(commentId);
   }
 
   @Roles(Role.Admin)

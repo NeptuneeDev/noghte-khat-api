@@ -26,7 +26,7 @@ export class CreateCommentDto {
   classRoomManagement: string;
 
   @IsValidRatingField()
-  teachingCoherence: Prisma.Decimal;
+  teachingCoherence: string;
 
   @IsValidRatingField()
   grading: string;

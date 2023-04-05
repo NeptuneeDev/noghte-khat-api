@@ -175,4 +175,13 @@ export class CommentRepository {
       },
     });
   }
+
+  async getUnverified(): Promise<Comment[]> {
+    return this.prisma.comment.findMany({
+      where: { isVerified: false },
+      include: {
+        professorRate: true,
+      },
+    });
+  }
 }
