@@ -6,58 +6,77 @@ import {
   Patch,
   Param,
   Delete,
-  UseGuards,
   ParseIntPipe,
+  UseInterceptors,
 } from '@nestjs/common';
+import { userInfo } from 'os';
 import { Public } from 'src/common/decorators';
+import { TokenInterceptor } from 'src/common/interceptors/token.interceptor';
 import { GetCurrentUserId } from '../../common/decorators/get-current-user-id.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
-import { RtGuard } from '../auth/guards/rt.guard';
 import { Role } from '../auth/types/roles.enum';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { ReactionDto } from './dto/reaction.file.Dto';
+import { ReactionDto } from './dto/reaction.comment.Dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Controller('comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
+  @Public()
+  @UseInterceptors(TokenInterceptor)
+  @Get(':professorId')
+  async getCommentToProfessorAndUserReactions(
+    @GetCurrentUserId() userId: number,
+    @Param('professorId', ParseIntPipe) professorId: number,
+  ) {
+    return await this.commentService.getCommentsToProfessorAndUserReactions(
+      userId,
+      professorId,
+    );
+  }
+
+  @Roles(Role.Admin)
+  @Get('unverifieds')
+  async getUnverifieds() {
+    console.log('hi there');
+    return await this.commentService.getUnverifieds();
+  }
+
   @Post(':professorId')
   create(
     @Body() createCommentDto: CreateCommentDto,
-    @Param('professorId') professorId: number,
+    @Param('professorId', ParseIntPipe) professorId: number,
     @GetCurrentUserId() userId: number,
   ) {
     return this.commentService.create(createCommentDto, professorId, userId);
   }
 
-  @Public()
-  @Get(':professorId')
-  async findAll(@Param('professorId') professorId: number) {
-    return await this.commentService.findByProfessorId(professorId);
-  }
-
-  @Get(':id')
-  findOne(@Param('id') commentId: number) {
-    return this.commentService.findOne(commentId);
+  @Get('duplicate/:professorId')
+  async canComment(
+    @GetCurrentUserId() userId: number,
+    @Param('professorId', ParseIntPipe) professorId: number,
+  ) {
+    return await this.commentService.checkAlreadyCommented(professorId, userId);
   }
 
   @Roles(Role.Admin)
   @Post('accept/:id')
-  async accept(@Param('id') commentId: number) {
+  async accept(@Param('id', ParseIntPipe) commentId: number) {
     return await this.commentService.acceptAndUpdateAverge(commentId);
   }
 
   @Roles(Role.Admin)
   @Delete('reject/:id')
-  async reject(@Param('id') commentId: number) {
+  async reject(@Param('id', ParseIntPipe) commentId: number) {
     return await this.commentService.delete(commentId);
   }
 
+  @Roles(Role.Admin)
   @Patch(':id')
   async update(
-    @Param('id') commentId: number,
+    @Param('id', ParseIntPipe) commentId: number,
     @Body() updateCommentDto: UpdateCommentDto,
   ) {
     return this.commentService.update(commentId, updateCommentDto);
@@ -73,17 +92,6 @@ export class CommentController {
       userId,
       commentId,
       reaction.type,
-    );
-  }
-
-  @Get(':professorId/userReactions')
-  async reara(
-    @GetCurrentUserId() userId: number,
-    @Param('professorId', ParseIntPipe) professorId: number,
-  ) {
-    return await this.commentService.getUserReactionToCommentsOfProfessor(
-      userId,
-      professorId,
     );
   }
 }

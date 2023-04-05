@@ -23,7 +23,7 @@ export function IsValidRatingField(validationOptions?: ValidationOptions) {
 @ValidatorConstraint({ name: 'ratingField', async: false })
 export class RatingValidator implements ValidatorConstraintInterface {
   validate(value: string, args: ValidationArguments) {
-    const len = value.length;
+    const len = value?.length;
     const number = +value;
 
     if (len > 3 || number > 5) return false;

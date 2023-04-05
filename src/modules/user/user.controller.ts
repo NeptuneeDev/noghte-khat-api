@@ -20,11 +20,11 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  create(@Body() createUserDto: User) {
-    return this.userService.create(createUserDto);
-  }
+  // @Post()
+  // @HttpCode(HttpStatus.CREATED)
+  // async create(@Body() createUserDto: User) {
+  //   return this.userService.create(createUserDto);
+  // }
 
   @Get()
   @UseGuards(AuthGuard('passport-local'))

@@ -75,9 +75,9 @@ export class ProfessorRepository {
     });
   }
 
-  async findById(id: number) {
+  async findById(id: number): Promise<Professor | undefined> {
     return this.prisma.professor.findUnique({
-      where: { id: id },
+      where: {id },
     });
   }
 

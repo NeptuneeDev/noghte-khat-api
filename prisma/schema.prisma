@@ -102,7 +102,7 @@ model Comment {
 
   numberOfDisLikes Int                   @default(0)
   numberOfLikes    Int                   @default(0)
-  reactions        UserCommentReaction[]
+   UserCommentReactions        UserCommentReaction[]
 
   professor     Professor      @relation(fields: [professorId], references: [id], onDelete: Cascade)
   user          User           @relation(fields: [userId], references: [id])

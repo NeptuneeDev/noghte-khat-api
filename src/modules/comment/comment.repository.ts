@@ -4,7 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { ProfessorRate } from '@prisma/client';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { ReactionType } from './dto/reaction.file.Dto';
+import { ReactionType } from './dto/reaction.comment.Dto';
 @Injectable()
 export class CommentRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -152,7 +152,7 @@ export class CommentRepository {
     });
   }
 
-  getProfessorComments(professorId: number) {
+  getCommentsToProfessorAndUserReactions(professorId: number, userId: number) {
     return this.prisma.comment.findMany({
       where: { professorId: professorId, isVerified: true },
       select: {
@@ -166,6 +166,12 @@ export class CommentRepository {
         numberOfLikes: true,
         createdAt: true,
         updatedAt: true,
+
+        UserCommentReactions: {
+          where: {
+            userId,
+          },
+        },
         professorRate: {
           select: {
             subjectMastry: true,
@@ -174,6 +180,15 @@ export class CommentRepository {
             grading: true,
           },
         },
+      },
+    });
+  }
+
+  async getUnverified(): Promise<Comment[]> {
+    return this.prisma.comment.findMany({
+      where: { isVerified: false },
+      include: {
+        professorRate: true,
       },
     });
   }
@@ -257,31 +272,31 @@ export class CommentRepository {
       });
     });
   }
-  async getUserReactedCommentsForProfessor(
-    userId: number,
-    professorId: number,
-  ) {
-    return this.prisma.comment.findMany({
-      where: {
-        professor: {
-          id: professorId,
-        },
-        reactions: {
-          some: {
-            user: {
-              id: userId,
-            },
-          },
-        },
-      },
-      select: {
-        reactions: {
-          select: {
-            reaction: true,
-            commentId: true,
-          },
-        },
-      },
-    });
-  }
+  // async getCommentsToProfessorAndUserReactions(
+  //   userId: number,
+  //   professorId: number,
+  // ) {
+  //   return this.prisma.comment.findMany({
+  //     where: {
+  //       professor: {
+  //         id: professorId,
+  //       },
+  //       reactions: {
+  //         some: {
+  //           user: {
+  //             id: userId,
+  //           },
+  //         },
+  //       },
+  //     },
+  //     select: {
+  //       reactions: {
+  //         select: {
+  //           reaction: true,
+  //           commentId: true,
+  //         },
+  //       },
+  //     },
+  //   });
+  // }
 }

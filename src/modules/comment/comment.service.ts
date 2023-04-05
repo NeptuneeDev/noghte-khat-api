@@ -9,7 +9,7 @@ import { ProfessorRepository } from '../professor/professor.repository';
 import { ProfessorService } from '../professor/professor.service';
 import { CommentRepository } from './comment.repository';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { ReactionType } from './dto/reaction.file.Dto';
+import { ReactionType } from './dto/reaction.comment.Dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Injectable()
@@ -17,6 +17,7 @@ export class CommentService {
   constructor(
     private readonly commentRepository: CommentRepository,
     private readonly professorRepository: ProfessorRepository,
+    private readonly professorService: ProfessorService,
   ) {}
 
   async create(
@@ -34,7 +35,7 @@ export class CommentService {
       userId,
     );
 
-    return { success: true };
+    return comment;
   }
 
   async acceptAndUpdateAverge(commentId: number) {
@@ -47,7 +48,6 @@ export class CommentService {
 
   async validateCommentId(commentId: number): Promise<Comment | undefined> {
     const comment = await this.commentRepository.findById(commentId);
-    console.log(comment);
     if (!comment) {
       throw new NotFoundException('Comment not found!');
     }
@@ -60,8 +60,7 @@ export class CommentService {
     if (!prof || !prof.isVerified) {
       throw new BadRequestException(clientMessages.professor.prfessorNorFound);
     }
-
-    return prof;
+    return;
   }
 
   async checkAlreadyCommented(professorId: number, userId: number) {
@@ -73,11 +72,18 @@ export class CommentService {
     if (userCommentExists) {
       throw new BadRequestException(clientMessages.comment.existsByUser);
     }
+    return { success: true };
   }
 
-  async findByProfessorId(professorId: number) {
+  async getCommentsToProfessorAndUserReactions(
+    professorId: number,
+    userId: number,
+  ) {
     await this.validateProfessor(professorId);
-    return await this.commentRepository.getProfessorComments(professorId);
+    return await this.commentRepository.getCommentsToProfessorAndUserReactions(
+      professorId,
+      userId,
+    );
   }
 
   async findOne(id: number) {
@@ -94,6 +100,10 @@ export class CommentService {
   async delete(id: number) {
     const comment = await this.validateCommentId(id);
     return await this.commentRepository.findByIdAndDelete(id);
+  }
+
+  async getUnverifieds() {
+    return await this.commentRepository.getUnverified();
   }
 
   async saveUserReaction(
@@ -119,22 +129,22 @@ export class CommentService {
     return { success: true };
   }
 
-  async getUserReactionToCommentsOfProfessor(
-    userId: number,
-    professorId: number,
-  ) {
-    const reactions =
-      await this.commentRepository.getUserReactedCommentsForProfessor(
-        userId,
-        professorId,
-      );
+  // async getCommentsToProfessorAndUserReactions(
+  //   userId: number,
+  //   professorId: number,
+  // ) {
+  //   const reactions =
+  //     await this.commentRepository.getCommentsToProfessorAndUserReactions(
+  //       userId,
+  //       professorId,
+  //     );
 
-    return reactions.map((item) => {
-      const userFileReaction = item.reactions[0];
-      return {
-        commentId: userFileReaction.commentId,
-        reaction: userFileReaction.reaction,
-      };
-    });
-  }
+  //   return reactions.map((item) => {
+  //     const userFileReaction = item.reactions[0];
+  //     return {
+  //       commentId: userFileReaction.commentId,
+  //       reaction: userFileReaction.reaction,
+  //     };
+  //   });
+  // }
 }
