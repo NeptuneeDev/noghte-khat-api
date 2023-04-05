@@ -9,6 +9,7 @@ import { ProfessorRepository } from '../professor/professor.repository';
 import { ProfessorService } from '../professor/professor.service';
 import { CommentRepository } from './comment.repository';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { ReactionType } from './dto/reaction.file.Dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Injectable()
@@ -78,6 +79,10 @@ export class CommentService {
     return await this.commentRepository.getProfessorComments(professorId);
   }
 
+  async findOne(id: number) {
+    return await this.commentRepository.findById(id);
+  }
+
   async update(commentId: number, updateCommentDto: UpdateCommentDto) {
     return await this.commentRepository.findByIdAndUpdate(
       commentId,
@@ -95,4 +100,45 @@ export class CommentService {
   }
 
   
+  async saveUserReaction(
+    userId: number,
+    commentId: number,
+    reactionType: ReactionType,
+  ): Promise<any> {
+    await this.validateCommentId(commentId);
+    const existingReaction = await this.commentRepository.getReactOf(
+      userId,
+      commentId,
+    );
+    if (existingReaction && existingReaction.reaction === reactionType) {
+      await this.commentRepository.removeUserReaction(userId, commentId);
+      return { success: true };
+    }
+    await this.commentRepository.saveUserReaction(
+      userId,
+      commentId,
+      reactionType,
+    );
+
+    return { success: true };
+  }
+
+  async getUserReactionToCommentsOfProfessor(
+    userId: number,
+    professorId: number,
+  ) {
+    const reactions =
+      await this.commentRepository.getUserReactedCommentsForProfessor(
+        userId,
+        professorId,
+      );
+
+    return reactions.map((item) => {
+      const userFileReaction = item.reactions[0];
+      return {
+        commentId: userFileReaction.commentId,
+        reaction: userFileReaction.reaction,
+      };
+    });
+  }
 }

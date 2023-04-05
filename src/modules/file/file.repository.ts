@@ -3,7 +3,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UploadFileDto } from './Dto/upload.file.Dto';
 import { UpdateFileDto } from './Dto/update.file.Dto';
 import { File as FileModel } from '@prisma/client';
-import { ReactionType } from './Dto/reaction.file.Dto';
 @Injectable()
 export class FileRepository {
   constructor(private readonly prisma: PrismaService) {}

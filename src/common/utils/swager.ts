@@ -1,9 +1,5 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import Module from 'module';
-import { AuthModule } from 'src/modules/auth/auth.module';
-import { FileModule } from 'src/modules/file/file.module';
-import { ProfessorModule } from 'src/modules/professor/professor.module';
 
 export class Swagger {
   constructor(private readonly app: INestApplication) {}

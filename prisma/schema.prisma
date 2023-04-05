@@ -8,18 +8,19 @@ datasource db {
 }
 
 model User {
-  id                Int                @id @default(autoincrement())
-  email             String             @unique
-  name              String
-  createdAt         DateTime           @default(now())
-  updateAt          DateTime           @default(now())
-  password          String?
-  role              Role               @default(user)
-  hashedRT          String?
-  lastLoggedInTime  DateTime?
-  comments          Comment[]
-  UserFileReactions UserFileReaction[]
-  rates            ProfessorRate[]
+  id                   Int                   @id @default(autoincrement())
+  email                String                @unique
+  name                 String
+  createdAt            DateTime              @default(now())
+  updateAt             DateTime              @default(now())
+  password             String?
+  role                 Role                  @default(user)
+  hashedRT             String?
+  lastLoggedInTime     DateTime?
+  comments             Comment[]
+  UserCommentReactions UserCommentReaction[]
+  UserFileReactions    UserFileReaction[]
+  rates                ProfessorRate[]
 }
 
 model Verification {
@@ -31,35 +32,33 @@ model Verification {
 }
 
 model Professor {
-  id         Int       @id @default(autoincrement())
-  name       String
-  email      String    @unique
+  id    Int    @id @default(autoincrement())
+  name  String
+  email String @unique
 
-  averageSubjectMastry    Decimal         @default(0)    @db.Decimal(2,1)
-  averageClassRoomManagement  Decimal     @default(0)    @db.Decimal(2,1)
-  averageTeachingCoherence Decimal        @default(0)    @db.Decimal(2,1)
-  averageGrading     Decimal              @default(0)    @db.Decimal(2,1)
+  averageSubjectMastry       Decimal @default(0) @db.Decimal(2, 1)
+  averageClassRoomManagement Decimal @default(0) @db.Decimal(2, 1)
+  averageTeachingCoherence   Decimal @default(0) @db.Decimal(2, 1)
+  averageGrading             Decimal @default(0) @db.Decimal(2, 1)
 
-
-
-  isVerified Boolean   @default(false)
+  isVerified Boolean         @default(false)
   university String
   createdAt  DateTime
   updatedAt  DateTime
   comments   Comment[]
   lessons    Subject[]
-  rates     ProfessorRate[]
+  rates      ProfessorRate[]
 }
 
 model Subject {
   id          Int       @id @default(autoincrement())
   title       String
   professorId Int
-  isVerified  Boolean  @default(false)
-  files File[]
-  createdAt DateTime
-  updatedAt DateTime
-   professor   Professor @relation(fields: [professorId], references: [id])
+  isVerified  Boolean   @default(false)
+  files       File[]
+  createdAt   DateTime
+  updatedAt   DateTime
+  professor   Professor @relation(fields: [professorId], references: [id])
 }
 
 model File {
@@ -90,50 +89,45 @@ model UserFileReaction {
 }
 
 model Comment {
-  id          Int        @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  subjectName String
-  presenceRoll    String   // ghanone hozor ghiab
-  description String
+  subjectName  String
+  presenceRoll String // ghanone hozor ghiab
+  description  String
 
-  isVerified  Boolean    @default(false)
-  
+  isVerified Boolean @default(false)
+
   professorId Int
   userId      Int
 
+  numberOfDisLikes Int                   @default(0)
+  numberOfLikes    Int                   @default(0)
+  reactions        UserCommentReaction[]
 
-  professor   Professor  @relation(fields: [professorId], references: [id],onDelete: Cascade)
-  user        User       @relation(fields: [userId], references: [id])
+  professor     Professor      @relation(fields: [professorId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id])
   professorRate ProfessorRate?
 
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
-model ProfessorRate{
- 
- 
-  subjectMastry        Decimal            @db.Decimal(2,1)
-  classRoomManagement  Decimal            @db.Decimal(2,1)
-  teachingCoherence    Decimal            @db.Decimal(2,1)    // yek parchegye tadris
-  grading              Decimal            @db.Decimal(2,1)
-  
+model ProfessorRate {
+  subjectMastry       Decimal @db.Decimal(2, 1)
+  classRoomManagement Decimal @db.Decimal(2, 1)
+  teachingCoherence   Decimal @db.Decimal(2, 1) // yek parchegye tadris
+  grading             Decimal @db.Decimal(2, 1)
 
-  commentId Int @unique
-  userId Int
+  commentId   Int @unique
+  userId      Int
   professorId Int
- 
 
-   
-  professor Professor @relation(fields: [professorId],references: [id] ,onDelete: Cascade )
-  user      User    @relation(fields: [userId],references: [id])
-  comment Comment  @relation(fields: [commentId], references: [id],onDelete: Cascade)
+  professor Professor @relation(fields: [professorId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id])
+  comment   Comment   @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
- @@id([professorId,userId,commentId])  
+  @@id([professorId, userId, commentId])
 }
-
-
-
 
 enum Role {
   user
@@ -143,4 +137,15 @@ enum Role {
 enum UserReaction {
   like
   dislike
+}
+
+model UserCommentReaction {
+  commentId Int
+  userId    Int
+  reaction  UserReaction
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([commentId, userId])
 }

@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { Public } from 'src/common/decorators';
 import { GetCurrentUserId } from '../../common/decorators/get-current-user-id.decorator';
@@ -15,6 +16,7 @@ import { RtGuard } from '../auth/guards/rt.guard';
 import { Role } from '../auth/types/roles.enum';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { ReactionDto } from './dto/reaction.file.Dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Controller('comment')
@@ -61,5 +63,29 @@ export class CommentController {
     @Body() updateCommentDto: UpdateCommentDto,
   ) {
     return this.commentService.update(commentId, updateCommentDto);
+  }
+
+  @Post(':commentId/react')
+  async react(
+    @GetCurrentUserId() userId: number,
+    @Param('commentId', ParseIntPipe) commentId: number,
+    @Body() reaction: ReactionDto,
+  ) {
+    return await this.commentService.saveUserReaction(
+      userId,
+      commentId,
+      reaction.type,
+    );
+  }
+
+  @Get(':professorId/userReactions')
+  async reara(
+    @GetCurrentUserId() userId: number,
+    @Param('professorId', ParseIntPipe) professorId: number,
+  ) {
+    return await this.commentService.getUserReactionToCommentsOfProfessor(
+      userId,
+      professorId,
+    );
   }
 }
