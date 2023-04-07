@@ -171,6 +171,9 @@ export class CommentRepository {
           where: {
             userId,
           },
+          select: {
+            reaction: true,
+          },
         },
         professorRate: {
           select: {

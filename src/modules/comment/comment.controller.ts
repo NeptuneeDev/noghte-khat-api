@@ -28,8 +28,8 @@ export class CommentController {
   @UseInterceptors(TokenInterceptor)
   @Get(':professorId')
   async getCommentToProfessorAndUserReactions(
-    @GetCurrentUserId() userId: number,
     @Param('professorId', ParseIntPipe) professorId: number,
+    @GetCurrentUserId() userId: number,
   ) {
     return await this.commentService.getCommentsToProfessorAndUserReactions(
       userId,
