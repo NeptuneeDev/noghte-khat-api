@@ -3,8 +3,6 @@ import { Prisma } from '@prisma/client';
 import { IsValidRatingField, RatingValidator } from './custom.validator';
 import { ApiProperty } from '@nestjs/swagger';
 export class CreateCommentDto {
-
-
   @ApiProperty()
   @IsString()
   subjectName: string;
@@ -32,6 +30,10 @@ export class CreateCommentDto {
   @IsString()
   @IsValidRatingField()
   grading: string;
+
+  @ApiProperty()
+  @IsString()
+  educationResource: string;
 
   @ApiProperty()
   @IsString()
