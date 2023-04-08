@@ -32,8 +32,8 @@ export class CommentController {
     @GetCurrentUserId() userId: number,
   ) {
     return await this.commentService.getCommentsToProfessorAndUserReactions(
-      userId,
       professorId,
+      userId,
     );
   }
 

@@ -40,10 +40,12 @@ export class CommentService {
 
   async acceptAndUpdateAverge(commentId: number) {
     const comment = await this.validateCommentId(commentId);
-    return await this.commentRepository.acceptAndUpdateAverage(
+    await this.commentRepository.acceptAndUpdateAverage(
       comment.professorId,
       comment.id,
     );
+
+    return { success: true };
   }
 
   async validateCommentId(commentId: number): Promise<Comment | undefined> {

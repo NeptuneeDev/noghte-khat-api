@@ -5,6 +5,7 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { ProfessorRate } from '@prisma/client';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { ReactionType } from './dto/reaction.comment.Dto';
+import { Decimal } from '@prisma/client/runtime';
 @Injectable()
 export class CommentRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -18,28 +19,41 @@ export class CommentRepository {
     });
   }
 
+  calculateAverageRates(rateFields: string[]): Prisma.Decimal {
+    const sum = rateFields.reduce((sum, current) => {
+      return sum.add(new Prisma.Decimal(current));
+    }, new Prisma.Decimal('0'));
+
+    return sum.div(rateFields.length);
+  }
+
   async comment(
     createCommentDto: CreateCommentDto,
     professorId: number,
     userId: number,
   ): Promise<Comment> {
+    const { subjectMastry, classRoomManagement, teachingCoherence, grading } =
+      createCommentDto;
+    const averageRates = this.calculateAverageRates([
+      subjectMastry,
+      classRoomManagement,
+      teachingCoherence,
+    ]);
     return this.prisma.comment.create({
       data: {
         subjectName: createCommentDto.subjectName,
         description: createCommentDto.description,
         presenceRoll: createCommentDto.presenceRoll,
+        educationResources: createCommentDto.educationResource,
+        averageRates: averageRates,
         professor: { connect: { id: professorId } },
         user: { connect: { id: userId } },
         professorRate: {
           create: {
-            subjectMastry: new Prisma.Decimal(createCommentDto.subjectMastry),
-            classRoomManagement: new Prisma.Decimal(
-              createCommentDto.classRoomManagement,
-            ),
-            teachingCoherence: new Prisma.Decimal(
-              createCommentDto.teachingCoherence,
-            ),
-            grading: new Prisma.Decimal(createCommentDto.grading),
+            subjectMastry: new Prisma.Decimal(subjectMastry),
+            classRoomManagement: new Prisma.Decimal(classRoomManagement),
+            teachingCoherence: new Prisma.Decimal(teachingCoherence),
+            grading: new Prisma.Decimal(grading),
             professor: { connect: { id: professorId } },
             user: { connect: { id: userId } },
           },
@@ -159,6 +173,8 @@ export class CommentRepository {
         id: true,
         subjectName: true,
         presenceRoll: true,
+        averageRates: true,
+        educationResources: true,
         description: true,
         isVerified: true,
         professorId: true,
