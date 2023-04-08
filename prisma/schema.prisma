@@ -94,11 +94,14 @@ model Comment {
   subjectName  String
   presenceRoll String // ghanone hozor ghiab
   description  String
+  averageRates  Decimal @db.Decimal(2, 1) 
+  educationResources String
 
   isVerified Boolean @default(false)
 
   professorId Int
   userId      Int
+
 
   numberOfDisLikes Int                   @default(0)
   numberOfLikes    Int                   @default(0)
