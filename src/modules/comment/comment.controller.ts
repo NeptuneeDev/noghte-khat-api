@@ -24,6 +24,14 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
+  @Roles(Role.Admin)
+  @Get('unverifieds')
+  async getUnverifieds() {
+    console.log('hi there');
+    return await this.commentService.getUnverifieds();
+  }
+
+  
   @Public()
   @UseInterceptors(TokenInterceptor)
   @Get(':professorId')
@@ -35,13 +43,6 @@ export class CommentController {
       professorId,
       userId,
     );
-  }
-
-  @Roles(Role.Admin)
-  @Get('unverifieds')
-  async getUnverifieds() {
-    console.log('hi there');
-    return await this.commentService.getUnverifieds();
   }
 
   @Post(':professorId')
