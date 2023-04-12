@@ -50,7 +50,7 @@ export class SubjectController {
   }
 
   @Roles(Role.Admin)
-  @Get('accept/:id')
+  @Post('accept/:id')
   async accept(@Param('id', ParseIntPipe) subjectId: number) {
     return await this.subjectService.accept(subjectId);
   }
