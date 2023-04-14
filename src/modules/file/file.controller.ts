@@ -80,7 +80,7 @@ export class FileController {
   }
 
   @Roles(Role.Admin)
-  @Get('accept/:id')
+  @Post('accept/:id')
   async accept(@Param('id', ParseIntPipe) fileId: number) {
     return await this.fileService.accept(fileId);
   }

@@ -31,7 +31,6 @@ export class CommentController {
     return await this.commentService.getUnverifieds();
   }
 
-  
   @Public()
   @UseInterceptors(TokenInterceptor)
   @Get(':professorId')
@@ -69,7 +68,7 @@ export class CommentController {
   }
 
   @Roles(Role.Admin)
-  @Delete('reject/:id')
+  @Delete('delete/:id')
   async reject(@Param('id', ParseIntPipe) commentId: number) {
     return await this.commentService.delete(commentId);
   }
