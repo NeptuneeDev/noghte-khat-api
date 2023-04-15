@@ -13,7 +13,7 @@ async function bootstrap() {
     credentials: true,
   });
   Sentry.init({
-    dsn: 'https://de3ceecd057d458db3fccc5e8361320b@o4504809613819904.ingest.sentry.io/4504809619324928',
+    dsn: 'https://kde3ceecd057d458db3fccc5e8361320b@o4504809613819904.ingest.sentry.io/4504809619324928',
     tracesSampleRate: 1.0,
   });
   app.useGlobalPipes(
