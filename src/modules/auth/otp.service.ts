@@ -15,6 +15,7 @@ export class OtpService {
 
   generate(): number {
     return Math.floor(Math.random() * 9000 + 1000);
+    
   }
 
   async isValid(otp: number, verification: Verification): Promise<boolean> {
