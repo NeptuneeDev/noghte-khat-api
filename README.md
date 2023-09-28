@@ -19,4 +19,6 @@ the Nogthe Khat App is a web application that allows students to share their han
 - **Prisma:** For modeling the Postgresql data and performing database operations.
 - **S3:** s3 sdk is used to upload files to a object storage.
 
-[click here to see a over view of noghte khat on production](https://www.youtube.com/embed/3__CCXOX3d)
+
+
+[click here to see a over view of noghte khat on youtube in production](https://www.youtube.com/watch?v=3__CCXOX3dI)
