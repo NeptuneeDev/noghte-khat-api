@@ -12,7 +12,7 @@ async function bootstrap() {
     origin: 'https://noghteh-khat.ir',
     credentials: true,
   });
-
+  
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
