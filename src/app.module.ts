@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  CacheModule,
+} from '@nestjs/common';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -29,6 +34,7 @@ import { CommentModule } from './modules/comment/comment.module';
     S3ManagerModule,
     ConfigModule.forRoot(),
     MulterModule.register(),
+    CacheModule.register({ isGlobal: true }),
     AwsSdkModule.forRoot({
       defaultServiceOptions: {
         accessKeyId: process.env.LIARA_ACCESS_KEY,

@@ -1,5 +1,6 @@
 import {
   Body,
+  CacheInterceptor,
   Controller,
   Get,
   HttpCode,
@@ -10,6 +11,7 @@ import {
   Req,
   Res,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CookieOptions, Request, Response } from 'express';
@@ -38,6 +40,7 @@ import { UserLoginDto } from './Dto/user-login.Dto';
 import { SignUpDto, VerficationDto } from './Dto/user-signUp.dto';
 import { googleOAuthGuard } from './guards/google.ouath.guard';
 import { GoogleUserInfo } from './types/google.user';
+import { timeout } from 'rxjs';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -61,6 +64,14 @@ export class AuthController {
     res.cookie(name, value, cookieOptions);
   };
 
+  @Public()
+  @UseInterceptors(CacheInterceptor)
+  @Get('')
+  async hello(@Res() res: Response) {
+    setTimeout(() => {
+      res.send(`hello from who`);
+    }, 5000);
+  }
   @Get('')
   @HttpCode(HttpStatus.OK)
   async init(@Req() req): Promise<UserInit> {
