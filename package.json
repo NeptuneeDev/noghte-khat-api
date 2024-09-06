@@ -26,11 +26,11 @@
     "test:int": "dotenv -e .env.test -- jest -i --no-cache --watch  --config jest-int.json"
   },
   "dependencies": {
-    "@nestjs-modules/mailer": "^1.8.1",
+    "@nestjs-modules/mailer": "^2.0.0",
     "@nestjs/common": "^9.3.9",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.3.9",
-    "@nestjs/jwt": "^10.0.1",
+    "@nestjs/jwt": "^10.2.0",
     "@nestjs/mapped-types": "^1.2.2",
     "@nestjs/passport": "^9.0.3",
     "@nestjs/platform-express": "^9.2.1",
